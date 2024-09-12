@@ -5,5 +5,5 @@ venv/
 # Ignore the .env file (contains sensitive data)
 .env
 
-# pycache
+# Ignore the pycache
 __pycache__
