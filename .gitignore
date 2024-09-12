@@ -4,3 +4,6 @@ venv/
 
 # Ignore the .env file (contains sensitive data)
 .env
+
+# pycache
+__pycache__
