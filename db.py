@@ -2,6 +2,7 @@ import mysql.connector
 import os
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 def get_db_connection():
@@ -15,10 +16,13 @@ def get_db_connection():
     return connection
 
 def test_db_connection():
-    connection = get_db_connection()
-    cursor = connection.cursor()
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute("SELECT DATABASE();")
-    database_name = cursor.fetchone()
-    print(f"Connected to database: {database_name[0]}")
+    db_name = cursor.fetchone()
+    print(f"Connected to database: {db_name[0]}")
     cursor.close()
-    connection.close()
+    conn.close()
+
+if __name__ == "__main__":
+    test_db_connection()
