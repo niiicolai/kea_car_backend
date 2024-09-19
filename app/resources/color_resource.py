@@ -1,38 +1,53 @@
 from pydantic_core import ValidationError
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional, Required
 
 class ColorBaseResource(BaseModel):
-    color: Optional[str] = None
+    color: str = Field(...)
+    price: float = Field(...)
+    
+    def to_dict(self, id: int | None = None) -> dict:
+        color_dict = {}
+        if id is not None:
+            color_dict["id"] = id
+        if self.color is not None:
+            color_dict["color"] = self.color
+        if self.price is not None:
+            color_dict["price"] = self.price
+        return color_dict
 
 
     class Config:
         from_attributes = True
 
-    @field_validator('color', mode="before")
-    def validate_color(cls, value: Optional[str]) -> Optional[str]:
+    @field_validator('color')
+    def validate_color(cls, value: str) -> str:
         if value is not None:
             value = value.strip()
-            if value.len(value) == 0:
-                raise ValidationError(f"The given color {value} is an empty string.")
+            if len(value) == 0:
+                raise ValueError(f"The given color {value} is an empty string.")
         return value
+    
+    @field_validator('price')
+    def validate_price(cls, value: float) -> float:
+        if value is not None:
+            if value < 0:
+                raise ValueError(f"The given color price {value} cannot be less than zero")
+        return value
+    
 
 class ColorCreateResource(ColorBaseResource):
-    color: str
+    pass
 
 class ColorUpdateResource(ColorBaseResource):
-    pass
+    color: str | None = None
+    price: float | None = None
 
 class ColorReturnResource(ColorBaseResource):
     id: int
 
-    def to_dict(self) -> dict:
-        return {
-            'id': self.id
-        }
-    
     def to_json(self) -> dict:
-        as_json = self.to_dict()
+        as_json = self.to_dict(self.id)
         return as_json
 
 

@@ -1,9 +1,13 @@
 from api import get_data_from_api
 from fastapi import FastAPI, Depends, HTTPException
-from db import Session, get_db as get_db_session
+from db import Session
+from db import get_db as get_db_session
 from sqlalchemy import text
+from app.controllers.controller_colors import router as color_router
 
 app = FastAPI()
+
+app.include_router(color_router)
 
 def get_db():
     with get_db_session() as session:
@@ -12,6 +16,7 @@ def get_db():
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
 
 @app.get("/test-db")
 async def get_db_connection(db: Session = Depends(get_db)):
