@@ -1,10 +1,10 @@
-from pydantic_core import ValidationError
-from pydantic import BaseModel, Field, field_validator
-from typing import Optional, Required
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 class ColorBaseResource(BaseModel):
     color: str = Field(...)
     price: float = Field(...)
+    
+    model_config = ConfigDict(from_attributes=True)
     
     def to_dict(self, id: int | None = None) -> dict:
         color_dict = {}
@@ -16,9 +16,6 @@ class ColorBaseResource(BaseModel):
             color_dict["price"] = self.price
         return color_dict
 
-
-    class Config:
-        from_attributes = True
 
     @field_validator('color')
     def validate_color(cls, value: str) -> str:

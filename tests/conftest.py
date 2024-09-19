@@ -1,9 +1,10 @@
 import os
-from app.models.color import Color
 from fastapi.testclient import TestClient
 import pytest
-from db import get_db
+
 from main import app
+from db import get_db
+from app.models.color import Color
 
 os.environ["TESTING"] = "true"
 

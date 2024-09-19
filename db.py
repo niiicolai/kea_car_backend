@@ -1,8 +1,8 @@
-import mysql.connector
 import os
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, Engine
-from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from sqlalchemy import create_engine, Engine, text
+from sqlalchemy.orm import sessionmaker, declarative_base
+from flask_sqlalchemy.session import Session
 from contextlib import contextmanager
 
 
@@ -35,15 +35,21 @@ def get_engine(is_test: bool = False) -> Engine:
     engine = create_engine(connection_string)
     return engine
 
-
+session_local = sessionmaker(autocommit=False, autoflush=False)
 
 @contextmanager
 def get_db() -> Session:
     is_test = os.getenv('TESTING') == 'true'
     engine = get_engine(is_test)
-    session = sessionmaker(autocommit=False, autoflush=False, bind=engine)()
+    session = session_local(bind=engine)
 
     try:
         yield session
     finally:
         session.close()
+
+def get_current_db_name(session: Session) -> str:
+    # Use text() to create a text-based SQL expression
+        result = session.execute(text("SELECT DATABASE();"))
+        # Fetch the result
+        return str(result.scalar())
