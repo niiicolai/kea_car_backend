@@ -1,1 +1,14 @@
-from sqlalchemy import text
+from sqlalchemy import Column, Integer, String
+from db import Base
+from app.resources.color_resource import ColorReturnResource
+
+class Color(Base):
+    __tablename__ = 'colors'
+    id: int = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    color: str = Column(String(45), unique=True)
+
+    def as_resource(self) -> dict:
+        return ColorReturnResource(
+            id=self.id,
+            color=self.color
+        )

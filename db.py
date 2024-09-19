@@ -1,28 +1,49 @@
 import mysql.connector
 import os
 from dotenv import load_dotenv
+from sqlalchemy import create_engine, Engine
+from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from contextlib import contextmanager
 
 
 load_dotenv()
 
-def get_db_connection():
-    connection = mysql.connector.connect(
-        host=os.getenv('DB_HOST'),
-        database=os.getenv('DB_NAME'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-        port=os.getenv('DB_PORT')
-    )
-    return connection
+Base = declarative_base()
 
-def test_db_connection():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT DATABASE();")
-    db_name = cursor.fetchone()
-    print(f"Connected to database: {db_name[0]}")
-    cursor.close()
-    conn.close()
+def get_db_connection_string(is_test: bool = False) -> str:
+    """
+    Creates a database engine using individual environment variables.
+    """
+    if is_test:
+        db_user = os.getenv('TEST_DB_USER')
+        db_password = os.getenv('TEST_DB_PASSWORD')
+        db_host = os.getenv('TEST_DB_HOST')
+        db_port = os.getenv('TEST_DB_PORT')
+        db_name = os.getenv('TEST_DB_NAME')
+    else:
+        db_host = os.getenv('DB_HOST')
+        db_name = os.getenv('DB_NAME')
+        db_user = os.getenv('DB_USER')
+        db_password = os.getenv('DB_PASSWORD')
+        db_port = os.getenv('DB_PORT')
 
-if __name__ == "__main__":
-    test_db_connection()
+    connection_string = f'mysql+mysqlconnector://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
+    return connection_string
+
+def get_engine(is_test: bool = False) -> Engine:
+    connection_string = get_db_connection_string(is_test)
+    engine = create_engine(connection_string)
+    return engine
+
+
+
+@contextmanager
+def get_db() -> Session:
+    is_test = os.getenv('TESTING') == 'true'
+    engine = get_engine(is_test)
+    session = sessionmaker(autocommit=False, autoflush=False, bind=engine)()
+
+    try:
+        yield session
+    finally:
+        session.close()
