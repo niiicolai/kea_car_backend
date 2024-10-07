@@ -63,4 +63,4 @@ class CustomerUpdateResource(CustomerBaseResource):
         return self.model_dump(exclude_unset=True)
 
 class CustomerReturnResource(CustomerBaseResource):
-    id: int = Field(..., examples=[1,2,3])
+    id: int = Field(..., examples=[1,2])
