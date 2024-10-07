@@ -19,7 +19,9 @@ def client():
 def session():
     # Set up test session using the same method globally
     with get_db() as session:
-        yield session  # Transaction starts
-        session.query(Color).delete()
-        session.commit()
-        session.close()
+        try:
+            yield session  # Transaction starts
+        finally:
+            session.query(Color).delete()
+            session.commit()
+            session.close()

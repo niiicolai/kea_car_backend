@@ -1,8 +1,7 @@
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, Engine, text
-from sqlalchemy.orm import sessionmaker, declarative_base
-from flask_sqlalchemy.session import Session
+from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from contextlib import contextmanager
 
 
