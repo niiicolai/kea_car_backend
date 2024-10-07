@@ -76,7 +76,7 @@ async def update_color(color_update_data: ColorUpdateResource, session: Session 
 async def delete_color(color_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete color"
     try:
-        raise NotImplementedError("Request DELETE '/color/color_id' has not been implemented yet.")
+        raise NotImplementedError("Request DELETE '/color/{color_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:

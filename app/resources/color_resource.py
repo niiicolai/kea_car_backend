@@ -35,9 +35,3 @@ class ColorUpdateResource(ColorBaseResource):
 
 class ColorReturnResource(ColorBaseResource):
     id: int = Field(..., examples=[1,2,3])
-
-    def to_json(self) -> dict:
-        as_json = self.to_dict(self.id)
-        return as_json
-
-
