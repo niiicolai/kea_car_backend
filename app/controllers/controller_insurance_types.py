@@ -7,13 +7,13 @@ from app.resources.insurance_type_resource import InsuranceTypeCreateResource, I
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
-router: APIRouter = APIRouter()
+insurance_types_router: APIRouter = APIRouter()
 
 def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/insurance-types", response_model=list[InsuranceTypeReturnResource])
+@insurance_types_router.get("/insurance-types", response_model=list[InsuranceTypeReturnResource])
 async def get_inurance_types(session: Session = Depends(get_db)):
     error_message = "Failed to get insurance types"
     try:
@@ -27,7 +27,7 @@ async def get_inurance_types(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.get("/insurance-type/{insurance_type_id}", response_model=InsuranceTypeReturnResource)
+@insurance_types_router.get("/insurance-type/{insurance_type_id}", response_model=InsuranceTypeReturnResource)
 async def get_insurance_type(insurance_type_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get insurance type"
     try:
@@ -42,7 +42,7 @@ async def get_insurance_type(insurance_type_id: int, session: Session = Depends(
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/insurance-type", response_model=InsuranceTypeReturnResource)
+@insurance_types_router.post("/insurance-type", response_model=InsuranceTypeReturnResource)
 async def create_insurance_type(insurance_type_create_data: InsuranceTypeCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create insurance type"
     try:
@@ -56,7 +56,7 @@ async def create_insurance_type(insurance_type_create_data: InsuranceTypeCreateR
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.put("/insurance-type/{insurance_type_id}", response_model=InsuranceTypeUpdateResource)
+@insurance_types_router.put("/insurance-type/{insurance_type_id}", response_model=InsuranceTypeUpdateResource)
 async def update_insurance_type(insurance_type_id: int, insurance_type_update_data: InsuranceTypeUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update insurance type"
     try:
@@ -70,7 +70,7 @@ async def update_insurance_type(insurance_type_id: int, insurance_type_update_da
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.delete("/insurance-type/{insurance_type_id}", response_model=InsuranceTypeCreateResource)
+@insurance_types_router.delete("/insurance-type/{insurance_type_id}", response_model=InsuranceTypeCreateResource)
 async def delete_insurance_type(insurance_type_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete insurance type"
     try:

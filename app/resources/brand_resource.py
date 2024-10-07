@@ -7,7 +7,7 @@ class BrandBaseResource(BaseModel):
 
 
     @field_validator('brand_name')
-    def validate_color(cls, value: str) -> str:
+    def validate_brand_name(cls, value: str) -> str:
         if value is not None:
             value = value.strip()
             if len(value) == 0:

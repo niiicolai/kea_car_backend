@@ -7,13 +7,13 @@ from app.resources.brand_resource import BrandCreateResource, BrandUpdateResourc
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
-router: APIRouter = APIRouter()
+brands_router: APIRouter = APIRouter()
 
 def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/brands", response_model=list[BrandReturnResource])
+@brands_router.get("/brands", response_model=list[BrandReturnResource])
 async def get_brands(session: Session = Depends(get_db)):
     error_message = "Failed to get brands"
     try:
@@ -27,7 +27,7 @@ async def get_brands(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.get("/brand/{brand_id}", response_model=BrandReturnResource)
+@brands_router.get("/brand/{brand_id}", response_model=BrandReturnResource)
 async def get_brand(brand_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get brand"
     try:
@@ -42,7 +42,7 @@ async def get_brand(brand_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/brand", response_model=BrandReturnResource)
+@brands_router.post("/brand", response_model=BrandReturnResource)
 async def create_brand(brand_create_data: BrandCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create brand"
     try:
@@ -56,7 +56,7 @@ async def create_brand(brand_create_data: BrandCreateResource, session: Session 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.put("/brand/{brand_id}", response_model=BrandReturnResource)
+@brands_router.put("/brand/{brand_id}", response_model=BrandReturnResource)
 async def update_brand(brand_id: int, brand_update_data: BrandUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update brand"
     try:
@@ -70,7 +70,7 @@ async def update_brand(brand_id: int, brand_update_data: BrandUpdateResource, se
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.delete("/brand/{brand_id}", response_model=BrandReturnResource)
+@brands_router.delete("/brand/{brand_id}", response_model=BrandReturnResource)
 async def delete_brand(insurance_type_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete brand"
     try:

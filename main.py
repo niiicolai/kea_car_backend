@@ -3,11 +3,19 @@ from fastapi import FastAPI, Depends, HTTPException
 from db import Session
 from db import get_db as get_db_session
 from sqlalchemy import text
-from app.controllers.controller_colors import router as color_router
+from app.controllers.controller_colors import colors_router
+from app.controllers.controller_accessories import accessories_router
+from app.controllers.controller_brands import brands_router
+from app.controllers.controller_customers import customers_router
+from app.controllers.controller_insurance_types import insurance_types_router
 
 app = FastAPI()
 
-app.include_router(color_router)
+app.include_router(colors_router)
+app.include_router(accessories_router)
+app.include_router(brands_router)
+app.include_router(customers_router)
+app.include_router(insurance_types_router)
 
 def get_db():
     with get_db_session() as session:

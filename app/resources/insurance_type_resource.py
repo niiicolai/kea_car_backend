@@ -7,7 +7,7 @@ class InsuranceTypeBaseResource(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
     @field_validator('insurance_name')
-    def validate_color(cls, value: str) -> str:
+    def validate_insurance_name(cls, value: str) -> str:
         if value is not None:
             value = value.strip()
             if len(value) == 0:
