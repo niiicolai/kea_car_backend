@@ -56,11 +56,11 @@ async def create_insurance_type(insurance_type_create_data: InsuranceTypeCreateR
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.put("/insurance-type", response_model=InsuranceTypeUpdateResource)
-async def update_insurance_type(insurance_type_update_data: InsuranceTypeUpdateResource, session: Session = Depends(get_db)):
+@router.put("/insurance-type/{insurance_type_id}", response_model=InsuranceTypeUpdateResource)
+async def update_insurance_type(insurance_type_id: int, insurance_type_update_data: InsuranceTypeUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update insurance type"
     try:
-        raise NotImplementedError("Request PUT '/insurance-type' has not been implemented yet.")
+        raise NotImplementedError("Request PUT '/insurance-type/{insurance_type_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:
