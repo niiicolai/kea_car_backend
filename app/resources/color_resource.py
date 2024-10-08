@@ -3,6 +3,9 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 class ColorBaseResource(BaseModel):
     color_name: str = Field(..., examples=["black","white", "grey"])
     price: float = Field(..., examples=[0.0, 99.99, 69.69])
+    red_value: int = Field(..., min_length=0, max_length=255, examples=[0, 255, 128])
+    green_value: int = Field(..., min_length=0, max_length=255, examples=[0, 255, 128])
+    blue_value: int = Field(..., min_length=0, max_length=255, examples=[0, 255, 128])
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -29,6 +32,9 @@ class ColorCreateResource(ColorBaseResource):
 class ColorUpdateResource(ColorBaseResource):
     color_name: str | None = Field(None, examples=["black","white", "grey"])
     price: float | None = Field(None, examples=[0.0, 99.99, 69.69])
+    red_value: int | None = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
+    green_value: int | None = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
+    blue_value: int | None = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)

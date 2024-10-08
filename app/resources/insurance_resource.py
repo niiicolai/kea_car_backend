@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-class InsuranceTypeBaseResource(BaseModel):
+class InsuranceBaseResource(BaseModel):
     insurance_name: str = Field(..., examples=["paranormal", "earthquake", "mechanic"])
     price: float = Field(..., examples=[999.95, 69.69, 99.99])
     
@@ -21,15 +21,15 @@ class InsuranceTypeBaseResource(BaseModel):
                 raise ValueError(f"The given insurance price {value} cannot be less than zero")
         return value
 
-class InsuranceTypeCreateResource(InsuranceTypeBaseResource):
+class InsuranceCreateResource(InsuranceBaseResource):
     pass
 
-class InsuranceTypeUpdateResource(InsuranceTypeBaseResource):
+class InsuranceUpdateResource(InsuranceBaseResource):
     insurance_name: str = Field(None, examples=["paranormal", "earthquake", "mechanic"])
     price: float = Field(None, examples=[999.95, 69.69, 99.99])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
     
-class InsuranceTypeReturnResource(InsuranceTypeBaseResource):
+class InsuranceReturnResource(InsuranceBaseResource):
     id: int = Field(..., examples=[1,2,3])

@@ -7,7 +7,7 @@ from app.controllers.controller_colors import colors_router
 from app.controllers.controller_accessories import accessories_router
 from app.controllers.controller_brands import brands_router
 from app.controllers.controller_customers import customers_router
-from app.controllers.controller_insurance_types import insurance_types_router
+from app.controllers.controller_insurances import insurance_types_router
 from app.controllers.controller_sales_people import sales_people_router
 
 app = FastAPI()
