@@ -1,13 +1,13 @@
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 class BrandBaseResource(BaseModel):
-    brand_name: str = Field(..., examples=["BMW","Ford", "Audi"])
+    name: str = Field(..., examples=["BMW","Ford", "Audi"])
     
     model_config = ConfigDict(from_attributes=True)
 
 
-    @field_validator('brand_name')
-    def validate_brand_name(cls, value: str) -> str:
+    @field_validator('name')
+    def validate_name(cls, value: str) -> str:
         if value is not None:
             value = value.strip()
             if len(value) == 0:
@@ -19,7 +19,7 @@ class BrandCreateResource(BrandBaseResource):
     pass
 
 class BrandUpdateResource(BrandBaseResource):
-    Brand_name: str | None = Field(None, examples=["BMW","Ford", "Audi"])
+    name: str | None = Field(None, examples=["BMW","Ford", "Audi"])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)

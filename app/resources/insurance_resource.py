@@ -1,13 +1,13 @@
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 class InsuranceBaseResource(BaseModel):
-    insurance_name: str = Field(..., examples=["paranormal", "earthquake", "mechanic"])
+    name: str = Field(..., examples=["paranormal", "earthquake", "mechanic"])
     price: float = Field(..., examples=[999.95, 69.69, 99.99])
     
     model_config = ConfigDict(from_attributes=True)
     
-    @field_validator('insurance_name')
-    def validate_insurance_name(cls, value: str) -> str:
+    @field_validator('name')
+    def validate_name(cls, value: str) -> str:
         if value is not None:
             value = value.strip()
             if len(value) == 0:
@@ -25,7 +25,7 @@ class InsuranceCreateResource(InsuranceBaseResource):
     pass
 
 class InsuranceUpdateResource(InsuranceBaseResource):
-    insurance_name: str | None = Field(None, examples=["paranormal", "earthquake", "mechanic"])
+    name: str | None = Field(None, examples=["paranormal", "earthquake", "mechanic"])
     price: float | None = Field(None, examples=[999.95, 69.69, 99.99])
     
     def get_updated_fields(self) -> dict:
