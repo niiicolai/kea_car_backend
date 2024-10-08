@@ -13,7 +13,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@insurances_router.get("/insurances", response_model=list[InsuranceReturnResource])
+#@insurances_router.get("/insurances", response_model=list[InsuranceReturnResource])
 async def get_inurances(session: Session = Depends(get_db)):
     error_message = "Failed to get insurances"
     try:
@@ -27,7 +27,7 @@ async def get_inurances(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@insurances_router.get("/insurance/{insurance_id}", response_model=InsuranceReturnResource)
+#@insurances_router.get("/insurance/{insurance_id}", response_model=InsuranceReturnResource)
 async def get_insurance(insurance_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get insurance"
     try:
@@ -42,7 +42,7 @@ async def get_insurance(insurance_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@insurances_router.post("/insurance", response_model=InsuranceReturnResource)
+#@insurances_router.post("/insurance", response_model=InsuranceReturnResource)
 async def create_insurance(insurance_create_data: InsuranceCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create insurance"
     try:
@@ -56,7 +56,7 @@ async def create_insurance(insurance_create_data: InsuranceCreateResource, sessi
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@insurances_router.put("/insurance/{insurance_id}", response_model=InsuranceUpdateResource)
+#@insurances_router.put("/insurance/{insurance_id}", response_model=InsuranceUpdateResource)
 async def update_insurance(insurance_id: int, insurance_update_data: InsuranceUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update insurance"
     try:
@@ -70,7 +70,7 @@ async def update_insurance(insurance_id: int, insurance_update_data: InsuranceUp
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@insurances_router.delete("/insurance/{insurance_id}", response_model=InsuranceCreateResource)
+#@insurances_router.delete("/insurance/{insurance_id}", response_model=InsuranceCreateResource)
 async def delete_insurance(insurance_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete insurance"
     try:

@@ -9,15 +9,17 @@ from app.controllers.controller_brands import brands_router
 from app.controllers.controller_customers import customers_router
 from app.controllers.controller_insurances import insurances_router
 from app.controllers.controller_sales_people import sales_people_router
+from app.controllers.controller_models import models_router
 
 app = FastAPI()
 
-app.include_router(colors_router)
-app.include_router(accessories_router)
-app.include_router(brands_router)
-app.include_router(customers_router)
-app.include_router(insurances_router)
-app.include_router(sales_people_router)
+app.include_router(colors_router, tags=["Colors"])
+app.include_router(accessories_router, tags=["Accessories"])
+app.include_router(brands_router, tags=["Brands"])
+app.include_router(customers_router, tags=["Customers"])
+app.include_router(insurances_router, tags=["Insurances"])
+app.include_router(sales_people_router, tags=["Sales People"])
+app.include_router(models_router, tags=["Models"])
 
 def get_db():
     with get_db_session() as session:

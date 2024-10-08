@@ -14,14 +14,14 @@ class Model(Base):
     
     def validate_data(self):
         ModelBaseResource(
-            model_name=self.model_name,
+            carmodel_name=self.model_name,
             price=self.price,
         )
 
     def as_resource(self) -> ModelReturnResource:
         return ModelReturnResource(
             id=self.id,
-            model_name=self.model_name,
+            carmodel_name=self.model_name,
             price=self.price,
             brand=self.brand.as_resource(),
         )

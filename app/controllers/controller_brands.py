@@ -26,7 +26,7 @@ async def get_brands(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@brands_router.get("/brand/{brand_id}", response_model=BrandReturnResource)
+#@brands_router.get("/brand/{brand_id}", response_model=BrandReturnResource)
 async def get_brand(brand_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get brand"
     try:
@@ -41,7 +41,7 @@ async def get_brand(brand_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@brands_router.post("/brand", response_model=BrandReturnResource)
+#@brands_router.post("/brand", response_model=BrandReturnResource)
 async def create_brand(brand_create_data: BrandCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create brand"
     try:
@@ -55,7 +55,7 @@ async def create_brand(brand_create_data: BrandCreateResource, session: Session 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@brands_router.put("/brand/{brand_id}", response_model=BrandReturnResource)
+#@brands_router.put("/brand/{brand_id}", response_model=BrandReturnResource)
 async def update_brand(brand_id: int, brand_update_data: BrandUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update brand"
     try:
@@ -69,7 +69,7 @@ async def update_brand(brand_id: int, brand_update_data: BrandUpdateResource, se
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@brands_router.delete("/brand/{brand_id}", response_model=BrandReturnResource)
+#@brands_router.delete("/brand/{brand_id}", response_model=BrandReturnResource)
 async def delete_brand(brand_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete brand"
     try:
