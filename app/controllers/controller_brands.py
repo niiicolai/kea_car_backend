@@ -17,9 +17,8 @@ def get_db():
 async def get_brands(session: Session = Depends(get_db)):
     error_message = "Failed to get brands"
     try:
-        raise NotImplementedError("Request GET '/brands' has not been implemented yet.")
-    except UnableToFindIdError as e:
-        raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
+        brands = service_brands.get_all(session)
+        return [brand.as_resource() for brand in brands]
     except SQLAlchemyError as e:
         raise HTTPException(status_code=422, detail=str(f"SQL Error caught. {error_message}: {e}"))
     except ValidationError as e:
@@ -71,7 +70,7 @@ async def update_brand(brand_id: int, brand_update_data: BrandUpdateResource, se
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @brands_router.delete("/brand/{brand_id}", response_model=BrandReturnResource)
-async def delete_brand(insurance_type_id: int, session: Session = Depends(get_db)):
+async def delete_brand(brand_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete brand"
     try:
         raise NotImplementedError("Request DELETE '/brand/{brand_id}' has not been implemented yet.")

@@ -7,7 +7,7 @@ from app.controllers.controller_colors import colors_router
 from app.controllers.controller_accessories import accessories_router
 from app.controllers.controller_brands import brands_router
 from app.controllers.controller_customers import customers_router
-from app.controllers.controller_insurances import insurance_types_router
+from app.controllers.controller_insurances import insurances_router
 from app.controllers.controller_sales_people import sales_people_router
 
 app = FastAPI()
@@ -16,7 +16,7 @@ app.include_router(colors_router)
 app.include_router(accessories_router)
 app.include_router(brands_router)
 app.include_router(customers_router)
-app.include_router(insurance_types_router)
+app.include_router(insurances_router)
 app.include_router(sales_people_router)
 
 def get_db():
