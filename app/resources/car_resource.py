@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import date, timedelta
+from app.resources.model_resource import ModelReturnResource
 
 def calculate_purchase_deadline() -> date:
     return date.today() + timedelta(days=30)
@@ -22,14 +23,17 @@ class CarBaseResource(BaseModel):
             raise ValueError(f"The given purchase deadline must not be None.")
         return value
 
+class CarCreateOrUpdateResource(CarBaseResource):
+    model_id: int = Field(..., examples=[1])
 
-class CarCreateResource(CarBaseResource):
+class CarCreateResource(CarCreateOrUpdateResource):
     purchase_deadline: date = Field(default_factory=calculate_purchase_deadline, examples=[calculate_purchase_deadline()])
 
 
-class CarUpdateResource(CarBaseResource):
+class CarUpdateResource(CarCreateOrUpdateResource):
+    model_id: int = Field(None, gt=0, examples=[1])
     total_price: float = Field(None, gt=0, examples=[999.99])
-    date_of_purchase: date = Field(None, examples=[calculate_purchase_deadline()])
+    purchase_deadline: date = Field(None, examples=[calculate_purchase_deadline()])
 
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
@@ -37,3 +41,4 @@ class CarUpdateResource(CarBaseResource):
 
 class CarReturnResource(CarBaseResource):
     id: int = Field(..., examples=[1])
+    model: ModelReturnResource = Field(..., default_factory=ModelReturnResource, examples=[1])
