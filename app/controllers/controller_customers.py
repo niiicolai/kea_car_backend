@@ -57,7 +57,7 @@ async def create_customer(customer_create_data: CustomerCreateResource, session:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@router.put("/customer/{customer_id}", response_model=CustomerReturnResource)
+@router.put("/customer/{customer_id}", response_model=CustomerReturnResource)
 async def update_customer(customer_id: int, customer_update_data: CustomerUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update customer"
     try:
@@ -71,7 +71,7 @@ async def update_customer(customer_id: int, customer_update_data: CustomerUpdate
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@router.delete("/customer/{customer_id}", response_model=CustomerReturnResource)
+@router.delete("/customer/{customer_id}", response_model=CustomerReturnResource)
 async def delete_customer(customer_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete customer"
     try:

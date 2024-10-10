@@ -58,7 +58,7 @@ async def create_color(color_create_data: ColorCreateResource, session: Session 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@router.put("/color/{color_id}", response_model=ColorReturnResource)
+@router.put("/color/{color_id}", response_model=ColorReturnResource)
 async def update_color(color_id: int, color_update_data: ColorUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update color"
     try:
@@ -72,7 +72,7 @@ async def update_color(color_id: int, color_update_data: ColorUpdateResource, se
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@router.delete("/color/{color_id}", response_model=ColorReturnResource)
+@router.delete("/color/{color_id}", response_model=ColorReturnResource)
 async def delete_color(color_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete color"
     try:
