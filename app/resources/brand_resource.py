@@ -19,7 +19,7 @@ class BrandCreateResource(BrandBaseResource):
     pass
 
 class BrandUpdateResource(BrandBaseResource):
-    name: str | None = Field(None, examples=["BMW","Ford", "Audi"])
+    name: str = Field(None, examples=["BMW","Ford", "Audi"])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)

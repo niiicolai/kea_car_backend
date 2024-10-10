@@ -27,8 +27,8 @@ class AccessoryCreateResource(AccessoryBaseResource):
     pass
 
 class AccessoryUpdateResource(AccessoryBaseResource):
-    name: str | None = Field(None, examples=["cup holder","radio", "stereo"])
-    price: float | None = Field(None, examples=[19.99, 99.99, 69.69])
+    name: str = Field(None, examples=["cup holder","radio", "stereo"])
+    price: float = Field(None, examples=[19.99, 99.99, 69.69])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)

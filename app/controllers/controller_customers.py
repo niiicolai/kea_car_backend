@@ -13,11 +13,12 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-#@router.get("/customers", response_model=list[CustomerReturnResource])
+@router.get("/customers", response_model=list[CustomerReturnResource])
 async def get_customers(session: Session = Depends(get_db)):
     error_message = "Failed to get customers"
     try:
-        raise NotImplementedError("Request GET '/customers' has not been implemented yet.")
+        customers = service_customers.get_all(session)
+        return [customer.as_resource() for customer in customers]
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:
@@ -27,11 +28,11 @@ async def get_customers(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@router.get("/customer/{customer_id}", response_model=CustomerReturnResource)
+@router.get("/customer/{customer_id}", response_model=CustomerReturnResource)
 async def get_customer(customer_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get customer"
     try:
-        raise NotImplementedError("Request GET '/customer/{customer_id}' has not been implemented yet.")
+        return service_customers.get_by_id(session, customer_id).as_resource()
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:
@@ -42,11 +43,11 @@ async def get_customer(customer_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-#@router.post("/customer", response_model=CustomerReturnResource)
+@router.post("/customer", response_model=CustomerReturnResource)
 async def create_customer(customer_create_data: CustomerCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create customer"
     try:
-        raise NotImplementedError("Request POST '/customer' has not been implemented yet.")
+        return service_customers.create(session, customer_create_data).as_resource()
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:

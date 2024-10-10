@@ -30,11 +30,11 @@ class ColorCreateResource(ColorBaseResource):
     pass
 
 class ColorUpdateResource(ColorBaseResource):
-    name: str | None = Field(None, examples=["black","white", "grey"])
-    price: float | None = Field(None, examples=[0.0, 99.99, 69.69])
-    red_value: int | None = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
-    green_value: int | None = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
-    blue_value: int | None = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
+    name: str = Field(None, examples=["black","white", "grey"])
+    price: float = Field(None, examples=[0.0, 99.99, 69.69])
+    red_value: int = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
+    green_value: int = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
+    blue_value: int = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)

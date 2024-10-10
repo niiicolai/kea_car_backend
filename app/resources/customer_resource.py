@@ -1,11 +1,12 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator
+from typing import Optional
 
 class CustomerBaseResource(BaseModel):
     email: str = Field(..., examples=["hans@gmail.com","lise@gmail.com"])
-    phone_number: str | None = Field(None, examples=["10203040", None])
+    phone_number: Optional[str] = Field(..., examples=["10203040", None])
     first_name: str = Field(..., examples=["Hans", "Lise"])
     last_name: str = Field(..., examples=["Hansen", "Fiskesen"])
-    address: str = Field(None, examples=[None, "Randomgade nr. 4 tv. Kbh 2100"])
+    address: Optional[str] = Field(..., examples=[None, "Randomgade nr. 4 tv. Kbh 2100"])
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -49,15 +50,25 @@ class CustomerBaseResource(BaseModel):
             if len(value) == 0:
                 raise ValueError(f"The given address {value} is an empty string.")
         return value
-    
+
+    @field_validator('*', mode='before')
+    def validate_fields_that_can_not_be_none(cls, value, info: ValidationInfo):
+        values_that_can_be_none = ['phone_number', 'address']
+        if info.field_name not in values_that_can_be_none and value is None:
+            raise ValueError(f"The given field {info.field_name} cannot be None.")
+        return value
+
 
 class CustomerCreateResource(CustomerBaseResource):
     pass
 
 class CustomerUpdateResource(CustomerBaseResource):
-    email: str | None = Field(None, examples=["hans@gmail.com","lise@gmail.com"])
-    first_name: str | None = Field(None, examples=["Hans", "Lise"])
-    last_name: str | None = Field(None, examples=["Hansen", "Fiskesen"])
+    email: str = Field(None, examples=["hans@gmail.com","lise@gmail.com"])
+    phone_number: Optional[str] = Field(None, examples=["10203040", None])
+    first_name: str = Field(None, examples=["Hans", "Lise"])
+    last_name: str = Field(None, examples=["Hansen", "Fiskesen"])
+    address: Optional[str] = Field(None, examples=["Randomgade nr. 4 tv. Kbh 2100"])
+
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)

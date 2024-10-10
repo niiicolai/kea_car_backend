@@ -10,7 +10,8 @@ from app.controllers import (
     controller_customers,
     controller_insurances,
     controller_accessories,
-    controller_sales_people
+    controller_sales_people,
+    controller_purchases
 )
 
 app = FastAPI()
@@ -22,6 +23,7 @@ app.include_router(controller_customers.router)
 app.include_router(controller_insurances.router)
 app.include_router(controller_accessories.router)
 app.include_router(controller_sales_people.router)
+app.include_router(controller_purchases.router)
 
 def get_db():
     with get_db_session() as session:

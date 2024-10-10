@@ -25,8 +25,8 @@ class InsuranceCreateResource(InsuranceBaseResource):
     pass
 
 class InsuranceUpdateResource(InsuranceBaseResource):
-    name: str | None = Field(None, examples=["paranormal", "earthquake", "mechanic"])
-    price: float | None = Field(None, examples=[999.95, 69.69, 99.99])
+    name: str = Field(None, examples=["paranormal", "earthquake", "mechanic"])
+    price: float = Field(None, examples=[999.95, 69.69, 99.99])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)

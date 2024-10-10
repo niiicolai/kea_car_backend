@@ -45,10 +45,10 @@ class SalesPersonCreateResource(SalesPersonBaseResource):
     pass
 
 class SalesPersonUpdateResource(SalesPersonBaseResource):
-    email: str | None = Field(None, examples=["tomsemail@gmail.com", "piasemail@gmail.com"])
-    password: str | None = Field(None, examples=["TomsCode", "PiasCode"])
-    first_name: str | None = Field(None, examples=["Tom", "Pia"])
-    last_name: str | None = Field(None, examples=["Thomsen", "Pil"])
+    email: str = Field(None, examples=["tomsemail@gmail.com", "piasemail@gmail.com"])
+    password: str = Field(None, examples=["TomsCode", "PiasCode"])
+    first_name: str = Field(None, examples=["Tom", "Pia"])
+    last_name: str = Field(None, examples=["Thomsen", "Pil"])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
