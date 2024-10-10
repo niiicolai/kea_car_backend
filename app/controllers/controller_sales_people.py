@@ -7,13 +7,13 @@ from app.resources.sales_person_resource import SalesPersonCreateResource, Sales
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
-sales_people_router: APIRouter = APIRouter()
+router: APIRouter = APIRouter(tags=['Sales People'])
 
 def get_db():
     with get_db_session() as session:
         yield session
 
-#@sales_people_router.get("/sales-people", response_model=list[SalesPersonReturnResource])
+#@router.get("/sales-people", response_model=list[SalesPersonReturnResource])
 async def get_sales_people(session: Session = Depends(get_db)):
     error_message = "Failed to get sales people"
     try:
@@ -27,7 +27,7 @@ async def get_sales_people(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@sales_people_router.get("/sales-person/{sales_person_id}", response_model=SalesPersonReturnResource)
+#@router.get("/sales-person/{sales_person_id}", response_model=SalesPersonReturnResource)
 async def get_sales_person(sales_person_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get sales person"
     try:
@@ -42,7 +42,7 @@ async def get_sales_person(sales_person_id: int, session: Session = Depends(get_
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-#@sales_people_router.post("/sales-person", response_model=SalesPersonReturnResource)
+#@router.post("/sales-person", response_model=SalesPersonReturnResource)
 async def create_sales_person(sales_person_create_data: SalesPersonCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create sales person"
     try:
@@ -56,7 +56,7 @@ async def create_sales_person(sales_person_create_data: SalesPersonCreateResourc
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@sales_people_router.put("/sales-person/{sales_person_id}", response_model=SalesPersonReturnResource)
+#@router.put("/sales-person/{sales_person_id}", response_model=SalesPersonReturnResource)
 async def update_sales_person(sales_person_id: int, sales_person_update_data: SalesPersonUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update sales person"
     try:
@@ -70,7 +70,7 @@ async def update_sales_person(sales_person_id: int, sales_person_update_data: Sa
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@sales_people_router.delete("/sales-person/{sales_person_id}", response_model=SalesPersonReturnResource)
+#@router.delete("/sales-person/{sales_person_id}", response_model=SalesPersonReturnResource)
 async def delete_sales_person(sales_person_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete sales person"
     try:

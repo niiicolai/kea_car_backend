@@ -3,23 +3,25 @@ from fastapi import FastAPI, Depends, HTTPException
 from db import Session
 from db import get_db as get_db_session
 from sqlalchemy import text
-from app.controllers.controller_colors import colors_router
-from app.controllers.controller_accessories import accessories_router
-from app.controllers.controller_brands import brands_router
-from app.controllers.controller_customers import customers_router
-from app.controllers.controller_insurances import insurances_router
-from app.controllers.controller_sales_people import sales_people_router
-from app.controllers.controller_models import models_router
+from app.controllers import (
+    controller_brands,
+    controller_colors,
+    controller_models,
+    controller_customers,
+    controller_insurances,
+    controller_accessories,
+    controller_sales_people
+)
 
 app = FastAPI()
 
-app.include_router(colors_router, tags=["Colors"])
-app.include_router(accessories_router, tags=["Accessories"])
-app.include_router(brands_router, tags=["Brands"])
-app.include_router(customers_router, tags=["Customers"])
-app.include_router(insurances_router, tags=["Insurances"])
-app.include_router(sales_people_router, tags=["Sales People"])
-app.include_router(models_router, tags=["Models"])
+app.include_router(controller_brands.router)
+app.include_router(controller_colors.router)
+app.include_router(controller_models.router)
+app.include_router(controller_customers.router)
+app.include_router(controller_insurances.router)
+app.include_router(controller_accessories.router)
+app.include_router(controller_sales_people.router)
 
 def get_db():
     with get_db_session() as session:

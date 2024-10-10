@@ -8,13 +8,13 @@ from app.resources.model_resource import ModelCreateResource, ModelUpdateResourc
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
-models_router: APIRouter = APIRouter()
+router: APIRouter = APIRouter(tags=['Models'])
 
 def get_db():
     with get_db_session() as session:
         yield session
 
-@models_router.get("/models", response_model=list[ModelReturnResource])
+@router.get("/models", response_model=list[ModelReturnResource])
 async def get_models(brand_id: Optional[int] = None, session: Session = Depends(get_db)):
     error_message = "Failed to get models"
     try:
@@ -29,7 +29,7 @@ async def get_models(brand_id: Optional[int] = None, session: Session = Depends(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@models_router.get("/model/{model_id}", response_model=ModelReturnResource)
+#@router.get("/model/{model_id}", response_model=ModelReturnResource)
 async def get_model(model_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get model"
     try:
@@ -44,7 +44,7 @@ async def get_model(model_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-#@models_router.post("/model", response_model=ModelReturnResource)
+#@router.post("/model", response_model=ModelReturnResource)
 async def create_model(model_create_data: ModelCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create model"
     try:
@@ -58,7 +58,7 @@ async def create_model(model_create_data: ModelCreateResource, session: Session 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@models_router.put("/model/{model_id}", response_model=ModelReturnResource)
+#@router.put("/model/{model_id}", response_model=ModelReturnResource)
 async def update_model(model_id: int, model_update_data: ModelUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update model"
     try:
@@ -72,7 +72,7 @@ async def update_model(model_id: int, model_update_data: ModelUpdateResource, se
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-#@models_router.delete("/model/{model_id}", response_model=ModelReturnResource)
+#@router.delete("/model/{model_id}", response_model=ModelReturnResource)
 async def delete_model(model_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete model"
     try:
