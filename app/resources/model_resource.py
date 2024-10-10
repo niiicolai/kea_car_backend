@@ -24,7 +24,7 @@ class ModelBaseResource(BaseModel):
         return value
     
 class ModelCreateOrUpdateResource(ModelBaseResource):
-    brand_id: int = Field(..., examples=[1,2,3])
+    brands_id: int = Field(..., examples=[1,2,3])
     color_ids: list[int] = Field(..., examples=[[1,2,3],[4,5,6],[7,8,9]], exclude=True)
     
     @field_validator('color_ids')
@@ -38,7 +38,7 @@ class ModelCreateResource(ModelCreateOrUpdateResource):
     pass
 
 class ModelUpdateResource(ModelCreateOrUpdateResource):
-    brand_id: int = Field(None, examples=[1,2,3])
+    brands_id: int = Field(None, examples=[1,2,3])
     color_ids: list[int] = Field(default_factory=list[int], examples=[[1,2,3],[4,5,6],[7,8,9]], exclude=True)
     name: str = Field(None, examples=["iX M60", "F-150 Lightning", "e-tron GT"])
     price: float = Field(None, examples=[9990.95, 690.69, 990.99])
