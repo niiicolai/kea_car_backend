@@ -11,6 +11,7 @@ class Model(Base):
     brands_id: Mapped[int] = Column(Integer, ForeignKey('brands.id'), nullable=False)
     name: Mapped[str] = Column(String(60), unique=True, index=True, nullable=False)
     price: Mapped[float] = Column(Double, nullable=False)
+
     brand: Mapped[Brand] = relationship('Brand', back_populates='models', lazy=False)
     colors: Mapped[list[Color]] = relationship('Color', secondary=models_has_colors, back_populates='models', lazy=False)
     

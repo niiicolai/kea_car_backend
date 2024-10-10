@@ -11,6 +11,8 @@ class Car(Base):
     total_price: Mapped[float] = Column(Double, nullable=False)
     purchase_deadline: Mapped[date] = Column(Date, nullable=False)
 
+    purchase = relationship("Purchase", back_populates="car", uselist=False, lazy=False)
+
     def validate_data(self):
         CarBaseResource(
             total_price=self.total_price,
