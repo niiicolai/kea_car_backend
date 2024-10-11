@@ -11,6 +11,8 @@ class SalesPerson(Base):
     password: Mapped[str] = Column(String(45), nullable=False)
     first_name: Mapped[str] = Column(String(45), nullable=False)
     last_name: Mapped[str] = Column(String(45), nullable=False)
+
+    cars = relationship("Car", back_populates="sales_person", lazy=False)
     
     
     def validate_data(self):

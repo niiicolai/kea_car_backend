@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import date, timedelta
 from app.resources.model_resource import ModelReturnResource, ColorReturnResource
 from app.resources.customer_resource import CustomerReturnResource
+from app.resources.sales_person_resource import SalesPersonReturnResource
 
 def calculate_purchase_deadline() -> date:
     return date.today() + timedelta(days=30)
@@ -27,6 +28,8 @@ class CarBaseResource(BaseModel):
 class CarCreateOrUpdateResource(CarBaseResource):
     models_id: int = Field(..., examples=[1])
     colors_id: int = Field(..., examples=[1])
+    customers_id: int = Field(..., examples=[1])
+    sales_people_id: int = Field(..., examples=[1])
 
 
 class CarCreateResource(CarCreateOrUpdateResource):
@@ -34,8 +37,10 @@ class CarCreateResource(CarCreateOrUpdateResource):
 
 
 class CarUpdateResource(CarCreateOrUpdateResource):
-    models_id: int = Field(None, gt=0, examples=[1])
-    colors_id: int = Field(None, exclude=True, examples=[1])
+    models_id: int = Field(None, examples=[1])
+    colors_id: int = Field(None, examples=[1])
+    customers_id: int = Field(None, examples=[1])
+    sales_people_id: int = Field(None, examples=[1])
     total_price: float = Field(None, gt=0, examples=[999.99])
     purchase_deadline: date = Field(None, examples=[calculate_purchase_deadline()])
 
@@ -48,3 +53,4 @@ class CarReturnResource(CarBaseResource):
     model: ModelReturnResource = Field(..., default_factory=ModelReturnResource)
     color: ColorReturnResource = Field(..., default_factory=ColorReturnResource)
     customer: CustomerReturnResource = Field(..., default_factory=CustomerReturnResource)
+    sales_person: SalesPersonReturnResource = Field(..., default_factory=SalesPersonReturnResource)
