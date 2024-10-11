@@ -4,6 +4,7 @@ from app.resources.model_resource import ModelReturnResource, ColorReturnResourc
 from app.resources.customer_resource import CustomerReturnResource
 from app.resources.sales_person_resource import SalesPersonReturnResource
 from app.resources.accessory_resource import AccessoryReturnResource
+from app.resources.insurance_resource import InsuranceReturnResource
 
 def calculate_purchase_deadline() -> date:
     return date.today() + timedelta(days=30)
@@ -32,6 +33,19 @@ class CarCreateOrUpdateResource(CarBaseResource):
     customers_id: int = Field(..., examples=[1])
     sales_people_id: int = Field(..., examples=[1])
     accessory_ids: list[int] = Field(default_factory=list[int], exclude=True, examples=[[1,2,3]])
+    insurance_ids: list[int] = Field(default_factory=list[int], exclude=True, examples=[[1,2,3]])
+
+    @field_validator('accessory_ids')
+    def validate_accessory_ids(cls, accessory_ids: list[int]) -> list[int]:
+        if len(accessory_ids) != len(set(accessory_ids)):
+            raise ValueError('accessory_ids must be unique')
+        return accessory_ids
+
+    @field_validator('insurance_ids')
+    def validate_insurance_ids(cls, insurance_ids: list[int]) -> list[int]:
+        if len(insurance_ids) != len(set(insurance_ids)):
+            raise ValueError('insurance_ids must be unique')
+        return insurance_ids
 
 
 class CarCreateResource(CarCreateOrUpdateResource):
@@ -52,8 +66,9 @@ class CarUpdateResource(CarCreateOrUpdateResource):
 
 class CarReturnResource(CarBaseResource):
     id: int = Field(..., examples=[1])
-    model: ModelReturnResource = Field(..., default_factory=ModelReturnResource)
-    color: ColorReturnResource = Field(..., default_factory=ColorReturnResource)
-    customer: CustomerReturnResource = Field(..., default_factory=CustomerReturnResource)
-    sales_person: SalesPersonReturnResource = Field(..., default_factory=SalesPersonReturnResource)
-    accessories: list[AccessoryReturnResource] = Field(..., default_factory=list[AccessoryReturnResource])
+    model: ModelReturnResource = Field(...)
+    color: ColorReturnResource = Field(...)
+    customer: CustomerReturnResource = Field(...)
+    sales_person: SalesPersonReturnResource = Field(...)
+    accessories: list[AccessoryReturnResource] = Field(...)
+    insurances: list[InsuranceReturnResource] = Field(...)

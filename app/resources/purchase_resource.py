@@ -31,4 +31,4 @@ class PurchaseUpdateResource(PurchaseCreateOrUpdateResource):
 
 class PurchaseReturnResource(PurchaseBaseResource):
     id: int = Field(..., examples=[1])
-    car: CarReturnResource = Field(..., default_factory=CarReturnResource)
+    car: CarReturnResource = Field(...)
