@@ -12,7 +12,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/colors", response_model=list[ColorReturnResource])
+@router.get("/colors", response_model=list[ColorReturnResource], description="Returns all colors.")
 async def get_colors(session: Session = Depends(get_db)):
     error_message = "Failed to get colors"
     try:
@@ -27,7 +27,7 @@ async def get_colors(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.get("/color/{color_id}", response_model=ColorReturnResource)
+@router.get("/color/{color_id}", response_model=ColorReturnResource, description="Returns one color from a given ID.")
 async def get_color(color_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get color"
     try:
@@ -43,7 +43,7 @@ async def get_color(color_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/color", response_model=ColorReturnResource)
+@router.post("/color", response_model=ColorReturnResource, description="Creates and returns a new color.")
 async def create_color(color_create_data: ColorCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create color"
     try:
@@ -58,7 +58,7 @@ async def create_color(color_create_data: ColorCreateResource, session: Session 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.put("/color/{color_id}", response_model=ColorReturnResource)
+@router.put("/color/{color_id}", response_model=ColorReturnResource, description="Not been implemented yet.")
 async def update_color(color_id: int, color_update_data: ColorUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update color"
     try:
@@ -72,7 +72,7 @@ async def update_color(color_id: int, color_update_data: ColorUpdateResource, se
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.delete("/color/{color_id}", response_model=ColorReturnResource)
+@router.delete("/color/{color_id}", response_model=ColorReturnResource, description="Not been implemented yet.")
 async def delete_color(color_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete color"
     try:

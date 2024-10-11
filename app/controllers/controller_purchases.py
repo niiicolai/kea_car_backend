@@ -13,7 +13,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/purchases", response_model=list[PurchaseReturnResource])
+@router.get("/purchases", response_model=list[PurchaseReturnResource], description="Returns all purchases.")
 async def get_purchases(session: Session = Depends(get_db)):
     error_message = "Failed to get purchases"
     try:
@@ -26,7 +26,7 @@ async def get_purchases(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.get("/purchase/{purchase_id}", response_model=PurchaseReturnResource)
+@router.get("/purchase/{purchase_id}", response_model=PurchaseReturnResource, description="Not been implemented yet.")
 async def get_purchase(purchase_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get purchase"
     try:
@@ -41,7 +41,7 @@ async def get_purchase(purchase_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/purchase", response_model=PurchaseReturnResource)
+@router.post("/purchase", response_model=PurchaseReturnResource, description="Not been implemented yet.")
 async def create_purchase(purchase_create_data: PurchaseCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create purchase"
     try:
@@ -55,7 +55,7 @@ async def create_purchase(purchase_create_data: PurchaseCreateResource, session:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.put("/purchase/{purchase_id}", response_model=PurchaseReturnResource)
+@router.put("/purchase/{purchase_id}", response_model=PurchaseReturnResource, description="Not been implemented yet.")
 async def update_purchase(purchase_id: int, purchase_update_data: PurchaseUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update purchase"
     try:
@@ -69,7 +69,7 @@ async def update_purchase(purchase_id: int, purchase_update_data: PurchaseUpdate
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.delete("/purchase/{purchase_id}", response_model=PurchaseReturnResource)
+@router.delete("/purchase/{purchase_id}", response_model=PurchaseReturnResource, description="Not been implemented yet.")
 async def delete_purchase(purchase_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete purchase"
     try:

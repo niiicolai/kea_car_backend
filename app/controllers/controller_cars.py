@@ -13,7 +13,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/cars", response_model=list[CarReturnResource])
+@router.get("/cars", response_model=list[CarReturnResource], description="Not been implemented yet.")
 async def get_cars(session: Session = Depends(get_db)):
     error_message = "Failed to get cars"
     try:
@@ -27,7 +27,7 @@ async def get_cars(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.get("/car/{car_id}", response_model=CarReturnResource)
+@router.get("/car/{car_id}", response_model=CarReturnResource, description="Not been implemented yet.")
 async def get_car(car_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get car"
     try:
@@ -42,7 +42,7 @@ async def get_car(car_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/car", response_model=CarReturnResource)
+@router.post("/car", response_model=CarReturnResource, description="Not been implemented yet.")
 async def create_car(car_create_data: CarCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create car"
     try:
@@ -56,7 +56,7 @@ async def create_car(car_create_data: CarCreateResource, session: Session = Depe
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.put("/car/{car_id}", response_model=CarReturnResource)
+@router.put("/car/{car_id}", response_model=CarReturnResource, description="Not been implemented yet.")
 async def update_car(car_id: int, car_update_data: CarUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update car"
     try:
@@ -70,7 +70,7 @@ async def update_car(car_id: int, car_update_data: CarUpdateResource, session: S
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.delete("/car/{car_id}", response_model=CarReturnResource)
+@router.delete("/car/{car_id}", response_model=CarReturnResource, description="Not been implemented yet.")
 async def delete_car(car_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete car"
     try:

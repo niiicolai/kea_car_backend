@@ -14,7 +14,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/models", response_model=list[ModelReturnResource])
+@router.get("/models", response_model=list[ModelReturnResource], description="Returns all models or all models from a given brand ID.")
 async def get_models(brand_id: Optional[int] = None, session: Session = Depends(get_db)):
     error_message = "Failed to get models"
     try:
@@ -29,7 +29,7 @@ async def get_models(brand_id: Optional[int] = None, session: Session = Depends(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.get("/model/{model_id}", response_model=ModelReturnResource)
+@router.get("/model/{model_id}", response_model=ModelReturnResource, description="Not been implemented yet.")
 async def get_model(model_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get model"
     try:
@@ -44,7 +44,7 @@ async def get_model(model_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/model", response_model=ModelReturnResource)
+@router.post("/model", response_model=ModelReturnResource, description="Not been implemented yet.")
 async def create_model(model_create_data: ModelCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create model"
     try:
@@ -58,7 +58,7 @@ async def create_model(model_create_data: ModelCreateResource, session: Session 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.put("/model/{model_id}", response_model=ModelReturnResource)
+@router.put("/model/{model_id}", response_model=ModelReturnResource, description="Not been implemented yet.")
 async def update_model(model_id: int, model_update_data: ModelUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update model"
     try:
@@ -72,7 +72,7 @@ async def update_model(model_id: int, model_update_data: ModelUpdateResource, se
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.delete("/model/{model_id}", response_model=ModelReturnResource)
+@router.delete("/model/{model_id}", response_model=ModelReturnResource, description="Not been implemented yet.")
 async def delete_model(model_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete model"
     try:

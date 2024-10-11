@@ -13,11 +13,12 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/insurances", response_model=list[InsuranceReturnResource])
+@router.get("/insurances", response_model=list[InsuranceReturnResource], description="Returns all insurances.")
 async def get_insurances(session: Session = Depends(get_db)):
     error_message = "Failed to get insurances"
     try:
-        raise NotImplementedError("Request GET '/insurances' has not been implemented yet.")
+        insurances = service_insurances.get_all(session)
+        return [insurance.as_resource() for insurance in insurances]
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:
@@ -27,7 +28,7 @@ async def get_insurances(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.get("/insurance/{insurance_id}", response_model=InsuranceReturnResource)
+@router.get("/insurance/{insurance_id}", response_model=InsuranceReturnResource, description="Not been implemented yet.")
 async def get_insurance(insurance_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get insurance"
     try:
@@ -42,7 +43,7 @@ async def get_insurance(insurance_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/insurance", response_model=InsuranceReturnResource)
+@router.post("/insurance", response_model=InsuranceReturnResource, description="Not been implemented yet.")
 async def create_insurance(insurance_create_data: InsuranceCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create insurance"
     try:
@@ -56,7 +57,7 @@ async def create_insurance(insurance_create_data: InsuranceCreateResource, sessi
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.put("/insurance/{insurance_id}", response_model=InsuranceUpdateResource)
+@router.put("/insurance/{insurance_id}", response_model=InsuranceUpdateResource, description="Not been implemented yet.")
 async def update_insurance(insurance_id: int, insurance_update_data: InsuranceUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update insurance"
     try:
@@ -70,7 +71,7 @@ async def update_insurance(insurance_id: int, insurance_update_data: InsuranceUp
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.delete("/insurance/{insurance_id}", response_model=InsuranceCreateResource)
+@router.delete("/insurance/{insurance_id}", response_model=InsuranceCreateResource, description="Not been implemented yet.")
 async def delete_insurance(insurance_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete insurance"
     try:

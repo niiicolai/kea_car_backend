@@ -13,7 +13,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/accessories", response_model=list[AccessoryReturnResource])
+@router.get("/accessories", response_model=list[AccessoryReturnResource], description="Returns all accessories.")
 async def get_accessories(session: Session = Depends(get_db)):
     error_message = "Failed to get accessories"
     try:
@@ -27,7 +27,7 @@ async def get_accessories(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.get("/accessory/{accessory_id}", response_model=AccessoryReturnResource)
+@router.get("/accessory/{accessory_id}", response_model=AccessoryReturnResource, description="Not been implemented yet.")
 async def get_accessory(accessory_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get accessory"
     try:
@@ -42,7 +42,7 @@ async def get_accessory(accessory_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/accessory", response_model=AccessoryReturnResource)
+@router.post("/accessory", response_model=AccessoryReturnResource, description="Not been implemented yet.")
 async def create_accessory(accessory_create_data: AccessoryCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create accessory"
     try:
@@ -56,7 +56,7 @@ async def create_accessory(accessory_create_data: AccessoryCreateResource, sessi
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.put("/accessory/{accessory_id}", response_model=AccessoryReturnResource)
+@router.put("/accessory/{accessory_id}", response_model=AccessoryReturnResource, description="Not been implemented yet.")
 async def update_accessory(accessory_id: int, accessory_update_data: AccessoryUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update accessory"
     try:
@@ -70,7 +70,7 @@ async def update_accessory(accessory_id: int, accessory_update_data: AccessoryUp
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.delete("/accessory/{accessory_id}", response_model=AccessoryReturnResource)
+@router.delete("/accessory/{accessory_id}", response_model=AccessoryReturnResource, description="Not been implemented yet.")
 async def delete_accessory(accessory_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete accessory"
     try:
