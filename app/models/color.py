@@ -6,8 +6,8 @@ from app.resources.color_resource import ColorBaseResource, ColorReturnResource
 models_has_colors = Table(
     'models_has_colors',
     Base.metadata,
-    Column('models_id', Integer, ForeignKey('models.id'), primary_key=True),
-    Column('colors_id', Integer, ForeignKey('colors.id'), primary_key=True),
+    Column('models_id', Integer, ForeignKey('models.id'), primary_key=True, nullable=False),
+    Column('colors_id', Integer, ForeignKey('colors.id'), primary_key=True, nullable=False),
 )
 
 class Color(Base):

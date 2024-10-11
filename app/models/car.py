@@ -5,6 +5,7 @@ from db import Base
 from app.resources.car_resource import CarBaseResource, CarReturnResource
 from app.models.model import Model
 from app.models.color import Color
+from app.models.customer import Customer
 
 
 class Car(Base):
@@ -12,12 +13,14 @@ class Car(Base):
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, index=True, nullable=False)
     models_id: Mapped[int] = Column(Integer, ForeignKey('models.id'), nullable=False)
     colors_id: Mapped[int] = Column(Integer, ForeignKey('colors.id'), nullable=False)
+    customers_id: Mapped[int] = Column(Integer, ForeignKey('customers.id'), nullable=False)
     total_price: Mapped[float] = Column(Double, nullable=False)
     purchase_deadline: Mapped[date] = Column(Date, nullable=False)
 
     purchase = relationship("Purchase", back_populates="car", uselist=False, lazy=False)
     model: Mapped[Model] = relationship("Model", back_populates="cars", lazy=False)
     color: Mapped[Color] = relationship("Color", back_populates="cars", lazy=False)
+    customer: Mapped[Customer] = relationship("Customer", back_populates="cars", lazy=False)
 
     def validate_data(self):
         CarBaseResource(
@@ -32,4 +35,5 @@ class Car(Base):
             purchase_deadline=self.purchase_deadline,
             model=self.model.as_resource(),
             color=self.color.as_resource(),
+            customer=self.customer.as_resource(),
         )

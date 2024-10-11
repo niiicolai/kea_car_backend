@@ -13,6 +13,8 @@ class Customer(Base):
     first_name: Mapped[str] = Column(String(45), nullable=False)
     last_name: Mapped[str] = Column(String(45), nullable=False)
     address: Mapped[Optional[str]] = Column(String(255), nullable=True)
+
+    cars = relationship('Car', back_populates='customer', lazy=False)
     
     
     def validate_data(self):
