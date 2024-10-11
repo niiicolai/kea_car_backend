@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from app.resources.model_resource import ModelReturnResource, ColorReturnResource
 from app.resources.customer_resource import CustomerReturnResource
 from app.resources.sales_person_resource import SalesPersonReturnResource
+from app.resources.accessory_resource import AccessoryReturnResource
 
 def calculate_purchase_deadline() -> date:
     return date.today() + timedelta(days=30)
@@ -30,6 +31,7 @@ class CarCreateOrUpdateResource(CarBaseResource):
     colors_id: int = Field(..., examples=[1])
     customers_id: int = Field(..., examples=[1])
     sales_people_id: int = Field(..., examples=[1])
+    accessory_ids: list[int] = Field(default_factory=list[int], exclude=True, examples=[[1,2,3]])
 
 
 class CarCreateResource(CarCreateOrUpdateResource):
@@ -54,3 +56,4 @@ class CarReturnResource(CarBaseResource):
     color: ColorReturnResource = Field(..., default_factory=ColorReturnResource)
     customer: CustomerReturnResource = Field(..., default_factory=CustomerReturnResource)
     sales_person: SalesPersonReturnResource = Field(..., default_factory=SalesPersonReturnResource)
+    accessories: list[AccessoryReturnResource] = Field(..., default_factory=list[AccessoryReturnResource])

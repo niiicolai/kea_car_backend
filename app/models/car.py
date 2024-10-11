@@ -7,6 +7,7 @@ from app.models.model import Model
 from app.models.color import Color
 from app.models.customer import Customer
 from app.models.sales_person import SalesPerson
+from app.models.accessory import Accessory, cars_has_accessories
 
 
 class Car(Base):
@@ -24,6 +25,7 @@ class Car(Base):
     color: Mapped[Color] = relationship("Color", back_populates="cars", lazy=False)
     customer: Mapped[Customer] = relationship("Customer", back_populates="cars", lazy=False)
     sales_person: Mapped[SalesPerson] = relationship("SalesPerson", back_populates="cars", lazy=False)
+    accessories: Mapped[list[Accessory]] = relationship("Accessory", secondary=cars_has_accessories, back_populates="cars", lazy=False)
 
     def validate_data(self):
         CarBaseResource(
@@ -40,4 +42,5 @@ class Car(Base):
             color=self.color.as_resource(),
             customer=self.customer.as_resource(),
             sales_person=self.sales_person.as_resource(),
+            accessories=[accessory.as_resource() for accessory in self.accessories],
         )
