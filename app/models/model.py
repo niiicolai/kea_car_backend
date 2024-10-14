@@ -14,7 +14,7 @@ class Model(Base):
 
     brand: Mapped[Brand] = relationship('Brand', back_populates='models', lazy=False)
     colors: Mapped[list[Color]] = relationship('Color', secondary=models_has_colors, back_populates='models', lazy=False)
-    cars = relationship('Car', back_populates='model', lazy=False)
+    cars = relationship('Car', back_populates='model')
     
     def validate_data(self):
         ModelCreateOrUpdateResource(

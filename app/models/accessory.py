@@ -16,7 +16,7 @@ class Accessory(Base):
     name: Mapped[str] = Column(String(60), unique=True, index=True, nullable=False)
     price: Mapped[float] = Column(Double, nullable=False)
 
-    cars = relationship('Car', secondary=cars_has_accessories, back_populates='accessories', lazy=False)
+    cars = relationship('Car', secondary=cars_has_accessories, back_populates='accessories')
     
     def validate_data(self):
         AccessoryBaseResource(

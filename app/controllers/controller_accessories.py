@@ -17,7 +17,8 @@ def get_db():
 async def get_accessories(session: Session = Depends(get_db)):
     error_message = "Failed to get accessories"
     try:
-        raise NotImplementedError("Request GET '/accessories' has not been implemented yet.")
+        accessories = service_accessories.get_all(session)
+        return [accessory.as_resource() for accessory in accessories]
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:

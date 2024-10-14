@@ -18,8 +18,8 @@ class Color(Base):
     red_value: Mapped[int] = Column(Integer, nullable=False)
     green_value: Mapped[int] = Column(Integer, nullable=False)
     blue_value: Mapped[int] = Column(Integer, nullable=False)
-    models = relationship('Model', secondary=models_has_colors, back_populates='colors', lazy=False)
-    cars = relationship('Car', back_populates='color', lazy=False)
+    models = relationship('Model', secondary=models_has_colors, back_populates='colors')
+    cars = relationship('Car', back_populates='color')
     
     
     def validate_data(self):

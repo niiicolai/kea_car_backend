@@ -3,9 +3,9 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 class ColorBaseResource(BaseModel):
     name: str = Field(..., examples=["black","white", "grey"])
     price: float = Field(..., examples=[0.0, 99.99, 69.69])
-    red_value: int = Field(..., min_length=0, max_length=255, examples=[0, 255, 128])
-    green_value: int = Field(..., min_length=0, max_length=255, examples=[0, 255, 128])
-    blue_value: int = Field(..., min_length=0, max_length=255, examples=[0, 255, 128])
+    red_value: int = Field(..., ge=0, le=255, examples=[0, 255, 128])
+    green_value: int = Field(..., ge=0, le=255, examples=[0, 255, 128])
+    blue_value: int = Field(..., ge=0, le=255, examples=[0, 255, 128])
     
     model_config = ConfigDict(from_attributes=True)
 

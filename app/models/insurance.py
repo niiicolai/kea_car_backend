@@ -16,7 +16,7 @@ class Insurance(Base):
     name: Mapped[str] = Column(String(45), unique=True, index=True, nullable=False)
     price: Mapped[float] = Column(Double, nullable=False)
 
-    cars = relationship('Car', secondary=cars_has_insurances, back_populates='insurances', lazy=False)
+    cars = relationship('Car', secondary=cars_has_insurances, back_populates='insurances')
     
     def validate_data(self):
         InsuranceBaseResource(

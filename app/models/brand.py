@@ -8,7 +8,7 @@ class Brand(Base):
     __tablename__ = 'brands'
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, index=True, nullable=False)
     name: Mapped[str] = Column(String(60), unique=True, index=True, nullable=False)
-    models = relationship('Model', back_populates='brand', lazy=False)
+    models = relationship('Model', back_populates='brand')
     
     def validate_data(self):
         BrandBaseResource(
