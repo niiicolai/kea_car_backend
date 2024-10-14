@@ -14,12 +14,6 @@ class CarBaseResource(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    @field_validator('total_price')
-    def validate_total_price(cls, value: float) -> float:
-        if value < 0:
-            raise ValueError('total price must be positive')
-        return value
-
     @field_validator('purchase_deadline')
     def validate_purchase_deadline(cls, value: date) -> date:
         if value is None:

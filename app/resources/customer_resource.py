@@ -1,8 +1,8 @@
-from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator, EmailStr
 from typing import Optional
 
 class CustomerBaseResource(BaseModel):
-    email: str = Field(..., examples=["hans@gmail.com","lise@gmail.com"])
+    email: EmailStr = Field(..., examples=["hans@gmail.com","lise@gmail.com"])
     phone_number: Optional[str] = Field(..., examples=["10203040", None])
     first_name: str = Field(..., examples=["Hans", "Lise"])
     last_name: str = Field(..., examples=["Hansen", "Fiskesen"])
@@ -10,14 +10,6 @@ class CustomerBaseResource(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
-
-    @field_validator('email')
-    def validate_email(cls, value: str) -> str:
-        if value is not None:
-            value = value.strip()
-            if len(value) == 0:
-                raise ValueError(f"The given email {value} is an empty string.")
-        return value
     
     @field_validator('phone_number')
     def validate_phone_number(cls, value: str) -> str:
@@ -63,7 +55,7 @@ class CustomerCreateResource(CustomerBaseResource):
     pass
 
 class CustomerUpdateResource(CustomerBaseResource):
-    email: str = Field(None, examples=["hans@gmail.com","lise@gmail.com"])
+    email: EmailStr = Field(None, examples=["hans@gmail.com","lise@gmail.com"])
     phone_number: Optional[str] = Field(None, examples=["10203040", None])
     first_name: str = Field(None, examples=["Hans", "Lise"])
     last_name: str = Field(None, examples=["Hansen", "Fiskesen"])
