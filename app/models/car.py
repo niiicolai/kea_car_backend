@@ -31,7 +31,6 @@ class Car(Base):
 
     def validate_data(self):
         CarBaseResource(
-            total_price=self.total_price,
             purchase_deadline=self.purchase_deadline,
         )
 

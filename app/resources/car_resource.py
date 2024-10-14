@@ -10,7 +10,6 @@ def calculate_purchase_deadline() -> date:
     return date.today() + timedelta(days=30)
 
 class CarBaseResource(BaseModel):
-    total_price: float = Field(..., gt=0, examples=[999.99])
     purchase_deadline: date = Field(..., examples=[calculate_purchase_deadline()])
 
     model_config = ConfigDict(from_attributes=True)
@@ -63,8 +62,8 @@ class CarUpdateResource(CarCreateOrUpdateResource):
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
 
-
 class CarReturnResource(CarBaseResource):
+    total_price: float = Field(..., gt=0, examples=[999.99])
     id: int = Field(..., examples=[1])
     model: ModelReturnResource = Field(...)
     color: ColorReturnResource = Field(...)

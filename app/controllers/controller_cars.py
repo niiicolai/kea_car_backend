@@ -5,6 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_cars
 from app.resources.car_resource import CarCreateResource, CarUpdateResource, CarReturnResource
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
+from typing import Optional
 
 
 router: APIRouter = APIRouter(tags=["Cars"])
@@ -13,11 +14,12 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/cars", response_model=list[CarReturnResource], description="Not been implemented yet.")
-async def get_cars(session: Session = Depends(get_db)):
+@router.get("/cars", response_model=list[CarReturnResource], description="Returns all cars there are or from a given customer and/or sales person id.")
+async def get_cars(customer_id: Optional[int] = None, sales_person_id: Optional[int] = None, session: Session = Depends(get_db)):
     error_message = "Failed to get cars"
     try:
-        raise NotImplementedError("Request GET '/cars' has not been implemented yet.")
+        cars = service_cars.get_all(customer_id, sales_person_id, session)
+        return [car.as_resource() for car in cars]
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:
@@ -42,11 +44,12 @@ async def get_car(car_id: int, session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/car", response_model=CarReturnResource, description="Not been implemented yet.")
+@router.post("/car", response_model=CarReturnResource, description="Creates a car in the database.")
 async def create_car(car_create_data: CarCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create car"
     try:
-        raise NotImplementedError("Request POST '/car' has not been implemented yet.")
+        car = service_cars.create(car_create_data, session)
+        return car.as_resource()
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:
