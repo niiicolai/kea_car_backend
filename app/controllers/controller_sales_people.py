@@ -3,7 +3,7 @@ from db import Session, get_db as get_db_session
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_sales_people
-from app.resources.sales_person_resource import SalesPersonCreateResource, SalesPersonUpdateResource, SalesPersonReturnResource
+from app.resources.sales_person_resource import SalesPersonCreateResource, SalesPersonUpdateResource, SalesPersonReturnResource, SalesPersonLoginResource
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
@@ -12,6 +12,22 @@ router: APIRouter = APIRouter()
 def get_db():
     with get_db_session() as session:
         yield session
+
+@router.post("/login", response_model=SalesPersonReturnResource, description="Logs in as a Sales Person.")
+async def login(sales_person_login_data: SalesPersonLoginResource, session: Session = Depends(get_db)):
+    error_message = "Failed to login"
+    try:
+        sales_person = service_sales_people.login(sales_person_login_data, session)
+        return sales_person.as_resource()
+    except UnableToFindIdError as e:
+        raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=422, detail=str(f"SQL Error caught. {error_message}: {e}"))
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=str(f"Validation Error caught. {error_message}: {e}"))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
+
 
 @router.get("/sales_people", response_model=list[SalesPersonReturnResource], description="Returns all Sales People.")
 async def get_sales_people(session: Session = Depends(get_db)):

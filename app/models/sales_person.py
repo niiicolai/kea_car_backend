@@ -18,7 +18,6 @@ class SalesPerson(Base):
     def validate_data(self):
         SalesPersonBaseResource(
             email=self.email,
-            password=self.password,
             first_name=self.first_name,
             last_name=self.last_name,
         )
@@ -27,7 +26,6 @@ class SalesPerson(Base):
         return SalesPersonReturnResource(
             id=self.id,
             email=self.email,
-            password=self.password,
             first_name=self.first_name,
             last_name=self.last_name,
         )
