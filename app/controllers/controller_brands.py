@@ -7,7 +7,7 @@ from app.resources.brand_resource import BrandCreateResource, BrandUpdateResourc
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
-router: APIRouter = APIRouter(tags=['Brands'])
+router: APIRouter = APIRouter()
 
 def get_db():
     with get_db_session() as session:

@@ -7,7 +7,7 @@ from app.resources.sales_person_resource import SalesPersonCreateResource, Sales
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
-router: APIRouter = APIRouter(tags=['Sales People'])
+router: APIRouter = APIRouter()
 
 def get_db():
     with get_db_session() as session:

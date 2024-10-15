@@ -7,7 +7,7 @@ from app.resources.customer_resource import CustomerCreateResource, CustomerUpda
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
-router: APIRouter = APIRouter(tags=["Customers"])
+router: APIRouter = APIRouter()
 
 def get_db():
     with get_db_session() as session:

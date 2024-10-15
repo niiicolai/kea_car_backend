@@ -7,7 +7,7 @@ from app.resources.insurance_resource import InsuranceCreateResource, InsuranceU
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
-router: APIRouter = APIRouter(tags=["Insurances"])
+router: APIRouter = APIRouter()
 
 def get_db():
     with get_db_session() as session:

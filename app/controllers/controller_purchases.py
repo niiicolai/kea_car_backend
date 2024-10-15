@@ -7,7 +7,7 @@ from app.resources.purchase_resource import PurchaseCreateResource, PurchaseUpda
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
-router: APIRouter = APIRouter(tags=['Purchases'])
+router: APIRouter = APIRouter()
 
 def get_db():
     with get_db_session() as session:

@@ -8,7 +8,7 @@ from app.resources.model_resource import ModelCreateResource, ModelUpdateResourc
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
 
-router: APIRouter = APIRouter(tags=['Models'])
+router: APIRouter = APIRouter()
 
 def get_db():
     with get_db_session() as session:

@@ -8,7 +8,7 @@ from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 from typing import Optional
 
 
-router: APIRouter = APIRouter(tags=["Cars"])
+router: APIRouter = APIRouter()
 
 def get_db():
     with get_db_session() as session:

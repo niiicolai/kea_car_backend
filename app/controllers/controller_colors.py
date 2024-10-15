@@ -6,7 +6,7 @@ from app.services import service_colors
 from app.resources.color_resource import ColorCreateResource, ColorUpdateResource, ColorReturnResource
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 
-router: APIRouter = APIRouter(tags=['Colors'])
+router: APIRouter = APIRouter()
 
 def get_db():
     with get_db_session() as session:
