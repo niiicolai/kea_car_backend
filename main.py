@@ -1,5 +1,6 @@
 from api import get_data_from_api
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from db import Session
 from db import get_db as get_db_session
 from sqlalchemy import text
@@ -16,6 +17,16 @@ from app.controllers import (
 )
 
 app = FastAPI()
+
+
+CORS_SETTINGS = {
+    "allow_origins": ["*"],
+    "allow_credentials": True,
+    "allow_methods": ["*"],
+    "allow_headers": ["*"]
+}
+
+app.add_middleware(CORSMiddleware, **CORS_SETTINGS)
 
 app.include_router(controller_brands.router, prefix="/mysql", tags=["MySQL - Brands"])
 app.include_router(controller_colors.router, prefix="/mysql", tags=["MySQL - Colors"])
