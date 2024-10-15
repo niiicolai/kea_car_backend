@@ -9,7 +9,7 @@ from app.models.car import Car
 class Purchase(Base):
     __tablename__ = 'purchases'
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, index=True, nullable=False)
-    car_id: Mapped[int] = Column(Integer, ForeignKey('cars.id'), nullable=False)
+    cars_id: Mapped[int] = Column(Integer, ForeignKey('cars.id'), nullable=False)
     date_of_purchase: Mapped[date] = Column(Date, nullable=False)
 
     car: Mapped[Car] = relationship('Car', back_populates='purchase', uselist=False, lazy=False)

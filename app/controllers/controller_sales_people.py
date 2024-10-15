@@ -13,11 +13,12 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/sales-people", response_model=list[SalesPersonReturnResource], description="Not been implemented yet.")
+@router.get("/sales_people", response_model=list[SalesPersonReturnResource], description="Returns all Sales People.")
 async def get_sales_people(session: Session = Depends(get_db)):
     error_message = "Failed to get sales people"
     try:
-        raise NotImplementedError("Request GET '/sales-people' has not been implemented yet.")
+        sales_people = service_sales_people.get_all(session)
+        return [sales_person.as_resource() for sales_person in sales_people]
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:
@@ -27,7 +28,7 @@ async def get_sales_people(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.get("/sales-person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
+@router.get("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
 async def get_sales_person(sales_person_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to get sales person"
     try:
@@ -42,7 +43,7 @@ async def get_sales_person(sales_person_id: int, session: Session = Depends(get_
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/sales-person", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
+@router.post("/sales_person", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
 async def create_sales_person(sales_person_create_data: SalesPersonCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create sales person"
     try:
@@ -56,7 +57,7 @@ async def create_sales_person(sales_person_create_data: SalesPersonCreateResourc
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.put("/sales-person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
+@router.put("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
 async def update_sales_person(sales_person_id: int, sales_person_update_data: SalesPersonUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update sales person"
     try:
@@ -70,7 +71,7 @@ async def update_sales_person(sales_person_id: int, sales_person_update_data: Sa
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
-@router.delete("/sales-person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
+@router.delete("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
 async def delete_sales_person(sales_person_id: int, session: Session = Depends(get_db)):
     error_message = "Failed to delete sales person"
     try:
