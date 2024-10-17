@@ -1,4 +1,3 @@
-from api import get_data_from_api
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from db import Session
