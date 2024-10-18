@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from db import Session, get_db as get_db_session
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_sales_people
+from app.repositories.sales_person_repositories import SalesPersonRepository, MySQLSalesPersonRepository
 from app.resources.sales_person_resource import SalesPersonCreateResource, SalesPersonUpdateResource, SalesPersonReturnResource, SalesPersonLoginResource
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
+from app.core.security import Token, verify_sales_person_email, verify_password, create_access_token
 
 
 router: APIRouter = APIRouter()
@@ -12,6 +14,32 @@ router: APIRouter = APIRouter()
 def get_db():
     with get_db_session() as session:
         yield session
+
+@router.post("/token", response_model=Token, description="Create a Token for a Sales Person.")
+async def login_for_access_token(sales_person_login_data: SalesPersonLoginResource, session: Session = Depends(get_db)):
+    error_message = "Failed to create access token"
+    repository: SalesPersonRepository = MySQLSalesPersonRepository(session)
+
+    verified_email = verify_sales_person_email(sales_person_login_data, repository)
+    if verified_email is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}. Incorrect email: {sales_person_login_data.email}"),
+        )
+    sales_person_resource, hashed_password = verified_email
+    verified_password = verify_password(sales_person_login_data, hashed_password)
+    if not verified_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}. Incorrect password: {sales_person_login_data.password}"),
+        )
+
+    created_access_token: str = create_access_token(sales_person_resource)
+    return Token(
+        access_token=created_access_token,
+        token_type="bearer",
+        sales_person=sales_person_resource,
+    )
 
 @router.post("/login", response_model=SalesPersonReturnResource, description="Logs in as a Sales Person.")
 async def login(sales_person_login_data: SalesPersonLoginResource, session: Session = Depends(get_db)):
@@ -59,11 +87,12 @@ async def get_sales_person(sales_person_id: int, session: Session = Depends(get_
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.post("/sales_person", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
+@router.post("/sales_person", response_model=SalesPersonReturnResource, description="Create a new sales person.")
 async def create_sales_person(sales_person_create_data: SalesPersonCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create sales person"
     try:
-        raise NotImplementedError("Request POST '/sales-person' has not been implemented yet.")
+        new_sales_person = service_sales_people.create(sales_person_create_data, session)
+        return new_sales_person.as_resource()
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
     except SQLAlchemyError as e:

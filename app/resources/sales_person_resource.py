@@ -36,11 +36,11 @@ class SalesPersonCreateResource(SalesPersonBaseResource):
 
     @field_validator('password')
     def validate_password(cls, value: str) -> str:
-        if value is not None:
-            value = value.strip()
-            if len(value) == 0:
-                raise ValueError(f"The given password {value} is an empty string.")
-        return value.strip()
+        if len(value) == 0:
+            raise ValueError(f"The given password {value} is an empty string.")
+        if ' ' in value:
+            raise ValueError(f"The given password {value} contains whitespaces.")
+        return value
 
 class SalesPersonUpdateResource(SalesPersonBaseResource):
     email: EmailStr = Field(None, examples=["tomsemail@gmail.com", "piasemail@gmail.com"])

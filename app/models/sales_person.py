@@ -8,7 +8,7 @@ class SalesPerson(Base):
     __tablename__ = 'sales_people'
     id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, index=True, nullable=False)
     email: Mapped[str] = Column(String(50), index=True, unique=True, nullable=False)
-    password: Mapped[str] = Column(String(45), nullable=False)
+    password: Mapped[str] = Column(String(150), nullable=False)
     first_name: Mapped[str] = Column(String(45), nullable=False)
     last_name: Mapped[str] = Column(String(45), nullable=False)
 
