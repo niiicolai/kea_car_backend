@@ -1,8 +1,9 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
+
 
 class InsuranceBaseResource(BaseModel):
-    name: str = Field(..., examples=["paranormal", "earthquake", "mechanic"])
-    price: float = Field(..., examples=[999.95, 69.69, 99.99])
+    name: str = Field(..., examples=["Flat Tire"])
+    price: float = Field(..., examples=[9.95])
     
     model_config = ConfigDict(from_attributes=True)
     
@@ -25,11 +26,11 @@ class InsuranceCreateResource(InsuranceBaseResource):
     pass
 
 class InsuranceUpdateResource(InsuranceBaseResource):
-    name: str = Field(None, examples=["paranormal", "earthquake", "mechanic"])
-    price: float = Field(None, examples=[999.95, 69.69, 99.99])
+    name: str = Field(None, examples=["Flat Tire"])
+    price: float = Field(None, examples=[9.95])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
     
 class InsuranceReturnResource(InsuranceBaseResource):
-    id: int = Field(..., examples=[1,2,3])
+    id: UUID4 = Field(..., examples=["8456043d-5fb0-49bf-ac2c-51567a32cc87"])

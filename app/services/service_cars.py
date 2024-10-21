@@ -8,12 +8,12 @@ from app.models.insurance import Insurance
 from app.models.sales_person import SalesPerson
 from app.models.model import Model, Color
 from sqlalchemy.orm import Session
-from typing import cast
+from typing import List, Optional, cast
 
 from app.resources.car_resource import CarCreateResource
 
 
-def get_all(customer_id: int | None, sales_person_id: int | None, session: Session) -> list[Car]:
+def get_all(customer_id: Optional[str], sales_person_id: Optional[str], session: Session) -> List[Car]:
     filtering_by_customer: bool = customer_id is not None
     filtering_by_sales_person: bool = sales_person_id is not None
 
@@ -31,16 +31,22 @@ def get_all(customer_id: int | None, sales_person_id: int | None, session: Sessi
     else:
         cars = session.query(Car).all()
 
-    return cast(list[Car], cars)
+    return cast(List[Car], cars)
 
 
 def create(car_create_data: CarCreateResource, session: Session) -> Car:
-    model: Model = session.query(Model).get(car_create_data.models_id)
+    model_id = str(car_create_data.models_id)
+    color_id = str(car_create_data.colors_id)
+    customer_id = str(car_create_data.customers_id)
+    sales_person_id = str(car_create_data.sales_people_id)
+
+    model: Model = session.query(Model).get(model_id)
+
     if model is None:
         raise UnableToFindIdError("Model", car_create_data.models_id)
     model_price = model.price
 
-    color: Color = session.query(Color).get(car_create_data.colors_id)
+    color: Color = session.query(Color).get(color_id)
     if color is None:
         raise UnableToFindIdError("Color", car_create_data.colors_id)
 
@@ -50,20 +56,22 @@ def create(car_create_data: CarCreateResource, session: Session) -> Car:
         raise ValidationError(f"The color id: '{color.id}' is not between the color ids: '{model_color_ids}', for the model with id: '{model.id}'.")
     color_price = color.price
 
-    accessories: list[Accessory] = []
+    accessories: List[Accessory] = []
     accessories_price = 0
     accessory_ids = car_create_data.accessory_ids
     for accessory_id in accessory_ids:
+        accessory_id = str(accessory_id)
         accessory: Accessory = session.query(Accessory).get(accessory_id)
         if accessory is None:
             raise UnableToFindIdError("Accessory", accessory_id)
         accessories.append(accessory)
         accessories_price += accessory.price
 
-    insurances: list [Insurance] = []
+    insurances: List[Insurance] = []
     insurance_price = 0
     insurance_ids = car_create_data.insurance_ids
     for insurance_id in insurance_ids:
+        insurance_id = str(insurance_id)
         insurance: Insurance = session.query(Insurance).get(insurance_id)
         if insurance is None:
             raise UnableToFindIdError("Insurance", insurance_id)
@@ -72,13 +80,13 @@ def create(car_create_data: CarCreateResource, session: Session) -> Car:
 
     total_price = model_price + color_price + accessories_price + insurance_price
 
-    customer: Customer = session.query(Customer).get(car_create_data.customers_id)
+    customer: Customer = session.query(Customer).get(customer_id)
     if customer is None:
-        raise UnableToFindIdError("Customer", car_create_data.customers_id)
+        raise UnableToFindIdError("Customer", customer_id)
 
-    sales_person: SalesPerson = session.query(SalesPerson).get(car_create_data.sales_people_id)
+    sales_person: SalesPerson = session.query(SalesPerson).get(sales_person_id)
     if sales_person is None:
-        raise UnableToFindIdError("Sales Person", car_create_data.sales_people_id)
+        raise UnableToFindIdError("Sales Person", sales_person_id)
 
     car = Car(
         models_id=model.id,

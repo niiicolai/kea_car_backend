@@ -1,8 +1,8 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
 
 class AccessoryBaseResource(BaseModel):
-    name: str = Field(..., examples=["cup holder","radio", "stereo"])
-    price: float = Field(..., examples=[19.99, 99.99, 69.69])
+    name: str = Field(..., examples=["Adaptive Headlights"])
+    price: float = Field(..., examples=[99.95])
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -27,11 +27,11 @@ class AccessoryCreateResource(AccessoryBaseResource):
     pass
 
 class AccessoryUpdateResource(AccessoryBaseResource):
-    name: str = Field(None, examples=["cup holder","radio", "stereo"])
-    price: float = Field(None, examples=[19.99, 99.99, 69.69])
+    name: str = Field(None, examples=["Adaptive Headlights"])
+    price: float = Field(None, examples=[99.95])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
 
 class AccessoryReturnResource(AccessoryBaseResource):
-    id: int = Field(..., examples=[1,2,3])
+    id: UUID4 = Field(..., examples=["e620ec3c-625d-4bde-9b77-f7449b6352d5"])

@@ -1,5 +1,5 @@
 from datetime import date
-from sqlalchemy import Column, Integer, Double, Date, ForeignKey
+from sqlalchemy import Column, String, Double, Date, ForeignKey
 from sqlalchemy.orm import Mapped, relationship
 from db import Base
 from app.resources.car_resource import CarBaseResource, CarReturnResource
@@ -9,15 +9,17 @@ from app.models.customer import Customer
 from app.models.sales_person import SalesPerson
 from app.models.accessory import Accessory, cars_has_accessories
 from app.models.insurance import Insurance, cars_has_insurances
+from uuid import uuid4
+from typing import List
 
 
 class Car(Base):
     __tablename__ = 'cars'
-    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, index=True, nullable=False)
-    models_id: Mapped[int] = Column(Integer, ForeignKey('models.id'), nullable=False)
-    colors_id: Mapped[int] = Column(Integer, ForeignKey('colors.id'), nullable=False)
-    customers_id: Mapped[int] = Column(Integer, ForeignKey('customers.id'), nullable=False)
-    sales_people_id: Mapped[int] = Column(Integer, ForeignKey('sales_people.id'), nullable=False)
+    id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
+    models_id: Mapped[str] = Column(String(36), ForeignKey('models.id'), nullable=False)
+    colors_id: Mapped[str] = Column(String(36), ForeignKey('colors.id'), nullable=False)
+    customers_id: Mapped[str] = Column(String(36), ForeignKey('customers.id'), nullable=False)
+    sales_people_id: Mapped[str] = Column(String(36), ForeignKey('sales_people.id'), nullable=False)
     total_price: Mapped[float] = Column(Double, nullable=False)
     purchase_deadline: Mapped[date] = Column(Date, nullable=False)
 
@@ -26,8 +28,8 @@ class Car(Base):
     color: Mapped[Color] = relationship("Color", back_populates="cars", lazy=False)
     customer: Mapped[Customer] = relationship("Customer", back_populates="cars", lazy=False)
     sales_person: Mapped[SalesPerson] = relationship("SalesPerson", back_populates="cars", lazy=False)
-    accessories: Mapped[list[Accessory]] = relationship("Accessory", secondary=cars_has_accessories, back_populates="cars", lazy=False)
-    insurances: Mapped[list[Insurance]] = relationship("Insurance", secondary=cars_has_insurances, back_populates="cars", lazy=False)
+    accessories: Mapped[List[Accessory]] = relationship("Accessory", secondary=cars_has_accessories, back_populates="cars", lazy=False)
+    insurances: Mapped[List[Insurance]] = relationship("Insurance", secondary=cars_has_insurances, back_populates="cars", lazy=False)
 
     def validate_data(self):
         CarBaseResource(

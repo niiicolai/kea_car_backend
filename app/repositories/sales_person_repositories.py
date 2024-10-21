@@ -20,7 +20,7 @@ class MySQLSalesPersonRepository(SalesPersonRepository):
 
         if sales_person is not None:
             sales_person_resource: SalesPersonReturnResource = sales_person.as_resource()
-            hashed_password: str = sales_person.password
+            hashed_password: str = sales_person.hashed_password
             return sales_person_resource, hashed_password
         return None, None
 

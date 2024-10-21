@@ -7,7 +7,8 @@ from app.repositories.sales_person_repositories import SalesPersonRepository, My
 from app.resources.sales_person_resource import SalesPersonCreateResource, SalesPersonUpdateResource, SalesPersonReturnResource, SalesPersonLoginResource
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 from app.core.security import Token, verify_sales_person_email, verify_password, create_access_token
-
+from typing import List
+from uuid import UUID
 
 router: APIRouter = APIRouter()
 
@@ -57,7 +58,7 @@ async def login(sales_person_login_data: SalesPersonLoginResource, session: Sess
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 
-@router.get("/sales_people", response_model=list[SalesPersonReturnResource], description="Returns all Sales People.")
+@router.get("/sales_people", response_model=List[SalesPersonReturnResource], description="Returns all Sales People.")
 async def get_sales_people(session: Session = Depends(get_db)):
     error_message = "Failed to get sales people"
     try:
@@ -73,7 +74,7 @@ async def get_sales_people(session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.get("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
-async def get_sales_person(sales_person_id: int, session: Session = Depends(get_db)):
+async def get_sales_person(sales_person_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get sales person"
     try:
         raise NotImplementedError("Request GET '/sales-person/{sales_person_id}' has not been implemented yet.")
@@ -103,7 +104,7 @@ async def create_sales_person(sales_person_create_data: SalesPersonCreateResourc
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.put("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
-async def update_sales_person(sales_person_id: int, sales_person_update_data: SalesPersonUpdateResource, session: Session = Depends(get_db)):
+async def update_sales_person(sales_person_id: UUID, sales_person_update_data: SalesPersonUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update sales person"
     try:
         raise NotImplementedError("Request PUT '/sales-person/{sales_person_id}' has not been implemented yet.")
@@ -117,7 +118,7 @@ async def update_sales_person(sales_person_id: int, sales_person_update_data: Sa
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.delete("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
-async def delete_sales_person(sales_person_id: int, session: Session = Depends(get_db)):
+async def delete_sales_person(sales_person_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to delete sales person"
     try:
         raise NotImplementedError("Request DELETE '/sales-person/{sales_person_id}' has not been implemented yet.")

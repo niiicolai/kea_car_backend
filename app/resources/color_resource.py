@@ -1,11 +1,11 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
 
 class ColorBaseResource(BaseModel):
-    name: str = Field(..., examples=["black","white", "grey"])
-    price: float = Field(..., examples=[0.0, 99.99, 69.69])
-    red_value: int = Field(..., ge=0, le=255, examples=[0, 255, 128])
-    green_value: int = Field(..., ge=0, le=255, examples=[0, 255, 128])
-    blue_value: int = Field(..., ge=0, le=255, examples=[0, 255, 128])
+    name: str = Field(..., examples=["blue"])
+    price: float = Field(..., examples=[99.95])
+    red_value: int = Field(..., ge=0, le=255, examples=[0])
+    green_value: int = Field(..., ge=0, le=255, examples=[0])
+    blue_value: int = Field(..., ge=0, le=255, examples=[255])
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -30,14 +30,14 @@ class ColorCreateResource(ColorBaseResource):
     pass
 
 class ColorUpdateResource(ColorBaseResource):
-    name: str = Field(None, examples=["black","white", "grey"])
-    price: float = Field(None, examples=[0.0, 99.99, 69.69])
-    red_value: int = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
-    green_value: int = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
-    blue_value: int = Field(None, min_length=0, max_length=255, examples=[0, 255, 128])
+    name: str = Field(None, examples=["blue"])
+    price: float = Field(None, examples=[99.95])
+    red_value: int = Field(None, min_length=0, max_length=255, examples=[0])
+    green_value: int = Field(None, min_length=0, max_length=255, examples=[0])
+    blue_value: int = Field(None, min_length=0, max_length=255, examples=[255])
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
 
 class ColorReturnResource(ColorBaseResource):
-    id: int = Field(..., examples=[1,2,3])
+    id: UUID4 = Field(..., examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])

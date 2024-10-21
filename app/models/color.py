@@ -2,17 +2,18 @@ from sqlalchemy import Table, Column, Integer, String, Double, ForeignKey
 from sqlalchemy.orm import Mapped, relationship
 from db import Base
 from app.resources.color_resource import ColorBaseResource, ColorReturnResource
+from uuid import uuid4
 
 models_has_colors = Table(
     'models_has_colors',
     Base.metadata,
-    Column('models_id', Integer, ForeignKey('models.id'), primary_key=True, nullable=False),
-    Column('colors_id', Integer, ForeignKey('colors.id'), primary_key=True, nullable=False),
+    Column('models_id', String(36), ForeignKey('models.id'), primary_key=True, nullable=False),
+    Column('colors_id', String(36), ForeignKey('colors.id'), primary_key=True, nullable=False),
 )
 
 class Color(Base):
     __tablename__ = 'colors'
-    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, index=True, nullable=False)
+    id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
     name: Mapped[str] = Column(String(45), unique=True, index=True, nullable=False)
     price: Mapped[float] = Column(Double, nullable=False)
     red_value: Mapped[int] = Column(Integer, nullable=False)

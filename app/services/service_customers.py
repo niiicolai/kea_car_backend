@@ -2,14 +2,14 @@ from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 from app.models.customer import Customer
 from app.resources.customer_resource import CustomerCreateResource
 from sqlalchemy.orm import Session
-from typing import cast
+from typing import List, cast
 
-def get_all(session: Session) -> list[Customer]:
+def get_all(session: Session) -> List[Customer]:
     customers = session.query(Customer).all()
-    return cast(list[Customer], customers)
+    return cast(List[Customer], customers)
 
 
-def get_by_id(session: Session, customer_id: int) -> Customer:
+def get_by_id(session: Session, customer_id: str) -> Customer:
     customer: Customer = session.query(Customer).get(customer_id)
     if customer is None:
         raise UnableToFindIdError(entity_name="Customer", entity_id=customer_id)

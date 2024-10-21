@@ -1,13 +1,14 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, String
 from sqlalchemy.orm import Mapped, relationship
 from typing import Optional
+from uuid import uuid4
 from db import Base
 from app.resources.customer_resource import CustomerBaseResource, CustomerReturnResource
 
 
 class Customer(Base):
     __tablename__ = 'customers'
-    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, index=True, nullable=False)
+    id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
     email: Mapped[str] = Column(String(50), unique=True, index=True, nullable=False)
     phone_number: Mapped[Optional[str]] = Column(String(30), nullable=True)
     first_name: Mapped[str] = Column(String(45), nullable=False)

@@ -5,7 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_brands
 from app.resources.brand_resource import BrandCreateResource, BrandUpdateResource, BrandReturnResource
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
-
+from typing import List
+from uuid import UUID
 
 router: APIRouter = APIRouter()
 
@@ -13,7 +14,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/brands", response_model=list[BrandReturnResource], description="Returns all brands.")
+@router.get("/brands", response_model=List[BrandReturnResource], description="Returns all brands.")
 async def get_brands(session: Session = Depends(get_db)):
     error_message = "Failed to get brands"
     try:
@@ -27,7 +28,7 @@ async def get_brands(session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.get("/brand/{brand_id}", response_model=BrandReturnResource, description="Not been implemented yet.")
-async def get_brand(brand_id: int, session: Session = Depends(get_db)):
+async def get_brand(brand_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get brand"
     try:
         raise NotImplementedError("Request GET '/brand/{brand_id}' has not been implemented yet.")
@@ -56,7 +57,7 @@ async def create_brand(brand_create_data: BrandCreateResource, session: Session 
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.put("/brand/{brand_id}", response_model=BrandReturnResource, description="Not been implemented yet.")
-async def update_brand(brand_id: int, brand_update_data: BrandUpdateResource, session: Session = Depends(get_db)):
+async def update_brand(brand_id: UUID, brand_update_data: BrandUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update brand"
     try:
         raise NotImplementedError("Request PUT '/brand/{brand_id}' has not been implemented yet.")
@@ -70,7 +71,7 @@ async def update_brand(brand_id: int, brand_update_data: BrandUpdateResource, se
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.delete("/brand/{brand_id}", response_model=BrandReturnResource, description="Not been implemented yet.")
-async def delete_brand(brand_id: int, session: Session = Depends(get_db)):
+async def delete_brand(brand_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to delete brand"
     try:
         raise NotImplementedError("Request DELETE '/brand/{brand_id}' has not been implemented yet.")

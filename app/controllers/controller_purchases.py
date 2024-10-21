@@ -5,7 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_purchases
 from app.resources.purchase_resource import PurchaseCreateResource, PurchaseUpdateResource, PurchaseReturnResource
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
-
+from typing import List
+from uuid import UUID
 
 router: APIRouter = APIRouter()
 
@@ -13,7 +14,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/purchases", response_model=list[PurchaseReturnResource], description="Returns all purchases.")
+@router.get("/purchases", response_model=List[PurchaseReturnResource], description="Returns all purchases.")
 async def get_purchases(session: Session = Depends(get_db)):
     error_message = "Failed to get purchases"
     try:
@@ -27,7 +28,7 @@ async def get_purchases(session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.get("/purchase/{purchase_id}", response_model=PurchaseReturnResource, description="Not been implemented yet.")
-async def get_purchase(purchase_id: int, session: Session = Depends(get_db)):
+async def get_purchase(purchase_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get purchase"
     try:
         raise NotImplementedError("Request GET '/purchase/{purchase_id}' has not been implemented yet.")
@@ -56,7 +57,7 @@ async def create_purchase(purchase_create_data: PurchaseCreateResource, session:
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.put("/purchase/{purchase_id}", response_model=PurchaseReturnResource, description="Not been implemented yet.")
-async def update_purchase(purchase_id: int, purchase_update_data: PurchaseUpdateResource, session: Session = Depends(get_db)):
+async def update_purchase(purchase_id: UUID, purchase_update_data: PurchaseUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update purchase"
     try:
         raise NotImplementedError("Request PUT '/purchase/{purchase_id}' has not been implemented yet.")
@@ -70,7 +71,7 @@ async def update_purchase(purchase_id: int, purchase_update_data: PurchaseUpdate
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.delete("/purchase/{purchase_id}", response_model=PurchaseReturnResource, description="Not been implemented yet.")
-async def delete_purchase(purchase_id: int, session: Session = Depends(get_db)):
+async def delete_purchase(purchase_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to delete purchase"
     try:
         raise NotImplementedError("Request DELETE '/purchase/{purchase_id}' has not been implemented yet.")

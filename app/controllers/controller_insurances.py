@@ -5,6 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_insurances
 from app.resources.insurance_resource import InsuranceCreateResource, InsuranceUpdateResource, InsuranceReturnResource
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
+from typing import List
+from uuid import UUID
 
 
 router: APIRouter = APIRouter()
@@ -13,7 +15,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/insurances", response_model=list[InsuranceReturnResource], description="Returns all insurances.")
+@router.get("/insurances", response_model=List[InsuranceReturnResource], description="Returns all insurances.")
 async def get_insurances(session: Session = Depends(get_db)):
     error_message = "Failed to get insurances"
     try:
@@ -29,7 +31,7 @@ async def get_insurances(session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.get("/insurance/{insurance_id}", response_model=InsuranceReturnResource, description="Not been implemented yet.")
-async def get_insurance(insurance_id: int, session: Session = Depends(get_db)):
+async def get_insurance(insurance_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get insurance"
     try:
         raise NotImplementedError("Request GET '/insurance/{insurance_id}' has not been implemented yet.")
@@ -58,7 +60,7 @@ async def create_insurance(insurance_create_data: InsuranceCreateResource, sessi
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.put("/insurance/{insurance_id}", response_model=InsuranceUpdateResource, description="Not been implemented yet.")
-async def update_insurance(insurance_id: int, insurance_update_data: InsuranceUpdateResource, session: Session = Depends(get_db)):
+async def update_insurance(insurance_id: UUID, insurance_update_data: InsuranceUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update insurance"
     try:
         raise NotImplementedError("Request PUT '/insurance/{insurance_id}' has not been implemented yet.")
@@ -72,7 +74,7 @@ async def update_insurance(insurance_id: int, insurance_update_data: InsuranceUp
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.delete("/insurance/{insurance_id}", response_model=InsuranceCreateResource, description="Not been implemented yet.")
-async def delete_insurance(insurance_id: int, session: Session = Depends(get_db)):
+async def delete_insurance(insurance_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to delete insurance"
     try:
         raise NotImplementedError("Request DELETE '/insurance/{insurance_id}' has not been implemented yet.")

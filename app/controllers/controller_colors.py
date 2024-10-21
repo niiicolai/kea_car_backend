@@ -5,6 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_colors
 from app.resources.color_resource import ColorCreateResource, ColorUpdateResource, ColorReturnResource
 from app.exceptions.unable_to_find_id_error import UnableToFindIdError
+from typing import List
+from uuid import UUID
 
 router: APIRouter = APIRouter()
 
@@ -12,7 +14,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/colors", response_model=list[ColorReturnResource], description="Returns all colors.")
+@router.get("/colors", response_model=List[ColorReturnResource], description="Returns all colors.")
 async def get_colors(session: Session = Depends(get_db)):
     error_message = "Failed to get colors"
     try:
@@ -28,10 +30,10 @@ async def get_colors(session: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.get("/color/{color_id}", response_model=ColorReturnResource, description="Returns one color from a given ID.")
-async def get_color(color_id: int, session: Session = Depends(get_db)):
+async def get_color(color_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get color"
     try:
-        color = service_colors.get_by_id(session, color_id)
+        color = service_colors.get_by_id(session, str(color_id))
         return color.as_resource()
     except UnableToFindIdError as e:
         raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
@@ -59,7 +61,7 @@ async def create_color(color_create_data: ColorCreateResource, session: Session 
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.put("/color/{color_id}", response_model=ColorReturnResource, description="Not been implemented yet.")
-async def update_color(color_id: int, color_update_data: ColorUpdateResource, session: Session = Depends(get_db)):
+async def update_color(color_id: UUID, color_update_data: ColorUpdateResource, session: Session = Depends(get_db)):
     error_message = "Failed to update color"
     try:
         raise NotImplementedError("Request PUT '/color/{color_id}' has not been implemented yet.")
@@ -73,7 +75,7 @@ async def update_color(color_id: int, color_update_data: ColorUpdateResource, se
         raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
 
 @router.delete("/color/{color_id}", response_model=ColorReturnResource, description="Not been implemented yet.")
-async def delete_color(color_id: int, session: Session = Depends(get_db)):
+async def delete_color(color_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to delete color"
     try:
         raise NotImplementedError("Request DELETE '/color/{color_id}' has not been implemented yet.")

@@ -2,17 +2,18 @@ from sqlalchemy import Table, Column, Integer, String, Double, ForeignKey
 from sqlalchemy.orm import Mapped, relationship
 from db import Base
 from app.resources.accessory_resource import AccessoryBaseResource, AccessoryReturnResource
+from uuid import uuid4
 
 cars_has_accessories = Table(
     'cars_has_accessories',
     Base.metadata,
-    Column('cars_id', Integer, ForeignKey('cars.id'), primary_key=True),
-    Column('accessories_id', Integer, ForeignKey('accessories.id'), primary_key=True),
+    Column('cars_id', String(36), ForeignKey('cars.id'), nullable=False, primary_key=True),
+    Column('accessories_id', String(36), ForeignKey('accessories.id'), nullable=False, primary_key=True),
 )
 
 class Accessory(Base):
     __tablename__ = 'accessories'
-    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True, index=True, nullable=False)
+    id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
     name: Mapped[str] = Column(String(60), unique=True, index=True, nullable=False)
     price: Mapped[float] = Column(Double, nullable=False)
 

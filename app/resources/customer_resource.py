@@ -1,12 +1,12 @@
-from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator, EmailStr
+from pydantic import BaseModel, ConfigDict, Field, UUID4, ValidationInfo, field_validator, EmailStr
 from typing import Optional
 
 class CustomerBaseResource(BaseModel):
-    email: EmailStr = Field(..., examples=["hans@gmail.com","lise@gmail.com"])
-    phone_number: Optional[str] = Field(..., examples=["10203040", None])
-    first_name: str = Field(..., examples=["Hans", "Lise"])
-    last_name: str = Field(..., examples=["Hansen", "Fiskesen"])
-    address: Optional[str] = Field(..., examples=[None, "Randomgade nr. 4 tv. Kbh 2100"])
+    email: EmailStr = Field(..., examples=["henrik@gmail.com"])
+    phone_number: Optional[str] = Field(..., examples=["10203040"])
+    first_name: str = Field(..., examples=["'Henrik"])
+    last_name: str = Field(..., examples=["Henriksen"])
+    address: Optional[str] = Field(..., examples=["Randomgade nr. 10 4. tv."])
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -55,15 +55,15 @@ class CustomerCreateResource(CustomerBaseResource):
     pass
 
 class CustomerUpdateResource(CustomerBaseResource):
-    email: EmailStr = Field(None, examples=["hans@gmail.com","lise@gmail.com"])
-    phone_number: Optional[str] = Field(None, examples=["10203040", None])
-    first_name: str = Field(None, examples=["Hans", "Lise"])
-    last_name: str = Field(None, examples=["Hansen", "Fiskesen"])
-    address: Optional[str] = Field(None, examples=["Randomgade nr. 4 tv. Kbh 2100"])
+    email: EmailStr = Field(None, examples=["henrik@gmail.com"])
+    phone_number: Optional[str] = Field(None, examples=["10203040"])
+    first_name: str = Field(None, examples=["Henrik"])
+    last_name: str = Field(None, examples=["Henriksen"])
+    address: Optional[str] = Field(None, examples=["Randomgade nr. 10 4. tv."])
 
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
 
 class CustomerReturnResource(CustomerBaseResource):
-    id: int = Field(..., examples=[1,2])
+    id: UUID4 = Field(..., examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])

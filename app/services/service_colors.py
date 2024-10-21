@@ -2,14 +2,14 @@ from app.exceptions.unable_to_find_id_error import UnableToFindIdError
 from app.models.color import Color
 from app.resources.color_resource import ColorCreateResource
 from sqlalchemy.orm import Session
-from typing import cast
+from typing import List, cast
 
-def get_all(session: Session) -> list[Color]:
+def get_all(session: Session) -> List[Color]:
     colors = session.query(Color).all()
-    return cast(list[Color], colors)
+    return cast(List[Color], colors)
     
 
-def get_by_id(session: Session, color_id: int) -> Color:
+def get_by_id(session: Session, color_id: str) -> Color:
     color: Color = session.query(Color).get(color_id)
     if color is None:
         raise UnableToFindIdError(entity_name="Color", entity_id=color_id)
