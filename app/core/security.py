@@ -4,8 +4,8 @@ from typing import Optional, Union, Tuple
 from jose import JWTError, jwt
 from pydantic import BaseModel, Field
 from fastapi import Depends, HTTPException, status
-from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context, oauth2_scheme
-from app.resources.sales_person_resource import SalesPersonLoginResource, SalesPersonReturnResource
+from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context, oauth2_mysql
+from app.resources.sales_person_resource import SalesPersonReturnResource
 from app.repositories.sales_person_repositories import SalesPersonRepository
 
 logger = logging.getLogger(__name__)
@@ -29,19 +29,18 @@ class TokenData(BaseModel):
 
 
 def verify_sales_person_email(
-        sent_sales_person_login_info: SalesPersonLoginResource,
+        email: str,
         repository: SalesPersonRepository
 ) -> Optional[Tuple[SalesPersonReturnResource, str]]:
-    sales_person_resource, hashed_password = repository.fetch_by_email(sent_sales_person_login_info.email)
+    sales_person_resource, hashed_password = repository.fetch_by_email(email)
     if sales_person_resource is not None and hashed_password is not None:
         return sales_person_resource, hashed_password
     return None
 
 def verify_password(
-        sent_sales_person_login_info: SalesPersonLoginResource,
+        sent_login_password: str,
         found_hashed_password: str
 ) -> bool:
-    sent_login_password = sent_sales_person_login_info.password
     return pwd_context.verify(sent_login_password, found_hashed_password)
 
 
@@ -49,11 +48,11 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(sales_person: SalesPersonReturnResource) -> str:
+def create_access_token(sales_person: SalesPersonReturnResource) -> Token:
     email = sales_person.email
     data: TokenData = TokenData(sub=email)
     encoded_jwt = jwt.encode(data.model_dump(), SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+    return Token(access_token=encoded_jwt, token_type="bearer", sales_person=sales_person)
 
 
 def decode_access_token(token: str) -> Optional[TokenPayload]:
@@ -77,7 +76,9 @@ def decode_access_token(token: str) -> Optional[TokenPayload]:
         )
     return None
 
-async def get_current_sales_person_token(token: str = Depends(oauth2_scheme)):
+
+
+def get_current_sales_person_token(token: str) -> TokenPayload:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -94,6 +95,5 @@ async def get_current_sales_person_token(token: str = Depends(oauth2_scheme)):
 
     return token_payload
 
-
-async def get_current_active_sales_person_token(current_token: TokenPayload = Depends(get_current_sales_person_token)):
-    return current_token
+async def get_current_mysql_sales_person_token(token: str = Depends(oauth2_mysql)):
+    return get_current_sales_person_token(token)

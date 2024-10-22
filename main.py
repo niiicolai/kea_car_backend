@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from db import Session
 from db import get_db as get_db_session
 from sqlalchemy import text
-from app.core.security import TokenPayload, get_current_active_sales_person_token
+from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 from app.controllers import (
     controller_brands,
     controller_colors,
@@ -17,7 +17,6 @@ from app.controllers import (
 )
 
 app = FastAPI()
-
 
 CORS_SETTINGS = {
     "allow_origins": ["*"],
@@ -44,7 +43,7 @@ def get_db():
 
 @app.get("/", response_model=TokenPayload,
          description="Test endpoint to check if the API is running.")
-async def root(current_token: TokenPayload = Depends(get_current_active_sales_person_token)):
+async def root(current_token: TokenPayload = Depends(get_current_mysql_sales_person_token)):
     return current_token
 
 

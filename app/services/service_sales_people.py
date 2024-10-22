@@ -4,7 +4,7 @@ from app.models.sales_person import SalesPerson
 from app.resources.sales_person_resource import SalesPersonLoginResource, SalesPersonCreateResource
 from app.core.security import get_password_hash
 from sqlalchemy.orm import Session
-from typing import List, Optional, cast
+from typing import List, cast
 from app.core.security import verify_password
 
 def get_all(session: Session) -> List[SalesPerson]:
@@ -18,7 +18,7 @@ def login(sales_person_login_data: SalesPersonLoginResource, session: Session) -
         raise ValidationError(f"No Sales Person with the email: '{sales_person_login_data.email}'")
     sales_person = cast(SalesPerson, sales_person)
     hashed_password = sales_person.hashed_password
-    if not verify_password(sales_person_login_data, hashed_password):
+    if not verify_password(sales_person_login_data.password, hashed_password):
         raise ValidationError(f"Incorrect password for Sales Person with the email: '{sales_person.email}'!")
     return sales_person
 
