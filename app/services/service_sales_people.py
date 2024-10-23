@@ -1,37 +1,35 @@
-from app.exceptions.unable_to_find_id_error import UnableToFindIdError
-from pydantic import ValidationError
-from app.models.sales_person import SalesPerson
-from app.resources.sales_person_resource import SalesPersonLoginResource, SalesPersonCreateResource
-from app.core.security import get_password_hash
-from sqlalchemy.orm import Session
-from typing import List, cast
-from app.core.security import verify_password
+from app.exceptions.database_errors import UnableToFindIdException, AlreadyTakenEmailException
+from app.exceptions.invalid_credentials_errors import IncorrectEmailException, IncorrectPasswordException
+from app.resources.sales_person_resource import SalesPersonLoginResource, SalesPersonCreateResource, SalesPersonReturnResource
+from app.repositories.sales_person_repositories import SalesPersonRepository
+from typing import List
+from app.core.security import Token, create_access_token, verify_password, get_password_hash
 
-def get_all(session: Session) -> List[SalesPerson]:
-    sales_people = session.query(SalesPerson).all()
-    return cast(List[SalesPerson], sales_people)
+def get_all(repository: SalesPersonRepository) -> List[SalesPersonReturnResource]:
+    return repository.get_all()
 
-
-def login(sales_person_login_data: SalesPersonLoginResource, session: Session) -> SalesPerson:
-    sales_person = session.query(SalesPerson).filter_by(email=sales_person_login_data.email).first()
+def get_by_id(repository: SalesPersonRepository, sales_person_id: str) -> SalesPersonReturnResource:
+    sales_person = repository.get_by_id(sales_person_id)
     if sales_person is None:
-        raise ValidationError(f"No Sales Person with the email: '{sales_person_login_data.email}'")
-    sales_person = cast(SalesPerson, sales_person)
-    hashed_password = sales_person.hashed_password
-    if not verify_password(sales_person_login_data.password, hashed_password):
-        raise ValidationError(f"Incorrect password for Sales Person with the email: '{sales_person.email}'!")
+        raise UnableToFindIdException(entity_name="Sales Person", entity_id=sales_person_id)
     return sales_person
 
-def create(sales_person_create_data: SalesPersonCreateResource, session: Session) -> SalesPerson:
-    hashed_password = get_password_hash(sales_person_create_data.password)
 
-    new_sales_person = SalesPerson(
-        email=sales_person_create_data.email,
-        hashed_password=hashed_password,
-        first_name=sales_person_create_data.first_name,
-        last_name=sales_person_create_data.last_name,
-    )
-    session.add(new_sales_person)
-    session.commit()
-    session.refresh(new_sales_person)
-    return new_sales_person
+def login(repository: SalesPersonRepository, sales_person_login_data: SalesPersonLoginResource) -> Token:
+    verified_email = repository.fetch_by_email(sales_person_login_data.email)
+    if verified_email is None:
+        raise IncorrectEmailException(sales_person_login_data.email)
+
+    sales_person_resource, hashed_password = verified_email
+    if not verify_password(sales_person_login_data.password, hashed_password):
+        raise IncorrectPasswordException(sales_person_resource.email, sales_person_login_data.password)
+
+    return create_access_token(sales_person_resource)
+
+def create(repository: SalesPersonRepository, sales_person_create_data: SalesPersonCreateResource) -> SalesPersonReturnResource:
+    hashed_password: str = get_password_hash(sales_person_create_data.password)
+    if repository.is_email_taken(sales_person_create_data.email):
+        raise AlreadyTakenEmailException(
+            sales_person_create_data.email
+        )
+    return repository.create(sales_person_create_data, hashed_password)

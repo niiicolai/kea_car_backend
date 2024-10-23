@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
 import logging
-from typing import Optional, Union, Tuple
+from typing import Optional, Union
 from jose import JWTError, jwt
 from pydantic import BaseModel, Field
 from fastapi import Depends, HTTPException, status
 from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context, oauth2_mysql
 from app.resources.sales_person_resource import SalesPersonReturnResource
-from app.repositories.sales_person_repositories import SalesPersonRepository
 
 logger = logging.getLogger(__name__)
 
@@ -29,13 +28,12 @@ class TokenData(BaseModel):
 
 
 def verify_sales_person_email(
-        email: str,
-        repository: SalesPersonRepository
-) -> Optional[Tuple[SalesPersonReturnResource, str]]:
-    sales_person_resource, hashed_password = repository.fetch_by_email(email)
-    if sales_person_resource is not None and hashed_password is not None:
-        return sales_person_resource, hashed_password
-    return None
+        sent_email: str,
+        sales_person_resource: SalesPersonReturnResource
+) -> bool:
+    if sent_email == sales_person_resource.email :
+        return True
+    return False
 
 def verify_password(
         sent_login_password: str,

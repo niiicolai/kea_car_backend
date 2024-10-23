@@ -13,7 +13,7 @@ class Model(Base):
     brands_id: Mapped[str] = Column(String(36), ForeignKey('brands.id'), nullable=False)
     name: Mapped[str] = Column(String(60), unique=True, index=True, nullable=False)
     price: Mapped[float] = Column(Double, nullable=False)
-    image_url: Mapped[Optional[str]] = Column(String(255), nullable=True)
+    image_url: Mapped[Optional[str]] = Column(String(255), nullable=False)
 
     brand: Mapped[Brand] = relationship('Brand', back_populates='models', lazy=False)
     colors: Mapped[List[Color]] = relationship('Color', secondary=models_has_colors, back_populates='models', lazy=False)
