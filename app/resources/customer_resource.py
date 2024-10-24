@@ -66,4 +66,4 @@ class CustomerUpdateResource(CustomerBaseResource):
         return self.model_dump(exclude_unset=True)
 
 class CustomerReturnResource(CustomerBaseResource):
-    id: UUID4 = Field(..., examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])
+    id: str = Field(..., examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])

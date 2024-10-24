@@ -34,4 +34,4 @@ class AccessoryUpdateResource(AccessoryBaseResource):
         return self.model_dump(exclude_unset=True)
 
 class AccessoryReturnResource(AccessoryBaseResource):
-    id: UUID4 = Field(..., examples=["e620ec3c-625d-4bde-9b77-f7449b6352d5"])
+    id: str = Field(..., examples=["e620ec3c-625d-4bde-9b77-f7449b6352d5"])

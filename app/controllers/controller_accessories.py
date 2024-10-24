@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_accessories
 from app.repositories.accessory_repositories import MySQLAccessoryRepository
 from app.resources.accessory_resource import AccessoryCreateResource, AccessoryUpdateResource, AccessoryReturnResource
-from app.exceptions.database_errors import UnableToFindIdException
+from app.exceptions.database_errors import UnableToFindIdError
 from typing import List
 from uuid import UUID
 
@@ -20,8 +20,7 @@ def get_db():
 async def get_accessories(session: Session = Depends(get_db)):
     error_message = "Failed to get accessories"
     try:
-        repository = MySQLAccessoryRepository(session)
-        return service_accessories.get_all(repository)
+        return service_accessories.get_all(MySQLAccessoryRepository(session))
     except SQLAlchemyError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -38,12 +37,12 @@ async def get_accessories(session: Session = Depends(get_db)):
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/accessory/{accessory_id}", response_model=AccessoryReturnResource, description="Not been implemented yet.")
+@router.get("/accessory/{accessory_id}", response_model=AccessoryReturnResource, description="Returns an accessory by id.")
 async def get_accessory(accessory_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get accessory"
     try:
-        raise NotImplementedError("Request GET '/accessory/{accessory_id}' has not been implemented yet.")
-    except UnableToFindIdException as e:
+        return service_accessories.get_by_id(MySQLAccessoryRepository(session), str(accessory_id))
+    except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
@@ -86,7 +85,7 @@ async def update_accessory(accessory_id: UUID, accessory_update_data: AccessoryU
     error_message = "Failed to update accessory"
     try:
         raise NotImplementedError("Request PUT '/accessory/{accessory_id}' has not been implemented yet.")
-    except UnableToFindIdException as e:
+    except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
@@ -112,7 +111,7 @@ async def delete_accessory(accessory_id: UUID, session: Session = Depends(get_db
     error_message = "Failed to delete accessory"
     try:
         raise NotImplementedError("Request DELETE '/accessory/{accessory_id}' has not been implemented yet.")
-    except UnableToFindIdException as e:
+    except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")

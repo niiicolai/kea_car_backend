@@ -30,5 +30,5 @@ class PurchaseUpdateResource(PurchaseCreateOrUpdateResource):
 
 
 class PurchaseReturnResource(PurchaseBaseResource):
-    id: UUID4 = Field(..., examples=["6b00d785-bdb8-4441-9590-04938eefa481"])
+    id: str = Field(..., examples=["6b00d785-bdb8-4441-9590-04938eefa481"])
     car: CarReturnResource = Field(...)

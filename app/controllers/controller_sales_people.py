@@ -5,8 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_sales_people
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
 from app.resources.sales_person_resource import SalesPersonCreateResource, SalesPersonUpdateResource, SalesPersonReturnResource, SalesPersonLoginResource
-from app.exceptions.database_errors import UnableToFindIdException, AlreadyTakenEmailException
-from app.exceptions.invalid_credentials_errors import IncorrectCredentialException
+from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenEmailError
+from app.exceptions.invalid_credentials_errors import IncorrectCredentialError
 from typing import List
 from uuid import UUID
 
@@ -26,7 +26,7 @@ async def login_for_access_token(
     try:
         repository = MySQLSalesPersonRepository(session)
         return service_sales_people.login(repository, SalesPersonLoginResource(email=username, password=password))
-    except IncorrectCredentialException as e:
+    except IncorrectCredentialError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(f"{error_message}: {e}"),
@@ -47,13 +47,13 @@ async def login_for_access_token(
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.post("/login", response_model=SalesPersonReturnResource, description="Logs in as a Sales Person.")
+@router.post("/login", response_model=service_sales_people.Token, description="Logs in as a Sales Person.")
 async def login(sales_person_login_data: SalesPersonLoginResource, session: Session = Depends(get_db)):
     error_message = "Failed to login"
     try:
         repository = MySQLSalesPersonRepository(session)
         return service_sales_people.login(repository, sales_person_login_data)
-    except IncorrectCredentialException as e:
+    except IncorrectCredentialError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(f"{error_message}: {e}"),
@@ -103,7 +103,7 @@ async def get_sales_person(sales_person_id: UUID, session: Session = Depends(get
     try:
         repository = MySQLSalesPersonRepository(session)
         return service_sales_people.get_by_id(repository, str(sales_person_id))
-    except UnableToFindIdException as e:
+    except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
@@ -131,7 +131,7 @@ async def create_sales_person(sales_person_create_data: SalesPersonCreateResourc
     try:
         repository = MySQLSalesPersonRepository(session)
         return service_sales_people.create(repository, sales_person_create_data)
-    except AlreadyTakenEmailException as e:
+    except AlreadyTakenEmailError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(f"{error_message}: {e}"),
@@ -157,7 +157,7 @@ async def update_sales_person(sales_person_id: UUID, sales_person_update_data: S
     error_message = "Failed to update sales person"
     try:
         raise NotImplementedError("Request PUT '/sales-person/{sales_person_id}' has not been implemented yet.")
-    except UnableToFindIdException as e:
+    except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
@@ -183,7 +183,7 @@ async def delete_sales_person(sales_person_id: UUID, session: Session = Depends(
     error_message = "Failed to delete sales person"
     try:
         raise NotImplementedError("Request DELETE '/sales-person/{sales_person_id}' has not been implemented yet.")
-    except UnableToFindIdException as e:
+    except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")

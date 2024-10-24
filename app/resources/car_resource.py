@@ -26,8 +26,8 @@ class CarCreateOrUpdateResource(CarBaseResource):
     colors_id: UUID4 = Field(..., examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])
     customers_id: UUID4 = Field(..., examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])
     sales_people_id: UUID4 = Field(..., examples=["f9097a97-eca4-49b6-85a0-08423789c320"])
-    accessory_ids: List[UUID4] = Field(default_factory=List[UUID4], exclude=True, examples=[["e620ec3c-625d-4bde-9b77-f7449b6352d5","fc8f689e-9615-4cf6-9664-31400db7ebea"]])
-    insurance_ids: List[UUID4] = Field(default_factory=List[UUID4], exclude=True, examples=[["8456043d-5fb0-49bf-ac2c-51567a32cc87","76b21d38-2103-4464-84f2-c87178e4a30c"]])
+    accessory_ids: List[UUID4] = Field(default_factory=list[UUID4], exclude=True, examples=[["e620ec3c-625d-4bde-9b77-f7449b6352d5","fc8f689e-9615-4cf6-9664-31400db7ebea"]])
+    insurance_ids: List[UUID4] = Field(default_factory=list[UUID4], exclude=True, examples=[["8456043d-5fb0-49bf-ac2c-51567a32cc87","76b21d38-2103-4464-84f2-c87178e4a30c"]])
 
     @field_validator('accessory_ids')
     def validate_accessory_ids(cls, accessory_ids: List[UUID4]) -> List[UUID4]:
@@ -59,7 +59,7 @@ class CarUpdateResource(CarCreateOrUpdateResource):
 
 class CarReturnResource(CarBaseResource):
     total_price: float = Field(..., gt=0, examples=[999.99])
-    id: UUID4 = Field(..., examples=["e7bd48c2-f1c4-4e1a-b0fc-dc09f2d8f28a"])
+    id: str = Field(..., examples=["e7bd48c2-f1c4-4e1a-b0fc-dc09f2d8f28a"])
     model: ModelReturnResource = Field(...)
     color: ColorReturnResource = Field(...)
     customer: CustomerReturnResource = Field(...)

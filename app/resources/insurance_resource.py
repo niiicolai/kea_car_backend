@@ -33,4 +33,4 @@ class InsuranceUpdateResource(InsuranceBaseResource):
         return self.model_dump(exclude_unset=True)
     
 class InsuranceReturnResource(InsuranceBaseResource):
-    id: UUID4 = Field(..., examples=["8456043d-5fb0-49bf-ac2c-51567a32cc87"])
+    id: str = Field(..., examples=["8456043d-5fb0-49bf-ac2c-51567a32cc87"])

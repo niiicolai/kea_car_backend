@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String, Double, ForeignKey
+from sqlalchemy import Table, Column, String, Double, ForeignKey
 from sqlalchemy.orm import Mapped, relationship
 from db import Base
 from app.resources.accessory_resource import AccessoryBaseResource, AccessoryReturnResource

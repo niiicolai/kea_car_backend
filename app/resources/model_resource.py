@@ -61,6 +61,6 @@ class ModelUpdateResource(ModelCreateOrUpdateResource):
         return self.model_dump(exclude_unset=True)
     
 class ModelReturnResource(ModelBaseResource):
-    id: UUID4 = Field(..., examples=["ed996516-a141-4f4e-8991-3edeaba81c14"])
+    id: str = Field(..., examples=["ed996516-a141-4f4e-8991-3edeaba81c14"])
     brand: BrandReturnResource = Field(...)
     colors: List[ColorReturnResource] = Field(...)

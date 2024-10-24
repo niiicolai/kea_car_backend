@@ -1,8 +1,8 @@
-class DatabaseException(Exception):
+class DatabaseError(Exception):
     pass
 
 
-class AlreadyTakenEmailException(DatabaseException):
+class AlreadyTakenEmailError(DatabaseError):
     def __init__(self, email: str):
         self.message = f'The email "{email}" is already taken."'
         super().__init__(self.message)  # Call the base class constructor
@@ -10,7 +10,7 @@ class AlreadyTakenEmailException(DatabaseException):
     def __str__(self):
         return f"AlreadyTakenEmailException: {self.message}"
 
-class UnableToFindIdException(DatabaseException):
+class UnableToFindIdError(DatabaseError):
     def __init__(self, entity_name: str, entity_id: str):
         self.message = f'{entity_name} with ID {entity_id} does not exist.'
         super().__init__(self.message)  # Initialize the base Exception with the message

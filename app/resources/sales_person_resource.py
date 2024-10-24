@@ -49,5 +49,5 @@ class SalesPersonUpdateResource(SalesPersonBaseResource):
         return self.model_dump(exclude_unset=True)
 
 class SalesPersonReturnResource(SalesPersonBaseResource):
-    id: UUID4 = Field(..., examples=["f9097a97-eca4-49b6-85a0-08423789c320"])
+    id: str = Field(..., examples=["f9097a97-eca4-49b6-85a0-08423789c320"])
     

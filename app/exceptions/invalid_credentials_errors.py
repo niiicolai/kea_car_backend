@@ -1,9 +1,9 @@
-class IncorrectCredentialException(Exception):
+class IncorrectCredentialError(Exception):
     """Base class for exceptions related to incorrect credentials"""
     pass
 
 
-class IncorrectEmailException(IncorrectCredentialException):
+class IncorrectEmailError(IncorrectCredentialError):
     """Exception raised for incorrect email"""
 
     def __init__(self, email: str):
@@ -14,7 +14,7 @@ class IncorrectEmailException(IncorrectCredentialException):
         return f"IncorrectEmailException: {self.message}"
 
 
-class IncorrectPasswordException(IncorrectCredentialException):
+class IncorrectPasswordError(IncorrectCredentialError):
     """Exception raised for incorrect password"""
 
     def __init__(self, email: str, password: str):

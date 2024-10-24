@@ -40,4 +40,4 @@ class ColorUpdateResource(ColorBaseResource):
         return self.model_dump(exclude_unset=True)
 
 class ColorReturnResource(ColorBaseResource):
-    id: UUID4 = Field(..., examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])
+    id: str = Field(..., examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])

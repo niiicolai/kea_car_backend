@@ -37,4 +37,4 @@ class BrandUpdateResource(BrandBaseResource):
         return self.model_dump(exclude_unset=True)
 
 class BrandReturnResource(BrandBaseResource):
-    id: UUID4 = Field(..., examples=["feb2efdb-93ee-4f45-88b1-5e4086c00334"])
+    id: str = Field(..., examples=["feb2efdb-93ee-4f45-88b1-5e4086c00334"])
