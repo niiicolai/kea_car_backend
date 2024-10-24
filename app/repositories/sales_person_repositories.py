@@ -4,8 +4,6 @@ from app.resources.sales_person_resource import SalesPersonReturnResource, Sales
 from app.models.sales_person import SalesPerson
 from sqlalchemy.orm import Session
 
-from tests.conftest import session
-
 
 class SalesPersonRepository(ABC):
     @abstractmethod
