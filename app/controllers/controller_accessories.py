@@ -27,10 +27,15 @@ async def get_accessories(session: Session = Depends(get_db)):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(f"SQL Error caught. {error_message}: {e}")
         )
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 @router.get("/accessory/{accessory_id}", response_model=AccessoryReturnResource, description="Not been implemented yet.")
@@ -48,10 +53,15 @@ async def get_accessory(accessory_id: UUID, session: Session = Depends(get_db)):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(f"SQL Error caught. {error_message}: {e}")
         )
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 
@@ -68,7 +78,7 @@ async def create_accessory(accessory_create_data: AccessoryCreateResource, sessi
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 @router.put("/accessory/{accessory_id}", response_model=AccessoryReturnResource, description="Not been implemented yet.")
@@ -94,7 +104,7 @@ async def update_accessory(accessory_id: UUID, accessory_update_data: AccessoryU
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 @router.delete("/accessory/{accessory_id}", response_model=AccessoryReturnResource, description="Not been implemented yet.")
@@ -112,8 +122,13 @@ async def delete_accessory(accessory_id: UUID, session: Session = Depends(get_db
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(f"SQL Error caught. {error_message}: {e}")
         )
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )

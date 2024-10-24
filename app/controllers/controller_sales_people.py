@@ -36,10 +36,15 @@ async def login_for_access_token(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(f"SQL Error caught. {error_message}: {e}")
         )
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 @router.post("/login", response_model=SalesPersonReturnResource, description="Logs in as a Sales Person.")
@@ -58,10 +63,15 @@ async def login(sales_person_login_data: SalesPersonLoginResource, session: Sess
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(f"SQL Error caught. {error_message}: {e}")
         )
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 
@@ -76,10 +86,15 @@ async def get_sales_people(session: Session = Depends(get_db)):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(f"SQL Error caught. {error_message}: {e}")
         )
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 @router.get("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Returns a Sales Person by id.")
@@ -98,10 +113,15 @@ async def get_sales_person(sales_person_id: UUID, session: Session = Depends(get
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(f"SQL Error caught. {error_message}: {e}")
         )
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 
@@ -121,10 +141,15 @@ async def create_sales_person(sales_person_create_data: SalesPersonCreateResourc
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(f"SQL Error caught. {error_message}: {e}")
         )
+    except ValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 @router.put("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
@@ -133,13 +158,25 @@ async def update_sales_person(sales_person_id: UUID, sales_person_update_data: S
     try:
         raise NotImplementedError("Request PUT '/sales-person/{sales_person_id}' has not been implemented yet.")
     except UnableToFindIdException as e:
-        raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
+        )
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=422, detail=str(f"SQL Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"SQL Error caught. {error_message}: {e}")
+        )
     except ValidationError as e:
-        raise HTTPException(status_code=422, detail=str(f"Validation Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
+        )
 
 @router.delete("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Not been implemented yet.")
 async def delete_sales_person(sales_person_id: UUID, session: Session = Depends(get_db)):
@@ -147,10 +184,22 @@ async def delete_sales_person(sales_person_id: UUID, session: Session = Depends(
     try:
         raise NotImplementedError("Request DELETE '/sales-person/{sales_person_id}' has not been implemented yet.")
     except UnableToFindIdException as e:
-        raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
+        )
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=422, detail=str(f"SQL Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"SQL Error caught. {error_message}: {e}")
+        )
     except ValidationError as e:
-        raise HTTPException(status_code=422, detail=str(f"Validation Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
+        )

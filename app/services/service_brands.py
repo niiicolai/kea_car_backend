@@ -1,8 +1,6 @@
-from app.exceptions.unable_to_find_id_error import UnableToFindIdError
-from app.models.brand import Brand
-from sqlalchemy.orm import Session
-from typing import List, cast
+from app.resources.brand_resource import BrandReturnResource
+from app.repositories.brand_repositories import BrandRepository
+from typing import List
 
-def get_all(session: Session) -> List[Brand]:
-    brands = session.query(Brand).all()
-    return cast(List[Brand], brands)
+def get_all(repository: BrandRepository) -> List[BrandReturnResource]:
+    return repository.get_all()
