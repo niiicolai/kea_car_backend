@@ -63,8 +63,7 @@ class MySQLSalesPersonRepository(SalesPersonRepository):
         return new_sales_person.as_resource()
 
     def is_email_taken(self, email: str) -> bool:
-        amount_of_sales_people_with_email: int = self.session.query(SalesPerson).filter_by(email=email).count()
-        return amount_of_sales_people_with_email > 0
+        return self.session.query(SalesPerson).filter_by(email=email).first() is not None
 
 # Placeholder for future repositories
 # class OtherDBSalesPersonRepository(SalesPersonRepository):

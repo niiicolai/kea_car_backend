@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_sales_people
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
 from app.resources.sales_person_resource import SalesPersonCreateResource, SalesPersonUpdateResource, SalesPersonReturnResource, SalesPersonLoginResource
-from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenEmailError
+from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
 from app.exceptions.invalid_credentials_errors import IncorrectCredentialError
 from typing import List
 from uuid import UUID
@@ -131,7 +131,7 @@ async def create_sales_person(sales_person_create_data: SalesPersonCreateResourc
     try:
         repository = MySQLSalesPersonRepository(session)
         return service_sales_people.create(repository, sales_person_create_data)
-    except AlreadyTakenEmailError as e:
+    except AlreadyTakenFieldValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(f"{error_message}: {e}"),

@@ -19,6 +19,10 @@ class ColorRepository(ABC):
     def create(self, color_create_data: ColorCreateResource) -> ColorReturnResource:
         pass
 
+    @abstractmethod
+    def is_name_taken(self, name: str) -> bool:
+        pass
+
 class MySQLColorRepository(ColorRepository):
     def __init__(self, session: Session):
         self.session = session
@@ -46,6 +50,9 @@ class MySQLColorRepository(ColorRepository):
         self.session.refresh(new_color)
 
         return new_color.as_resource()
+
+    def is_name_taken(self, name: str) -> bool:
+        return self.session.query(Color).filter_by(name=name).first() is not None
 
 # Placeholder for future repositories
 # class OtherDBColorRepository(ColorRepository):

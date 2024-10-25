@@ -1,4 +1,4 @@
-from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenEmailError
+from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
 from app.exceptions.invalid_credentials_errors import IncorrectEmailError, IncorrectPasswordError
 from app.resources.sales_person_resource import SalesPersonLoginResource, SalesPersonCreateResource, SalesPersonReturnResource
 from app.repositories.sales_person_repositories import SalesPersonRepository
@@ -29,7 +29,9 @@ def login(repository: SalesPersonRepository, sales_person_login_data: SalesPerso
 def create(repository: SalesPersonRepository, sales_person_create_data: SalesPersonCreateResource) -> SalesPersonReturnResource:
     hashed_password: str = get_password_hash(sales_person_create_data.password)
     if repository.is_email_taken(sales_person_create_data.email):
-        raise AlreadyTakenEmailError(
-            sales_person_create_data.email
+        raise AlreadyTakenFieldValueError(
+            entity_name="Sales Person",
+            field="email",
+            value=sales_person_create_data.email
         )
     return repository.create(sales_person_create_data, hashed_password)
