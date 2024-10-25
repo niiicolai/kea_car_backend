@@ -1,8 +1,12 @@
+# External Library imports
+from uuid import uuid4
 from sqlalchemy import Column, String
 from sqlalchemy.orm import Mapped, relationship
+
+# Internal library imports
 from db import Base
 from app.resources.sales_person_resource import SalesPersonBaseResource, SalesPersonReturnResource
-from uuid import uuid4
+
 
 
 class SalesPerson(Base):

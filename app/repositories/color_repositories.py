@@ -1,8 +1,11 @@
+# External Library imports
+from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
-from app.resources.color_resource import ColorReturnResource, ColorCreateResource
+
+# Internal library imports
 from app.models.color import Color
-from sqlalchemy.orm import Session
+from app.resources.color_resource import ColorReturnResource, ColorCreateResource
 
 
 class ColorRepository(ABC):

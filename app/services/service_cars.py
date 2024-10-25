@@ -1,15 +1,15 @@
-from pydantic import ValidationError
-from app.exceptions.database_errors import UnableToFindIdError
+# External Library imports
 from typing import List, Optional
 
-from app.repositories.car_repositories import CarRepository, CarReturnResource, CarCreateResource
-from app.repositories.customer_repositories import CustomerRepository, CustomerReturnResource
-from app.repositories.sales_person_repositories import SalesPersonRepository, SalesPersonReturnResource
+# Internal library imports
 from app.repositories.model_repositories import ModelRepository, ModelReturnResource
 from app.repositories.color_repositories import ColorRepository, ColorReturnResource
-from app.repositories.accessory_repositories import AccessoryRepository, AccessoryReturnResource
+from app.repositories.customer_repositories import CustomerRepository, CustomerReturnResource
 from app.repositories.insurance_repository import InsuranceRepository, InsuranceReturnResource
-
+from app.repositories.accessory_repositories import AccessoryRepository, AccessoryReturnResource
+from app.repositories.car_repositories import CarRepository, CarReturnResource, CarCreateResource
+from app.repositories.sales_person_repositories import SalesPersonRepository, SalesPersonReturnResource
+from app.exceptions.database_errors import UnableToFindIdError, UnableToGiveEntityWithValueFromOtherEntityError
 
 def get_all(
         car_repository: CarRepository,
@@ -82,7 +82,7 @@ def create(
         raise UnableToFindIdError("Color", color_id)
     color_ids_within_model = [color.id for color in model_resource.colors]
     if color_id not in color_ids_within_model:
-        raise ValidationError(f"The color id: '{color_id}' is not between the color ids: \n{color_ids_within_model}\n for the model with id: '{model_resource.id}'.")
+        raise UnableToGiveEntityWithValueFromOtherEntityError("Car", "Color", color_resource.name, "Model")
 
     accessory_resources: List[AccessoryReturnResource] = []
     for accessory_uuid in car_create_data.accessory_ids:

@@ -1,8 +1,11 @@
+# External Library imports
+from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
 from typing import Optional, Tuple, List, cast
-from app.resources.sales_person_resource import SalesPersonReturnResource, SalesPersonCreateResource
+
+# Internal library imports
 from app.models.sales_person import SalesPerson
-from sqlalchemy.orm import Session
+from app.resources.sales_person_resource import SalesPersonReturnResource, SalesPersonCreateResource
 
 
 class SalesPersonRepository(ABC):

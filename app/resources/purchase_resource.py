@@ -1,5 +1,8 @@
-from pydantic import BaseModel, ConfigDict, Field, UUID4
+# External Library imports
 from datetime import date
+from pydantic import BaseModel, ConfigDict, Field, UUID4
+
+# Internal library imports
 from app.resources.car_resource import CarReturnResource
 
 

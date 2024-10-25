@@ -1,7 +1,11 @@
+# External Library imports
+from typing import List
 from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
+
+# Internal library imports
 from app.resources.brand_resource import BrandReturnResource
 from app.resources.color_resource import ColorReturnResource
-from typing import List
+
 
 class ModelBaseResource(BaseModel):
     name: str = Field(..., examples=["Series 1"])

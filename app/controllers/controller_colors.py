@@ -1,13 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from db import Session, get_db as get_db_session
+# External Library imports
+from uuid import UUID
+from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
+from fastapi import APIRouter, Depends, HTTPException, status
+
+# Internal library imports
 from app.services import service_colors
-from app.repositories.color_repositories import MySQLColorRepository
-from app.resources.color_resource import ColorCreateResource, ColorUpdateResource, ColorReturnResource
+from db import Session, get_db as get_db_session
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
-from typing import List
-from uuid import UUID
+from app.repositories.color_repositories import MySQLColorRepository, ColorReturnResource, ColorCreateResource
+
+# These imports should come from repository, but the repo is not made for these resources,
+# but to let swagger give examples of what the endpoints should do, we import them here
+from app.resources.color_resource import ColorUpdateResource
+
 
 router: APIRouter = APIRouter()
 

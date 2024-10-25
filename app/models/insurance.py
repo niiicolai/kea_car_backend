@@ -1,8 +1,12 @@
-from sqlalchemy import Table, Column, ForeignKey, String, Double
+# External Library imports
+from uuid import uuid4
 from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import Table, Column, ForeignKey, String, Double
+
+# Internal library imports
 from db import Base
 from app.resources.insurance_resource import InsuranceBaseResource, InsuranceReturnResource
-from uuid import uuid4
+
 
 cars_has_insurances = Table(
     'cars_has_insurances',

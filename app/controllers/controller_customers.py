@@ -1,13 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from db import Session, get_db as get_db_session
+# External Library imports
+from uuid import UUID
+from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
+from fastapi import APIRouter, Depends, HTTPException, status
+
+# Internal library imports
 from app.services import service_customers
-from app.resources.customer_resource import CustomerUpdateResource
+from db import Session, get_db as get_db_session
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
 from app.repositories.customer_repositories import MySQLCustomerRepository, CustomerReturnResource, CustomerCreateResource
-from typing import List
-from uuid import UUID
+
+# These imports should come from repository, but the repo is not made for these resources,
+# but to let swagger give examples of what the endpoints should do, we import them here
+from app.resources.customer_resource import CustomerUpdateResource
 
 
 router: APIRouter = APIRouter()

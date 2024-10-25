@@ -1,8 +1,11 @@
+# External Library imports
+from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
-from app.resources.model_resource import ModelReturnResource, BrandReturnResource
+
+# Internal library imports
 from app.models.model import Model
-from sqlalchemy.orm import Session
+from app.resources.model_resource import ModelReturnResource, BrandReturnResource
 
 
 class ModelRepository(ABC):

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator, EmailStr
+from pydantic import BaseModel, ConfigDict, Field, field_validator, EmailStr
 
 class SalesPersonBaseResource(BaseModel):
     email: EmailStr = Field(..., examples=["hans@gmail.com"])

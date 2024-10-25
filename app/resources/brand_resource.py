@@ -1,5 +1,5 @@
-from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
-from typing import Optional
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
 
 class BrandBaseResource(BaseModel):
     name: str = Field(..., examples=["BMW"])

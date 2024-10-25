@@ -36,3 +36,11 @@ class UnableToFindEntityError(DatabaseError):
 
     def __str__(self):
         return f"UnableToFindEntityException: {self.message}"
+
+class UnableToGiveEntityWithValueFromOtherEntityError(DatabaseError):
+    def __init__(self, entity_name: str, field: str, value: str, other_entity_name: str):
+        self.message = f'{entity_name} can not have {field}: {value} set from {other_entity_name}.'
+        super().__init__(self.message)  # Call the base class constructor
+
+    def __str__(self):
+        return f"UnableToGiveEntityWithValueFromOtherEntityException: {self.message}"

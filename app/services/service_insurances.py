@@ -1,6 +1,10 @@
+# External Library imports
+from typing import List
+
+# Internal library imports
 from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.insurance_repository import InsuranceRepository, InsuranceReturnResource
-from typing import List
+
 
 def get_all(repository: InsuranceRepository) -> List[InsuranceReturnResource]:
     return repository.get_all()

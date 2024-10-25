@@ -1,6 +1,9 @@
-from sqlalchemy import Column, String
+# External Library imports
 from uuid import uuid4
+from sqlalchemy import Column, String
 from sqlalchemy.orm import Mapped, relationship
+
+# Internal library imports
 from db import Base
 from app.resources.brand_resource import BrandBaseResource, BrandReturnResource
 

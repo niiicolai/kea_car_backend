@@ -1,16 +1,19 @@
+# External Library imports
+from uuid import uuid4
+from typing import List
 from datetime import date
-from sqlalchemy import Column, String, Double, Date, ForeignKey
 from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import Column, String, Double, Date, ForeignKey
+
+# Internal library imports
 from db import Base
-from app.resources.car_resource import CarBaseResource, CarReturnResource
 from app.models.model import Model
 from app.models.color import Color
 from app.models.customer import Customer
 from app.models.sales_person import SalesPerson
-from app.models.accessory import Accessory, cars_has_accessories
 from app.models.insurance import Insurance, cars_has_insurances
-from uuid import uuid4
-from typing import List
+from app.models.accessory import Accessory, cars_has_accessories
+from app.resources.car_resource import CarBaseResource, CarReturnResource
 
 
 class Car(Base):

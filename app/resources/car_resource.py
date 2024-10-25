@@ -1,11 +1,15 @@
-from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
+# External Library imports
+from typing import List
 from datetime import date, timedelta
-from app.resources.model_resource import ModelReturnResource, ColorReturnResource
+from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
+
+# Internal library imports
 from app.resources.customer_resource import CustomerReturnResource
-from app.resources.sales_person_resource import SalesPersonReturnResource
 from app.resources.accessory_resource import AccessoryReturnResource
 from app.resources.insurance_resource import InsuranceReturnResource
-from typing import List
+from app.resources.sales_person_resource import SalesPersonReturnResource
+from app.resources.model_resource import ModelReturnResource, ColorReturnResource
+
 
 def calculate_purchase_deadline() -> date:
     return date.today() + timedelta(days=30)

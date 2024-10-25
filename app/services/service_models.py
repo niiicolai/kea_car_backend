@@ -1,7 +1,11 @@
+# External Library imports
+from typing import List, Optional
+
+# Internal library imports
 from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.model_repositories import ModelRepository, ModelReturnResource
 from app.repositories.brand_repositories import BrandRepository, BrandReturnResource
-from typing import List, Optional
+
 
 def get_all(
         model_repository: ModelRepository,

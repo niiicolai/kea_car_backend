@@ -1,21 +1,25 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from db import Session, get_db as get_db_session
+# External Library imports
+from uuid import UUID
+from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from app.exceptions.database_errors import UnableToFindIdError
+from fastapi import APIRouter, Depends, HTTPException, status
+
+# Internal library imports
 from app.services import service_cars
-from app.resources.car_resource import CarCreateResource, CarUpdateResource, CarReturnResource
-from app.repositories.car_repositories import MySQLCarRepository
-from app.repositories.customer_repositories import MySQLCustomerRepository
-from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
+from db import Session, get_db as get_db_session
 from app.repositories.model_repositories import MySQLModelRepository
 from app.repositories.color_repositories import MySQLColorRepository
-from app.repositories.accessory_repositories import MySQLAccessoryRepository
 from app.repositories.insurance_repository import MySQLInsuranceRepository
+from app.repositories.customer_repositories import MySQLCustomerRepository
+from app.repositories.accessory_repositories import MySQLAccessoryRepository
+from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
+from app.repositories.car_repositories import MySQLCarRepository, CarReturnResource, CarCreateResource
+from app.exceptions.database_errors import UnableToFindIdError, UnableToGiveEntityWithValueFromOtherEntityError
 
-from typing import Optional, List
-from uuid import UUID
-
+# These imports should come from repository, but the repo is not made for these resources,
+# but to let swagger give examples of what the endpoints should do, we import them here
+from app.resources.car_resource import CarUpdateResource
 
 router: APIRouter = APIRouter()
 
@@ -106,6 +110,11 @@ async def create_car(car_create_data: CarCreateResource, session: Session = Depe
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
+        )
+    except UnableToGiveEntityWithValueFromOtherEntityError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"Unable To Give Entity With Value From Other Entity Error caught. {error_message}: {e}")
         )
     except SQLAlchemyError as e:
         raise HTTPException(

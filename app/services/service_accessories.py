@@ -1,7 +1,10 @@
-from app.resources.accessory_resource import AccessoryReturnResource
-from app.repositories.accessory_repositories import AccessoryRepository
-from app.exceptions.database_errors import UnableToFindIdError
+# External Library imports
 from typing import List
+
+# Internal library imports
+from app.exceptions.database_errors import UnableToFindIdError
+from app.repositories.accessory_repositories import AccessoryRepository, AccessoryReturnResource
+
 
 def get_all(repository: AccessoryRepository) -> List[AccessoryReturnResource]:
     return repository.get_all()

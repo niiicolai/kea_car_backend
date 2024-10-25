@@ -1,8 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
+# External Library imports
+from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Depends, HTTPException
+
+# Internal library imports
 from db import Session
 from db import get_db as get_db_session
-from sqlalchemy import text
 from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 from app.controllers import (
     controller_brands,

@@ -1,13 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from db import Session, get_db as get_db_session
+# External Library imports
+from uuid import UUID
+from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
+from fastapi import APIRouter, Depends, HTTPException, status
+
+
+# Internal library imports
 from app.services import service_accessories
-from app.repositories.accessory_repositories import MySQLAccessoryRepository
-from app.resources.accessory_resource import AccessoryCreateResource, AccessoryUpdateResource, AccessoryReturnResource
+from db import Session, get_db as get_db_session
 from app.exceptions.database_errors import UnableToFindIdError
-from typing import List
-from uuid import UUID
+from app.repositories.accessory_repositories import MySQLAccessoryRepository, AccessoryReturnResource
+
+# These imports should come from repository, but the repo is not made for these resources,
+# but to let swagger give examples of what the endpoints should do, we import them here
+from app.resources.accessory_resource import AccessoryCreateResource, AccessoryUpdateResource
 
 
 router: APIRouter = APIRouter()

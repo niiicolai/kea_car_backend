@@ -1,11 +1,14 @@
-from datetime import datetime, timedelta
+# External Library imports
 import logging
-from typing import Optional, Union
 from jose import JWTError, jwt
+from typing import Optional, Union
 from pydantic import BaseModel, Field
+from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
-from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context, oauth2_mysql
+
+# Internal library imports
 from app.resources.sales_person_resource import SalesPersonReturnResource
+from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context, oauth2_mysql
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,13 @@
+# External Library imports
+from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
-from app.resources.purchase_resource import PurchaseReturnResource, PurchaseCreateResource, CarReturnResource
+
+# Internal library imports
 from app.models.purchase import Purchase
-from sqlalchemy.orm import Session
+from app.resources.purchase_resource import PurchaseReturnResource, PurchaseCreateResource, CarReturnResource
+
+
 
 
 class PurchaseRepository(ABC):

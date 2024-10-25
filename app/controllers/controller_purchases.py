@@ -1,13 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from db import Session, get_db as get_db_session
+# External Library imports
+from uuid import UUID
+from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
+from fastapi import APIRouter, Depends, HTTPException, status
+
+# Internal library imports
 from app.services import service_purchases
-from app.exceptions.database_errors import UnableToFindIdError, PurchaseDeadlineHasPastError, AlreadyTakenFieldValueError, UnableToFindEntityError
-from app.repositories.purchase_repositories import MySQLPurchaseRepository, PurchaseReturnResource, PurchaseCreateResource
+from db import Session, get_db as get_db_session
 from app.repositories.car_repositories import MySQLCarRepository
-from typing import List
-from uuid import UUID
+from app.repositories.purchase_repositories import MySQLPurchaseRepository, PurchaseReturnResource, PurchaseCreateResource
+from app.exceptions.database_errors import (
+    UnableToFindIdError,
+    PurchaseDeadlineHasPastError,
+    AlreadyTakenFieldValueError,
+    UnableToFindEntityError
+)
 
 router: APIRouter = APIRouter()
 

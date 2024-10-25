@@ -1,7 +1,10 @@
-from app.resources.brand_resource import BrandReturnResource
-from app.repositories.brand_repositories import BrandRepository
-from app.exceptions.database_errors import UnableToFindIdError
+# External Library imports
 from typing import List
+
+# Internal library imports
+from app.exceptions.database_errors import UnableToFindIdError
+from app.repositories.brand_repositories import BrandRepository, BrandReturnResource
+
 
 def get_all(repository: BrandRepository) -> List[BrandReturnResource]:
     return repository.get_all()

@@ -1,8 +1,11 @@
+# External Library imports
+from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
-from app.resources.insurance_resource import InsuranceReturnResource
+
+# Internal library imports
 from app.models.insurance import Insurance
-from sqlalchemy.orm import Session
+from app.resources.insurance_resource import InsuranceReturnResource
 
 
 class InsuranceRepository(ABC):

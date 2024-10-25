@@ -1,8 +1,12 @@
-from sqlalchemy import Table, Column, Integer, String, Double, ForeignKey
+# External Library imports
+from uuid import uuid4
 from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import Table, Column, Integer, String, Double, ForeignKey
+
+# Internal library imports
 from db import Base
 from app.resources.color_resource import ColorBaseResource, ColorReturnResource
-from uuid import uuid4
+
 
 models_has_colors = Table(
     'models_has_colors',

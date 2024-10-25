@@ -1,5 +1,11 @@
+# External Library imports
+from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
 from typing import List, Optional, cast
+from sqlalchemy.exc import SQLAlchemyError
+
+# Internal library imports
+from app.models.car import Car, cars_has_accessories, cars_has_insurances
 from app.resources.car_resource import (
     CarCreateResource,
     CarReturnResource,
@@ -10,9 +16,9 @@ from app.resources.car_resource import (
     AccessoryReturnResource,
     InsuranceReturnResource
 )
-from app.models.car import Car, cars_has_accessories, cars_has_insurances
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
+
+
+
 
 
 def calculate_total_price_for_car(

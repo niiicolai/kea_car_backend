@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 class AccessoryBaseResource(BaseModel):
     name: str = Field(..., examples=["Adaptive Headlights"])

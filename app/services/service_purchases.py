@@ -1,8 +1,19 @@
-from app.exceptions.database_errors import UnableToFindIdError, PurchaseDeadlineHasPastError, AlreadyTakenFieldValueError, UnableToFindEntityError
-from app.repositories.purchase_repositories import PurchaseRepository, PurchaseReturnResource, PurchaseCreateResource
-from app.repositories.car_repositories import CarRepository, CarReturnResource
+# External Library imports
 from datetime import date
 from typing import List, Optional
+
+
+# Internal library imports
+from app.repositories.car_repositories import CarRepository, CarReturnResource
+from app.repositories.purchase_repositories import PurchaseRepository, PurchaseReturnResource, PurchaseCreateResource
+from app.exceptions.database_errors import (
+    UnableToFindIdError,
+    PurchaseDeadlineHasPastError,
+    AlreadyTakenFieldValueError,
+    UnableToFindEntityError
+)
+
+
 
 
 def get_all(repository: PurchaseRepository) -> List[PurchaseReturnResource]:

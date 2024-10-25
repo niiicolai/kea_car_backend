@@ -1,6 +1,10 @@
+# External Library imports
+from typing import List
+
+# Internal library imports
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
 from app.repositories.customer_repositories import CustomerRepository, CustomerReturnResource, CustomerCreateResource
-from typing import List
+
 
 def get_all(repository: CustomerRepository) -> List[CustomerReturnResource]:
     return repository.get_all()

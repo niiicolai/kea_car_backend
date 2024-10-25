@@ -1,7 +1,10 @@
+# External Library imports
+from uuid import uuid4
+from typing import Optional
 from sqlalchemy import Column, String
 from sqlalchemy.orm import Mapped, relationship
-from typing import Optional
-from uuid import uuid4
+
+# Internal library imports
 from db import Base
 from app.resources.customer_resource import CustomerBaseResource, CustomerReturnResource
 

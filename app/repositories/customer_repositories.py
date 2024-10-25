@@ -1,12 +1,14 @@
+# External Library imports
+from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
-from app.resources.customer_resource import CustomerReturnResource, CustomerCreateResource
+
+# Internal library imports
 from app.models.customer import Customer
-from sqlalchemy.orm import Session
+from app.resources.customer_resource import CustomerReturnResource, CustomerCreateResource
 
 
 class CustomerRepository(ABC):
-
 
     @abstractmethod
     def get_all(self) -> List[CustomerReturnResource]:

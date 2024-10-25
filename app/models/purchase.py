@@ -1,10 +1,13 @@
-from datetime import date
-from sqlalchemy import Column, String, Date, ForeignKey
-from sqlalchemy.orm import Mapped, relationship
-from db import Base
-from app.resources.purchase_resource import PurchaseBaseResource, PurchaseReturnResource
-from app.models.car import Car
+# External Library imports
 from uuid import uuid4
+from datetime import date
+from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import Column, String, Date, ForeignKey
+
+# Internal library imports
+from db import Base
+from app.models.car import Car
+from app.resources.purchase_resource import PurchaseBaseResource, PurchaseReturnResource
 
 
 class Purchase(Base):

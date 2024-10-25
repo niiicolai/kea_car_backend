@@ -1,14 +1,20 @@
-from fastapi import APIRouter, Depends, Form, HTTPException, status
-from db import Session, get_db as get_db_session
+# External Library imports
+from uuid import UUID
+from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
+from fastapi import APIRouter, Depends, Form, HTTPException, status
+
+# Internal library imports
 from app.services import service_sales_people
-from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
-from app.resources.sales_person_resource import SalesPersonCreateResource, SalesPersonUpdateResource, SalesPersonReturnResource, SalesPersonLoginResource
-from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
+from db import Session, get_db as get_db_session
 from app.exceptions.invalid_credentials_errors import IncorrectCredentialError
-from typing import List
-from uuid import UUID
+from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
+from app.repositories.sales_person_repositories import MySQLSalesPersonRepository, SalesPersonReturnResource, SalesPersonCreateResource
+
+# These imports, except SalesPersonLoginResource, should come from repository, but the repo is not made for these resources,
+# but to let swagger give examples of what the endpoints should do, we import them here
+from app.resources.sales_person_resource import SalesPersonUpdateResource, SalesPersonLoginResource
 
 router: APIRouter = APIRouter()
 

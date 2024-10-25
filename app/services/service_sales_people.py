@@ -1,9 +1,13 @@
+# External Library imports
+from typing import List
+
+# Internal library imports
+from app.resources.sales_person_resource import SalesPersonLoginResource
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
 from app.exceptions.invalid_credentials_errors import IncorrectEmailError, IncorrectPasswordError
-from app.resources.sales_person_resource import SalesPersonLoginResource, SalesPersonCreateResource, SalesPersonReturnResource
-from app.repositories.sales_person_repositories import SalesPersonRepository
-from typing import List
 from app.core.security import Token, create_access_token, verify_password, get_password_hash
+from app.repositories.sales_person_repositories import SalesPersonRepository, SalesPersonReturnResource, SalesPersonCreateResource
+
 
 def get_all(repository: SalesPersonRepository) -> List[SalesPersonReturnResource]:
     return repository.get_all()

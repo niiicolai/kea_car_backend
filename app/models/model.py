@@ -1,10 +1,14 @@
-from sqlalchemy import Column, String, Double, ForeignKey
-from sqlalchemy.orm import Mapped, relationship
-from db import Base
-from app.resources.model_resource import ModelCreateOrUpdateResource, ModelReturnResource
-from app.models.color import Color, models_has_colors
-from app.models.brand import Brand
+# External Library imports
 from uuid import uuid4
+from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import Column, String, Double, ForeignKey
+
+# Internal library imports
+from db import Base
+from app.models.brand import Brand
+from app.models.color import Color, models_has_colors
+from app.resources.model_resource import ModelCreateOrUpdateResource, ModelReturnResource
+
 from typing import Optional, List
 
 class Model(Base):
