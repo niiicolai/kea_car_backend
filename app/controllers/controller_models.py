@@ -50,7 +50,7 @@ async def get_models(brand_id: Optional[UUID] = None, session: Session = Depends
             detail=str(f"Unknown Error caught. {error_message}: {e}")
         )
 
-@router.get("/model/{model_id}", response_model=ModelReturnResource, description="Returns one model by id.")
+@router.get("/model/{model_id}", response_model=ModelReturnResource, description="Returns one model by ID.")
 async def get_model(model_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get model"
     try:

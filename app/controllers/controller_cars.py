@@ -66,7 +66,7 @@ async def get_cars(customer_id: Optional[UUID] = None, sales_person_id: Optional
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/car/{car_id}", response_model=CarReturnResource, description="Not been implemented yet.")
+@router.get("/car/{car_id}", response_model=CarReturnResource, description="Returns a Car by ID.")
 async def get_car(car_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get car"
     try:

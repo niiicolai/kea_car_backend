@@ -43,7 +43,7 @@ async def get_customers(session: Session = Depends(get_db)):
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/customer/{customer_id}", response_model=CustomerReturnResource, description="Returns one customer by id.")
+@router.get("/customer/{customer_id}", response_model=CustomerReturnResource, description="Returns one customer by ID.")
 async def get_customer(customer_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get customer"
     try:

@@ -103,7 +103,7 @@ async def get_sales_people(session: Session = Depends(get_db)):
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Returns a Sales Person by id.")
+@router.get("/sales_person/{sales_person_id}", response_model=SalesPersonReturnResource, description="Returns a Sales Person by ID.")
 async def get_sales_person(sales_person_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get sales person"
     try:
