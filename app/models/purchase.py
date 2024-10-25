@@ -11,7 +11,7 @@ class Purchase(Base):
     __tablename__ = 'purchases'
     id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
     cars_id: Mapped[str] = Column(String(36), ForeignKey('cars.id'), nullable=False)
-    date_of_purchase: Mapped[date] = Column(Date, nullable=False)
+    date_of_purchase: Mapped[date] = Column(Date, default=lambda: date.today(), nullable=False)
 
     car: Mapped[Car] = relationship('Car', back_populates='purchase', uselist=False, lazy=False)
 
