@@ -1,30 +1,19 @@
-from app.exceptions.unable_to_find_id_error import UnableToFindIdError
-from app.models.customer import Customer
-from app.resources.customer_resource import CustomerCreateResource
-from sqlalchemy.orm import Session
-from typing import List, cast
+from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
+from app.repositories.customer_repositories import CustomerRepository, CustomerReturnResource, CustomerCreateResource
+from typing import List
 
-def get_all(session: Session) -> List[Customer]:
-    customers = session.query(Customer).all()
-    return cast(List[Customer], customers)
+def get_all(repository: CustomerRepository) -> List[CustomerReturnResource]:
+    return repository.get_all()
 
 
-def get_by_id(session: Session, customer_id: str) -> Customer:
-    customer: Customer = session.query(Customer).get(customer_id)
+def get_by_id(repository: CustomerRepository, customer_id: str) -> CustomerReturnResource:
+    customer = repository.get_by_id(customer_id)
     if customer is None:
         raise UnableToFindIdError(entity_name="Customer", entity_id=customer_id)
     return customer
 
 
-def create(session: Session, customer_data: CustomerCreateResource) -> Customer:
-    new_customer = Customer(
-        email=customer_data.email,
-        phone_number=customer_data.phone_number,
-        first_name=customer_data.first_name,
-        last_name=customer_data.last_name,
-        address=customer_data.address,
-    )
-    session.add(new_customer)
-    session.commit()
-    session.refresh(new_customer)
-    return new_customer
+def create(repository: CustomerRepository, customer_create_data: CustomerCreateResource) -> CustomerReturnResource:
+    if repository.is_email_taken(customer_create_data.email):
+        raise AlreadyTakenFieldValueError(entity_name="Customer", field="email", value=customer_create_data.email)
+    return repository.create(customer_create_data)

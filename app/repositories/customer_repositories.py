@@ -20,6 +20,10 @@ class CustomerRepository(ABC):
     def create(self, customer_create_data: CustomerCreateResource) -> CustomerReturnResource:
         pass
 
+    @abstractmethod
+    def is_email_taken(self, email: str) -> bool:
+        pass
+
 class MySQLCustomerRepository(CustomerRepository):
     def __init__(self, session: Session):
         self.session = session
@@ -47,6 +51,9 @@ class MySQLCustomerRepository(CustomerRepository):
         self.session.refresh(new_customer)
 
         return new_customer.as_resource()
+
+    def is_email_taken(self, email: str) -> bool:
+        return self.session.query(Customer).filter_by(email=email).first() is not None
 
 # Placeholder for future repositories
 # class OtherDBCustomerRepository(CustomerRepository):
