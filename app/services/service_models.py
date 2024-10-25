@@ -1,14 +1,22 @@
-from app.exceptions.unable_to_find_id_error import UnableToFindIdError
-from app.models.model import Model
-from app.models.brand import Brand
-from sqlalchemy.orm import Session
-from typing import List, Optional, cast
+from app.exceptions.database_errors import UnableToFindIdError
+from app.repositories.model_repositories import ModelRepository, ModelReturnResource
+from app.repositories.brand_repositories import BrandRepository, BrandReturnResource
+from typing import List, Optional
 
-def get_all(brand_id: Optional[str], session: Session) -> List[Model]:
-    if brand_id is not None:
-        if session.query(Brand).get(brand_id) is None:
-            raise UnableToFindIdError(entity_name="Brand", entity_id=brand_id)
-        models = session.query(Model).filter_by(brands_id = brand_id).all()
-    else:
-        models = session.query(Model).all()
-    return cast(List[Model], models)
+def get_all(
+        model_repository: ModelRepository,
+        brand_repository: BrandRepository,
+        brand_id: Optional[str] = None) -> List[ModelReturnResource]:
+    filtering_by_brand: bool = brand_id is not None
+    if filtering_by_brand:
+        brand_resource: Optional[BrandReturnResource] = brand_repository.get_by_id(brand_id)
+        if brand_resource is None:
+            raise UnableToFindIdError("Brand", brand_id)
+        return model_repository.get_all_by_brand_id(brand_resource)
+    return model_repository.get_all()
+
+def get_by_id(repository: ModelRepository, model_id: str) -> ModelReturnResource:
+    model_resource: Optional[ModelReturnResource] = repository.get_by_id(model_id)
+    if model_resource is None:
+        raise UnableToFindIdError("Model", model_id)
+    return model_resource

@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from db import Session, get_db as get_db_session
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_models
-from app.resources.model_resource import ModelCreateResource, ModelUpdateResource, ModelReturnResource
-from app.exceptions.unable_to_find_id_error import UnableToFindIdError
+from app.repositories.model_repositories import MySQLModelRepository, ModelReturnResource
+from app.repositories.brand_repositories import MySQLBrandRepository
+from app.resources.model_resource import ModelCreateResource, ModelUpdateResource
+from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
 from typing import List, Optional
 from uuid import UUID
 
@@ -20,30 +22,53 @@ async def get_models(brand_id: Optional[UUID] = None, session: Session = Depends
     try:
         if brand_id is not None:
             brand_id = str(brand_id)
-        models = service_models.get_all(brand_id, session)
-        return [model.as_resource() for model in models]
+        return service_models.get_all(MySQLModelRepository(session), MySQLBrandRepository(session), brand_id)
     except UnableToFindIdError as e:
-        raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
+        )
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=422, detail=str(f"SQL Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"SQL Error caught. {error_message}: {e}")
+        )
     except ValidationError as e:
-        raise HTTPException(status_code=422, detail=str(f"Validation Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(f"Unknown Error caught. {error_message}: {e}")
+        )
 
-@router.get("/model/{model_id}", response_model=ModelReturnResource, description="Not been implemented yet.")
+@router.get("/model/{model_id}", response_model=ModelReturnResource, description="Returns one model by id.")
 async def get_model(model_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get model"
     try:
-        raise NotImplementedError("Request GET '/model/{model_id}' has not been implemented yet.")
+        return service_models.get_by_id(MySQLModelRepository(session), str(model_id))
     except UnableToFindIdError as e:
-        raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
+        )
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=422, detail=str(f"SQL Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"SQL Error caught. {error_message}: {e}")
+        )
     except ValidationError as e:
-        raise HTTPException(status_code=422, detail=str(f"Validation Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(f"Unknown Error caught. {error_message}: {e}")
+        )
 
 
 @router.post("/model", response_model=ModelReturnResource, description="Not been implemented yet.")
@@ -51,14 +76,26 @@ async def create_model(model_create_data: ModelCreateResource, session: Session 
     error_message = "Failed to create model"
     try:
         raise NotImplementedError("Request POST '/model' has not been implemented yet.")
-    except UnableToFindIdError as e:
-        raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
+    except AlreadyTakenFieldValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}: {e}")
+        )
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=422, detail=str(f"SQL Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"SQL Error caught. {error_message}: {e}")
+        )
     except ValidationError as e:
-        raise HTTPException(status_code=422, detail=str(f"Validation Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
+        )
 
 @router.put("/model/{model_id}", response_model=ModelReturnResource, description="Not been implemented yet.")
 async def update_model(model_id: UUID, model_update_data: ModelUpdateResource, session: Session = Depends(get_db)):
@@ -66,13 +103,30 @@ async def update_model(model_id: UUID, model_update_data: ModelUpdateResource, s
     try:
         raise NotImplementedError("Request PUT '/model/{model_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
-        raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
+        )
+    except AlreadyTakenFieldValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}: {e}")
+        )
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=422, detail=str(f"SQL Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"SQL Error caught. {error_message}: {e}")
+        )
     except ValidationError as e:
-        raise HTTPException(status_code=422, detail=str(f"Validation Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
+        )
 
 @router.delete("/model/{model_id}", response_model=ModelReturnResource, description="Not been implemented yet.")
 async def delete_model(model_id: UUID, session: Session = Depends(get_db)):
@@ -80,10 +134,22 @@ async def delete_model(model_id: UUID, session: Session = Depends(get_db)):
     try:
         raise NotImplementedError("Request DELETE '/model/{model_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
-        raise HTTPException(status_code=404, detail=str(f"Unable To Find Id Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
+        )
     except SQLAlchemyError as e:
-        raise HTTPException(status_code=422, detail=str(f"SQL Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"SQL Error caught. {error_message}: {e}")
+        )
     except ValidationError as e:
-        raise HTTPException(status_code=422, detail=str(f"Validation Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(f"Validation Error caught. {error_message}: {e}")
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(f"Unknown Error caught. {error_message}: {e}"))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
+        )

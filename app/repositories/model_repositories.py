@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
-from app.resources.model_resource import ModelReturnResource
+from app.resources.model_resource import ModelReturnResource, BrandReturnResource
 from app.models.model import Model
 from sqlalchemy.orm import Session
 
@@ -8,6 +8,10 @@ from sqlalchemy.orm import Session
 class ModelRepository(ABC):
     @abstractmethod
     def get_all(self) -> List[ModelReturnResource]:
+        pass
+
+    @abstractmethod
+    def get_all_by_brand_id(self, brand_resource: BrandReturnResource) -> List[ModelReturnResource]:
         pass
 
     @abstractmethod
@@ -20,6 +24,10 @@ class MySQLModelRepository(ModelRepository):
 
     def get_all(self) -> List[ModelReturnResource]:
         models: List[Model] = cast(List[Model], self.session.query(Model).all())
+        return [model.as_resource() for model in models]
+
+    def get_all_by_brand_id(self, brand_resource: BrandReturnResource) -> List[ModelReturnResource]:
+        models: List[Model] = cast(List[Model], self.session.query(Model).filter_by(brands_id=brand_resource.id).all())
         return [model.as_resource() for model in models]
 
     def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:
