@@ -3,9 +3,9 @@ from db import Session, get_db as get_db_session
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from app.services import service_customers
-from app.resources.customer_resource import CustomerCreateResource, CustomerUpdateResource, CustomerReturnResource
+from app.resources.customer_resource import CustomerUpdateResource
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
-from app.repositories.customer_repositories import MySQLCustomerRepository
+from app.repositories.customer_repositories import MySQLCustomerRepository, CustomerReturnResource, CustomerCreateResource
 from typing import List
 from uuid import UUID
 
@@ -37,7 +37,7 @@ async def get_customers(session: Session = Depends(get_db)):
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/customer/{customer_id}", response_model=CustomerReturnResource, description="Returns one customer from a given ID.")
+@router.get("/customer/{customer_id}", response_model=CustomerReturnResource, description="Returns one customer by id.")
 async def get_customer(customer_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get customer"
     try:
