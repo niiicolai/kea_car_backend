@@ -8,15 +8,15 @@ from db import Session
 from db import get_db as get_db_session
 from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 from app.controllers import (
+    controller_accessories,
     controller_brands,
+    controller_cars,
     controller_colors,
-    controller_models,
     controller_customers,
     controller_insurances,
-    controller_accessories,
-    controller_sales_people,
+    controller_models,
     controller_purchases,
-    controller_cars
+    controller_sales_people
 )
 
 app = FastAPI()
@@ -30,15 +30,17 @@ CORS_SETTINGS = {
 
 app.add_middleware(CORSMiddleware, **CORS_SETTINGS)
 
+app.include_router(controller_accessories.router, prefix="/mysql", tags=["MySQL - Accessories"])
 app.include_router(controller_brands.router, prefix="/mysql", tags=["MySQL - Brands"])
+app.include_router(controller_cars.router, prefix="/mysql", tags=["MySQL - Cars"])
 app.include_router(controller_colors.router, prefix="/mysql", tags=["MySQL - Colors"])
-app.include_router(controller_models.router, prefix="/mysql", tags=["MySQL - Models"])
 app.include_router(controller_customers.router, prefix="/mysql", tags=["MySQL - Customers"])
 app.include_router(controller_insurances.router, prefix="/mysql", tags=["MySQL - Insurances"])
-app.include_router(controller_accessories.router, prefix="/mysql", tags=["MySQL - Accessories"])
-app.include_router(controller_sales_people.router, prefix="/mysql", tags=["MySQL - Sales People"])
+app.include_router(controller_models.router, prefix="/mysql", tags=["MySQL - Models"])
 app.include_router(controller_purchases.router, prefix="/mysql", tags=["MySQL - Purchases"])
-app.include_router(controller_cars.router, prefix="/mysql", tags=["MySQL - Cars"])
+app.include_router(controller_sales_people.router, prefix="/mysql", tags=["MySQL - Sales People"])
+
+
 
 def get_db():
     with get_db_session() as session:
