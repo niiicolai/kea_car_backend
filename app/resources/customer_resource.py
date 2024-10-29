@@ -3,46 +3,53 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validat
 
 
 class CustomerBaseResource(BaseModel):
-    email: EmailStr = Field(..., examples=["henrik@gmail.com"])
-    phone_number: Optional[str] = Field(..., examples=["10203040"])
-    first_name: str = Field(..., examples=["'Henrik"])
-    last_name: str = Field(..., examples=["Henriksen"])
-    address: Optional[str] = Field(..., examples=["Randomgade nr. 10 4. tv."])
+    email: EmailStr = Field(..., description="Email of the customer.", examples=["henrik@gmail.com"])
+    phone_number: Optional[str] = Field(..., description="Phone number of the customer.", examples=["10203040"])
+    first_name: str = Field(..., description="First name of the customer.", examples=["'Henrik"])
+    last_name: str = Field(..., description="Last name of the customer.", examples=["Henriksen"])
+    address: Optional[str] = Field(..., description="Address of the customer.", examples=["Randomgade nr. 10 4. tv."])
     
     model_config = ConfigDict(from_attributes=True)
 
+    @field_validator('email')
+    def validate_email(cls, email: str) -> str:
+        if email is None:
+            raise ValueError(f"The given email cannot be set to None.")
+        return email
     
     @field_validator('phone_number')
-    def validate_phone_number(cls, value: str) -> str:
-        if value is not None:
-            value = value.strip()
+    def validate_phone_number(cls, phone_number: Optional[str]) -> Optional[str]:
+        if phone_number is not None:
+            value = phone_number.strip()
             if len(value) == 0:
-                raise ValueError(f"The given phone number {value} is an empty string.")
-        return value
+                raise ValueError(f"The given phone number {phone_number} is an empty string.")
+        return phone_number
     
     @field_validator('first_name')
-    def validate_first_name(cls, value: str) -> str:
-        if value is not None:
-            value = value.strip()
-            if len(value) == 0:
-                raise ValueError(f"The given first name {value} is an empty string.")
-        return value
+    def validate_first_name(cls, first_name: str) -> str:
+        if first_name is None:
+            raise ValueError(f"The given first name cannot be set to None.")
+        first_name = first_name.strip()
+        if len(first_name) == 0:
+            raise ValueError(f"The given first name {first_name} is an empty string.")
+        return first_name
     
     @field_validator('last_name')
-    def validate_last_name(cls, value: str) -> str:
-        if value is not None:
-            value = value.strip()
-            if len(value) == 0:
-                raise ValueError(f"The given last name {value} is an empty string.")
-        return value
+    def validate_last_name(cls, last_name: str) -> str:
+        if last_name is None:
+            raise ValueError(f"The given last name cannot be set to None.")
+        last_name = last_name.strip()
+        if len(last_name) == 0:
+            raise ValueError(f"The given last name {last_name} is an empty string.")
+        return last_name
     
     @field_validator('address')
-    def validate_address(cls, value: str) -> str:
-        if value is not None:
-            value = value.strip()
-            if len(value) == 0:
-                raise ValueError(f"The given address {value} is an empty string.")
-        return value
+    def validate_address(cls, address: Optional[str]) -> Optional[str]:
+        if address is not None:
+            address = address.strip()
+            if len(address) == 0:
+                raise ValueError(f"The given address {address} is an empty string.")
+        return address
 
     @field_validator('*', mode='before')
     def validate_fields_that_can_not_be_none(cls, value, info: ValidationInfo):
@@ -56,15 +63,15 @@ class CustomerCreateResource(CustomerBaseResource):
     pass
 
 class CustomerUpdateResource(CustomerBaseResource):
-    email: EmailStr = Field(None, examples=["henrik@gmail.com"])
-    phone_number: Optional[str] = Field(None, examples=["10203040"])
-    first_name: str = Field(None, examples=["Henrik"])
-    last_name: str = Field(None, examples=["Henriksen"])
-    address: Optional[str] = Field(None, examples=["Randomgade nr. 10 4. tv."])
+    email: EmailStr = Field(None, description="Updated email of the customer.", examples=["henrik@gmail.com"])
+    phone_number: Optional[str] = Field(None, description="Updated phone number of the customer.", examples=["10203040"])
+    first_name: str = Field(None, description="Updated first name of the customer.", examples=["Henrik"])
+    last_name: str = Field(None, description="Updated last name of the customer.", examples=["Henriksen"])
+    address: Optional[str] = Field(None, description="Updated address of the customer.", examples=["Randomgade nr. 10 4. tv."])
 
     
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
 
 class CustomerReturnResource(CustomerBaseResource):
-    id: str = Field(..., examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])
+    id: str = Field(..., description="The UUID for the customer.", examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])

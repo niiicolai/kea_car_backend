@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Body, status
 
 # Internal library imports
 from app.services import service_customers
@@ -22,11 +22,19 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/customers", response_model=List[CustomerReturnResource], description="Returns all customers.")
+@router.get(
+    path="/customers",
+    response_model=List[CustomerReturnResource],
+    response_description="Successfully retrieved list of customers, returns: List[CustomerReturnResource]",
+    summary="Retrieve all Customers.",
+    description="Fetches all Customers from the MySQL database and returns a list of 'CustomerReturnResource'."
+)
 async def get_customers(session: Session = Depends(get_db)):
-    error_message = "Failed to get customers"
+    error_message = "Failed to get customers from the MySQL database"
     try:
-        return service_customers.get_all(MySQLCustomerRepository(session))
+        return service_customers.get_all(
+            repository=MySQLCustomerRepository(session)
+        )
     except SQLAlchemyError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -43,11 +51,21 @@ async def get_customers(session: Session = Depends(get_db)):
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/customer/{customer_id}", response_model=CustomerReturnResource, description="Returns one customer by ID.")
-async def get_customer(customer_id: UUID, session: Session = Depends(get_db)):
-    error_message = "Failed to get customer"
+@router.get(
+    path="/customer/{customer_id}",
+    response_model=CustomerReturnResource,
+    response_description="Successfully retrieved a customer, returns: CustomerReturnResource",
+    summary="Retrieve a Customer by ID.",
+    description="Fetches a Customer by ID from the MySQL database and returns it as a 'CustomerReturnResource'."
+)
+async def get_customer(customer_id: UUID = Path(..., description="The UUID of the customer to retrieve."),
+                       session: Session = Depends(get_db)):
+    error_message = "Failed to get customer from the MySQL database"
     try:
-        return service_customers.get_by_id(MySQLCustomerRepository(session), str(customer_id))
+        return service_customers.get_by_id(
+            repository=MySQLCustomerRepository(session),
+            customer_id=str(customer_id)
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -70,11 +88,20 @@ async def get_customer(customer_id: UUID, session: Session = Depends(get_db)):
         )
 
 
-@router.post("/customer", response_model=CustomerReturnResource, description="Creates and returns a new customer.")
+@router.post(
+    path="/customer",
+    response_model=CustomerReturnResource,
+    response_description="Successfully created a customer, returns: CustomerReturnResource.",
+    summary="Create a Customer.",
+    description="Creates a Customer within the MySQL database by giving a request body 'CustomerCreateResource' and returns it as a 'CustomerReturnResource'."
+)
 async def create_customer(customer_create_data: CustomerCreateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to create customer"
+    error_message = "Failed to create customer within the MySQL database"
     try:
-        return service_customers.create(MySQLCustomerRepository(session), customer_create_data)
+        return service_customers.create(
+            repository=MySQLCustomerRepository(session),
+            customer_create_data=customer_create_data
+        )
     except AlreadyTakenFieldValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -96,11 +123,19 @@ async def create_customer(customer_create_data: CustomerCreateResource, session:
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.put("/customer/{customer_id}", response_model=CustomerReturnResource, description="Not been implemented yet.")
-async def update_customer(customer_id: UUID, customer_update_data: CustomerUpdateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to update customer"
+@router.put(
+    path="/customer/{customer_id}",
+    response_model=CustomerReturnResource,
+    response_description="Successfully updated a customer, returns: CustomerReturnResource.",
+    summary="Update a Customer - NOT BEEN IMPLEMENTED YET.",
+    description="Updates a Customer within the MySQL database by giving a UUID in the path for the customer and by giving a request body 'CustomerUpdateResource' and returns it as a 'CustomerReturnResource'."
+)
+async def update_customer(customer_id: UUID = Path(..., description="The UUID of the customer to update."),
+                          customer_update_data: CustomerUpdateResource = Body(..., title="CustomerUpdateResource"),
+                          session: Session = Depends(get_db)):
+    error_message = "Failed to update customer within the MySQL database"
     try:
-        raise NotImplementedError("Request PUT '/customer/{customer_id}' has not been implemented yet.")
+        raise NotImplementedError("Request PUT '/mysql/customer/{customer_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -127,11 +162,18 @@ async def update_customer(customer_id: UUID, customer_update_data: CustomerUpdat
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.delete("/customer/{customer_id}", response_model=CustomerReturnResource, description="Not been implemented yet.")
-async def delete_customer(customer_id: UUID, session: Session = Depends(get_db)):
-    error_message = "Failed to delete customer"
+@router.delete(
+    path="/customer/{customer_id}",
+    response_model=CustomerReturnResource,
+    response_description="Successfully deleted a customer, returns: CustomerReturnResource.",
+    summary="Delete a Customer - NOT BEEN IMPLEMENTED YET.",
+    description="Deletes a Customer within the MySQL database by giving a UUID in the path for the customer and returns it as a 'CustomerReturnResource'."
+)
+async def delete_customer(customer_id: UUID = Path(..., description="The UUID of the customer to delete."),
+                          session: Session = Depends(get_db)):
+    error_message = "Failed to delete customer within the MySQL database"
     try:
-        raise NotImplementedError("Request DELETE '/customer/{customer_id}' has not been implemented yet.")
+        raise NotImplementedError("Request DELETE '/mysql/customer/{customer_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

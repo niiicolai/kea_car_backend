@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 
 # Internal library imports
 from app.services import service_purchases
@@ -23,11 +23,19 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/purchases", response_model=List[PurchaseReturnResource], description="Returns all purchases.")
+@router.get(
+    path="/purchases",
+    response_model=List[PurchaseReturnResource],
+    response_description="Successfully retrieved list of purchases, returns: List[PurchaseReturnResource]",
+    summary="Retrieve all Purchases.",
+    description="Fetches all Purchases from the MySQL database and returns a list of 'PurchaseReturnResource'."
+)
 async def get_purchases(session: Session = Depends(get_db)):
-    error_message = "Failed to get purchases"
+    error_message = "Failed to get purchases from the MySQL database"
     try:
-        return service_purchases.get_all(MySQLPurchaseRepository(session))
+        return service_purchases.get_all(
+            repository=MySQLPurchaseRepository(session)
+        )
     except SQLAlchemyError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -41,14 +49,24 @@ async def get_purchases(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/purchase/{purchase_id}", response_model=PurchaseReturnResource, description="Returns one Model by ID.")
-async def get_purchase(purchase_id: UUID, session: Session = Depends(get_db)):
-    error_message = "Failed to get purchase"
+@router.get(
+    path="/purchase/{purchase_id}",
+    response_model=PurchaseReturnResource,
+    response_description="Successfully retrieved a purchase, returns: PurchaseReturnResource",
+    summary="Retrieve a Purchase by ID.",
+    description="Fetches a Purchase by ID from the MySQL database by giving a UUID in the path for the purchase and returns it as a 'PurchaseReturnResource'."
+)
+async def get_purchase(purchase_id: UUID = Path(..., description="The UUID of the purchase to retrieve."),
+                       session: Session = Depends(get_db)):
+    error_message = "Failed to get purchase from the MySQL database"
     try:
-        return service_purchases.get_by_id(MySQLPurchaseRepository(session), str(purchase_id))
+        return service_purchases.get_by_id(
+            repository=MySQLPurchaseRepository(session),
+            purchase_id=str(purchase_id)
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -67,17 +85,25 @@ async def get_purchase(purchase_id: UUID, session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/purchase/car/{cars_id}", response_model=PurchaseReturnResource, description="Returns a Purchase by a Car ID.")
-async def get_purchase_by_car_id(cars_id: UUID, session: Session = Depends(get_db)):
-    error_message = "Failed to get purchase by car id"
+@router.get(
+    path="/purchase/car/{cars_id}",
+    response_model=PurchaseReturnResource,
+    response_description="Successfully retrieved a purchase, returns: PurchaseReturnResource",
+    summary="Retrieve a Purchase by Car ID.",
+    description="Fetches a Purchase by Car ID from the MySQL database by giving a UUID in the path for the car of the purchase and returns it as a 'PurchaseReturnResource'."
+)
+async def get_purchase_by_car_id(cars_id: UUID = Path(..., description="The UUID of the purchase's car to retrieve."),
+                                 session: Session = Depends(get_db)):
+    error_message = "Failed to get purchase by car id from the MySQL database"
     try:
         return service_purchases.get_by_car_id(
-            MySQLPurchaseRepository(session),
-            MySQLCarRepository(session),
-            str(cars_id))
+            purchase_repository=MySQLPurchaseRepository(session),
+            car_repository=MySQLCarRepository(session),
+            car_id=str(cars_id)
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -101,18 +127,25 @@ async def get_purchase_by_car_id(cars_id: UUID, session: Session = Depends(get_d
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 
-@router.post("/purchase", response_model=PurchaseReturnResource, description="Create a new Purchase.")
+@router.post(
+    path="/purchase",
+    response_model=PurchaseReturnResource,
+    response_description="Successfully created a purchase, returns: PurchaseReturnResource.",
+    summary="Create a Purchase.",
+    description="Creates a Purchase within the MySQL database by giving a request body 'PurchaseCreateResource' and returns it as a 'PurchaseReturnResource'."
+)
 async def create_purchase(purchase_create_data: PurchaseCreateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to create purchase"
+    error_message = "Failed to create purchase within the MySQL database"
     try:
         return service_purchases.create(
-            MySQLPurchaseRepository(session),
-            MySQLCarRepository(session),
-            purchase_create_data)
+            purchase_repository=MySQLPurchaseRepository(session),
+            car_repository=MySQLCarRepository(session),
+            purchase_create_data=purchase_create_data
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

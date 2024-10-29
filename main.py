@@ -47,7 +47,7 @@ def get_db():
         yield session
 
 @app.get("/mysql/", response_model=TokenPayload,
-         description="Test endpoint to check if the API is running.")
+         description="Test endpoint to check if the API is running and to test how to access an endpoint that needs authorization.")
 async def root(current_token: TokenPayload = Depends(get_current_mysql_sales_person_token)):
     return current_token
 

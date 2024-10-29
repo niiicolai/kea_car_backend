@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Body, Query, status
 
 # Internal library imports
 from app.services import service_cars
@@ -27,23 +27,29 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/cars", response_model=List[CarReturnResource], description="Returns all cars there are or from a given customer and/or sales person id.")
-async def get_cars(customer_id: Optional[UUID] = None, sales_person_id: Optional[UUID] = None, session: Session = Depends(get_db)):
-    error_message = "Failed to get cars"
+@router.get(
+    path="/cars",
+    response_model=List[CarReturnResource],
+    response_description="Successfully retrieved list of cars, returns: List[CarReturnResource]",
+    summary="Retrieve all Cars.",
+    description="Fetches all Cars or all Cars belonging to a customer and/or sales person from the MySQL database and returns a list of 'CarReturnResource'."
+)
+async def get_cars(customer_id: Optional[UUID] = Query(default=None, description="The UUID of the customer, to retrieve cars belonging to that customer."),
+                   sales_person_id: Optional[UUID] = Query(default=None, description="The UUID of the sales person, to retrieve cars belonging to that sales person."),
+                   session: Session = Depends(get_db)):
+    error_message = "Failed to get cars from the MySQL database"
     try:
-        car_repository = MySQLCarRepository(session)
-        customer_repository = MySQLCustomerRepository(session)
-        sales_person_repository = MySQLSalesPersonRepository(session)
         if customer_id is not None:
             customer_id = str(customer_id)
         if sales_person_id is not None:
             sales_person_id = str(sales_person_id)
         return service_cars.get_all(
-            car_repository,
-            customer_repository,
-            sales_person_repository,
-            customer_id,
-            sales_person_id)
+            car_repository=MySQLCarRepository(session),
+            customer_repository=MySQLCustomerRepository(session),
+            sales_person_repository=MySQLSalesPersonRepository(session),
+            customer_id=customer_id,
+            sales_person_id=sales_person_id
+        )
 
     except UnableToFindIdError as e:
         raise HTTPException(
@@ -66,11 +72,21 @@ async def get_cars(customer_id: Optional[UUID] = None, sales_person_id: Optional
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/car/{car_id}", response_model=CarReturnResource, description="Returns a Car by ID.")
-async def get_car(car_id: UUID, session: Session = Depends(get_db)):
-    error_message = "Failed to get car"
+@router.get(
+    path="/car/{car_id}",
+    response_model=CarReturnResource,
+    response_description="Successfully retrieved a car, returns: CarReturnResource",
+    summary="Retrieve a Car by ID.",
+    description="Fetches a Car by ID from the MySQL database by giving a UUID in the path for the car and returns it as a 'CarReturnResource'."
+)
+async def get_car(car_id: UUID = Path(..., description="The UUID of the car to retrieve."),
+                  session: Session = Depends(get_db)):
+    error_message = "Failed to get car from the MySQL database"
     try:
-        return service_cars.get_by_id(MySQLCarRepository(session), str(car_id))
+        return service_cars.get_by_id(
+            repository=MySQLCarRepository(session),
+            car_id=str(car_id)
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -93,9 +109,15 @@ async def get_car(car_id: UUID, session: Session = Depends(get_db)):
         )
 
 
-@router.post("/car", response_model=CarReturnResource, description="Creates a car in the database.")
+@router.post(
+    path="/car",
+    response_model=CarReturnResource,
+    response_description="Successfully created a car, returns: CarReturnResource.",
+    summary="Create a Car.",
+    description="Creates a Car within the MySQL database by giving a request body 'CarCreateResource' and returns it as a 'CarReturnResource'."
+)
 async def create_car(car_create_data: CarCreateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to create car"
+    error_message = "Failed to create car within the MySQL database"
     try:
         return service_cars.create(
             car_repository=MySQLCarRepository(session),
@@ -132,11 +154,19 @@ async def create_car(car_create_data: CarCreateResource, session: Session = Depe
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.put("/car/{car_id}", response_model=CarReturnResource, description="Not been implemented yet.")
-async def update_car(car_id: UUID, car_update_data: CarUpdateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to update car"
+@router.put(
+    path="/car/{car_id}",
+    response_model=CarReturnResource,
+    response_description="Successfully updated a car, returns: CarReturnResource.",
+    summary="Update a Car - NOT BEEN IMPLEMENTED YET.",
+    description="Updates a Car within the MySQL database by giving a UUID in the path for the car and by giving a request body 'CarUpdateResource' and returns it as a 'CarReturnResource'."
+)
+async def update_car(car_id: UUID = Path(..., description="The UUID of the car to update."),
+                     car_update_data: CarUpdateResource = Body(..., title="CarUpdateResource"),
+                     session: Session = Depends(get_db)):
+    error_message = "Failed to update car within the MySQL database"
     try:
-        raise NotImplementedError("Request PUT '/car/{car_id}' has not been implemented yet.")
+        raise NotImplementedError("Request PUT '/mysql/car/{car_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -158,11 +188,18 @@ async def update_car(car_id: UUID, car_update_data: CarUpdateResource, session: 
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.delete("/car/{car_id}", response_model=CarReturnResource, description="Not been implemented yet.")
-async def delete_car(car_id: UUID, session: Session = Depends(get_db)):
-    error_message = "Failed to delete car"
+@router.delete(
+    path="/car/{car_id}",
+    response_model=CarReturnResource,
+    response_description="Successfully deleted a car, returns: CarReturnResource.",
+    summary="Delete a Car - NOT BEEN IMPLEMENTED YET.",
+    description="Deletes a Car within the MySQL database by giving a UUID in the path for the car and returns it as a 'BrandReturnResource'."
+)
+async def delete_car(car_id: UUID = Path(..., description="The UUID of the car to delete."),
+                     session: Session = Depends(get_db)):
+    error_message = "Failed to delete car within the MySQL database"
     try:
-        raise NotImplementedError("Request DELETE '/car/{car_id}' has not been implemented yet.")
+        raise NotImplementedError("Request DELETE '/mysql/car/{car_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

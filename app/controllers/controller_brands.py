@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Body, status
 
 # Internal library imports
 from app.services import service_brands
@@ -21,11 +21,19 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/brands", response_model=List[BrandReturnResource], description="Returns all brands.")
+@router.get(
+    path="/brands",
+    response_model=List[BrandReturnResource],
+    response_description="Successfully retrieved list of brands, returns: List[BrandReturnResource]",
+    summary="Retrieve all Brands.",
+    description="Fetches all Brands from the MySQL database and returns a list of 'BrandReturnResource'."
+)
 async def get_brands(session: Session = Depends(get_db)):
-    error_message = "Failed to get brands"
+    error_message = "Failed to get brands from the MySQL database"
     try:
-        return service_brands.get_all(MySQLBrandRepository(session))
+        return service_brands.get_all(
+            repository=MySQLBrandRepository(session)
+        )
     except SQLAlchemyError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -42,11 +50,21 @@ async def get_brands(session: Session = Depends(get_db)):
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/brand/{brand_id}", response_model=BrandReturnResource, description="Returns a brand by id.")
-async def get_brand(brand_id: UUID, session: Session = Depends(get_db)):
-    error_message = "Failed to get brand"
+@router.get(
+    path="/brand/{brand_id}",
+    response_model=BrandReturnResource,
+    response_description="Successfully retrieved a brand, returns: BrandReturnResource",
+    summary="Retrieve a Brand by ID.",
+    description="Fetches a Brand by ID from the MySQL database by giving a UUID in the path for the brand and returns it as a 'BrandReturnResource'."
+)
+async def get_brand(brand_id: UUID = Path(..., description="The UUID of the brand to retrieve."),
+                    session: Session = Depends(get_db)):
+    error_message = "Failed to get brand from the MySQL database"
     try:
-        return service_brands.get_by_id(MySQLBrandRepository(session), str(brand_id))
+        return service_brands.get_by_id(
+            repository=MySQLBrandRepository(session),
+            brand_id=str(brand_id)
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -69,11 +87,17 @@ async def get_brand(brand_id: UUID, session: Session = Depends(get_db)):
         )
 
 
-@router.post("/brand", response_model=BrandReturnResource, description="Not been implemented yet.")
+@router.post(
+    path="/brand",
+    response_model=BrandReturnResource,
+    response_description="Successfully created a brand, returns: AccessoryReturnResource.",
+    summary="Create a Brand - NOT BEEN IMPLEMENTED YET.",
+    description="Creates a Brand within the MySQL database by giving a request body 'BrandCreateResource' and returns it as a 'BrandReturnResource'."
+)
 async def create_brand(brand_create_data: BrandCreateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to create brand"
+    error_message = "Failed to create brand within the MySQL database"
     try:
-        raise NotImplementedError("Request POST '/brand' has not been implemented yet.")
+        raise NotImplementedError("Request POST '/mysql/brand' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -95,11 +119,19 @@ async def create_brand(brand_create_data: BrandCreateResource, session: Session 
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.put("/brand/{brand_id}", response_model=BrandReturnResource, description="Not been implemented yet.")
-async def update_brand(brand_id: UUID, brand_update_data: BrandUpdateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to update brand"
+@router.put(
+    path="/brand/{brand_id}",
+    response_model=BrandReturnResource,
+    response_description="Successfully updated a brand, returns: BrandReturnResource.",
+    summary="Update a Brand - NOT BEEN IMPLEMENTED YET.",
+    description="Updates a Brand within the MySQL database by giving a UUID in the path for the brand and by giving a request body 'BrandUpdateResource' and returns it as a 'BrandReturnResource'."
+)
+async def update_brand(brand_id: UUID = Path(..., description="The UUID of the brand to update."),
+                       brand_update_data: BrandUpdateResource = Body(..., title="BrandUpdateResource"),
+                       session: Session = Depends(get_db)):
+    error_message = "Failed to update brand within the MySQL database"
     try:
-        raise NotImplementedError("Request PUT '/brand/{brand_id}' has not been implemented yet.")
+        raise NotImplementedError("Request PUT '/mysql/brand/{brand_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -121,11 +153,18 @@ async def update_brand(brand_id: UUID, brand_update_data: BrandUpdateResource, s
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.delete("/brand/{brand_id}", response_model=BrandReturnResource, description="Not been implemented yet.")
-async def delete_brand(brand_id: UUID, session: Session = Depends(get_db)):
-    error_message = "Failed to delete brand"
+@router.delete(
+    path="/brand/{brand_id}",
+    response_model=BrandReturnResource,
+    response_description="Successfully deleted a brand, returns: BrandReturnResource.",
+    summary="Delete a Brand - NOT BEEN IMPLEMENTED YET.",
+    description="Deletes a Brand within the MySQL database by giving a UUID in the path for the brand and returns it as a 'BrandReturnResource'."
+)
+async def delete_brand(brand_id: UUID = Path(..., description="The UUID of the brand to delete."),
+                       session: Session = Depends(get_db)):
+    error_message = "Failed to delete brand within the MySQL database"
     try:
-        raise NotImplementedError("Request DELETE '/brand/{brand_id}' has not been implemented yet.")
+        raise NotImplementedError("Request DELETE '/mysql/brand/{brand_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

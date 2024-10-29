@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, Body, status, Request
+from fastapi import APIRouter, Depends, HTTPException, Path, Body, status
 
 
 # Internal library imports
@@ -24,16 +24,18 @@ def get_db():
         yield session
 
 @router.get(
-    "/accessories",
+    path="/accessories",
     response_model=List[AccessoryReturnResource],
-    response_description="Successfully retrieved list of accessories from the MySQL database: List[AccessoryReturnResource]",
-    summary="Retrieve All Accessories.",
-    description="Fetches all accessories from the database and returns a list of 'AccessoryReturnResource'."
+    response_description="Successfully retrieved list of accessories, returns: List[AccessoryReturnResource]",
+    summary="Retrieve all Accessories.",
+    description="Fetches all Accessories from the MySQL database and returns a list of 'AccessoryReturnResource'."
 )
 async def get_accessories(session: Session = Depends(get_db)):
-    error_message = "Failed to get accessories"
+    error_message = "Failed to get accessories from the MySQL database"
     try:
-        return service_accessories.get_all(MySQLAccessoryRepository(session))
+        return service_accessories.get_all(
+            repository=MySQLAccessoryRepository(session)
+        )
     except SQLAlchemyError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -51,16 +53,20 @@ async def get_accessories(session: Session = Depends(get_db)):
         )
 
 @router.get(
-    "/accessory/{accessory_id}",
+    path="/accessory/{accessory_id}",
     response_model=AccessoryReturnResource,
-    response_description="Successfully retrieved an accessory from the MySQL database: AccessoryReturnResource",
+    response_description="Successfully retrieved an accessory, returns: AccessoryReturnResource",
     summary="Retrieve an Accessory by ID.",
-    description="Fetches an 'AccessoryReturnResource' by ID from the MySQL database.")
+    description="Fetches an Accessory by ID from the MySQL database by giving a UUID in the path for the accessory and returns it as an 'AccessoryReturnResource'."
+)
 async def get_accessory(accessory_id: UUID = Path(..., description="The UUID of the accessory to retrieve"),
                         session: Session = Depends(get_db)):
-    error_message = "Failed to get accessory"
+    error_message = "Failed to get accessory from the MySQL database"
     try:
-        return service_accessories.get_by_id(MySQLAccessoryRepository(session), str(accessory_id))
+        return service_accessories.get_by_id(
+            repository=MySQLAccessoryRepository(session),
+            accessory_id=str(accessory_id)
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -84,15 +90,16 @@ async def get_accessory(accessory_id: UUID = Path(..., description="The UUID of 
 
 
 @router.post(
-    "/accessory",
+    path="/accessory",
     response_model=AccessoryReturnResource,
-    response_description="Successfully created an accessory from the MySQL database: AccessoryReturnResource.",
-    summary="Creates an Accessory - NOT BEEN IMPLEMENTED YET.",
-    description="Creates an Accessory within the MySQL database by giving a request body 'AccessoryCreateResource' and returns it as an 'AccessoryReturnResource'.")
+    response_description="Successfully created an accessory and returns it as a: AccessoryReturnResource.",
+    summary="Create an Accessory - NOT BEEN IMPLEMENTED YET.",
+    description="Creates an Accessory within the MySQL database by giving a request body 'AccessoryCreateResource' and returns it as an 'AccessoryReturnResource'."
+)
 async def create_accessory(accessory_create_data: AccessoryCreateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to create accessory"
+    error_message = "Failed to create accessory from the MySQL database"
     try:
-        raise NotImplementedError("Request POST '/accessory' has not been implemented yet.")
+        raise NotImplementedError("Request POST '/mysql/accessory' has not been implemented yet.")
     except SQLAlchemyError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -104,17 +111,19 @@ async def create_accessory(accessory_create_data: AccessoryCreateResource, sessi
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.put("/accessory/{accessory_id}",
-            response_model=AccessoryReturnResource,
-            response_description="Successfully updated an accessory from the MySQL database: AccessoryReturnResource.",
-            description="Updated an Accessory within the MySQL database by giving a request body 'AccessoryUpdateResource' and returns it as an 'AccessoryReturnResource'.",
-            summary="Updates an Accessory - NOT BEEN IMPLEMENTED YET.")
+@router.put(
+    path="/accessory/{accessory_id}",
+    response_model=AccessoryReturnResource,
+    response_description="Successfully updated an accessory, returns: AccessoryReturnResource.",
+    summary="Update an Accessory - NOT BEEN IMPLEMENTED YET.",
+    description="Updates an Accessory within the MySQL database by giving a UUID in the path for the accessory and by giving a request body 'AccessoryUpdateResource' and returns it as an 'AccessoryReturnResource'."
+)
 async def update_accessory(accessory_id: UUID = Path(..., description="The UUID of the accessory to update."),
                            accessory_update_data: AccessoryUpdateResource = Body(..., title="AccessoryUpdateResource"),
                            session: Session = Depends(get_db)):
-    error_message = "Failed to update accessory"
+    error_message = "Failed to update accessory from the MySQL database"
     try:
-        raise NotImplementedError("Request PUT '/accessory/{accessory_id}' has not been implemented yet.")
+        raise NotImplementedError("Request PUT '/mysql/accessory/{accessory_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -137,16 +146,17 @@ async def update_accessory(accessory_id: UUID = Path(..., description="The UUID 
         )
 
 @router.delete(
-    "/accessory/{accessory_id}",
+    path="/accessory/{accessory_id}",
     response_model=AccessoryReturnResource,
-    response_description="Successfully deleted an accessory from the MySQL database: AccessoryReturnResource.",
-    description="Deleted an Accessory within the MySQL database by giving a UUID in the path for the accessory and returns it as an 'AccessoryReturnResource'.",
-    summary="Deletes an Accessory - NOT BEEN IMPLEMENTED YET.")
+    response_description="Successfully deleted an accessory, returns: AccessoryReturnResource.",
+    summary="Delete an Accessory - NOT BEEN IMPLEMENTED YET.",
+    description="Deletes an Accessory within the MySQL database by giving a UUID in the path for the accessory and returns it as an 'AccessoryReturnResource'."
+)
 async def delete_accessory(accessory_id: UUID = Path(..., description="The UUID of the accessory to delete."),
                            session: Session = Depends(get_db)):
-    error_message = "Failed to delete accessory"
+    error_message = "Failed to delete accessory within the MySQL database"
     try:
-        raise NotImplementedError("Request DELETE '/accessory/{accessory_id}' has not been implemented yet.")
+        raise NotImplementedError("Request DELETE '/mysql/accessory/{accessory_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

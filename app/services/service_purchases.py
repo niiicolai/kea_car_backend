@@ -25,11 +25,11 @@ def get_by_id(repository: PurchaseRepository, purchase_id: str) -> PurchaseRetur
         raise UnableToFindIdError(entity_name="Purchase", entity_id=purchase_id)
     return purchase
 
-def get_by_car_id(repository: PurchaseRepository, car_repository: CarRepository, car_id: str) -> PurchaseReturnResource:
+def get_by_car_id(purchase_repository: PurchaseRepository, car_repository: CarRepository, car_id: str) -> PurchaseReturnResource:
     car: Optional[CarReturnResource] = car_repository.get_by_id(car_id)
     if car is None:
         raise UnableToFindIdError(entity_name="Car", entity_id=car_id)
-    purchase: Optional[PurchaseReturnResource] = repository.get_by_car_id(car)
+    purchase: Optional[PurchaseReturnResource] = purchase_repository.get_by_car_id(car)
     if purchase is None:
         raise UnableToFindEntityError("Purchase", "cars_id", car_id)
     return purchase

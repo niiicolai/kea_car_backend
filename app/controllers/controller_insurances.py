@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Body, status
 
 # Internal library imports
 from app.services import service_insurances
@@ -22,11 +22,19 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-@router.get("/insurances", response_model=List[InsuranceReturnResource], description="Returns all insurances.")
+@router.get(
+    path="/insurances",
+    response_model=List[InsuranceReturnResource],
+    response_description="Successfully retrieved list of insurances, returns: List[InsuranceReturnResource]",
+    summary="Retrieve all Insurances.",
+    description="Fetches all Insurances from the MySQL database and returns a list of 'InsuranceReturnResource'."
+)
 async def get_insurances(session: Session = Depends(get_db)):
-    error_message = "Failed to get insurances"
+    error_message = "Failed to get insurances from the MySQL database"
     try:
-        return service_insurances.get_all(MySQLInsuranceRepository(session))
+        return service_insurances.get_all(
+            repository=MySQLInsuranceRepository(session)
+        )
     except SQLAlchemyError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -40,14 +48,23 @@ async def get_insurances(session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.get("/insurance/{insurance_id}", response_model=InsuranceReturnResource, description="Returns one insurance by id.")
+@router.get(
+    path="/insurance/{insurance_id}",
+    response_model=InsuranceReturnResource,
+    response_description="Successfully retrieved an insurance, returns: InsuranceReturnResource",
+    summary="Retrieve a Insurance by ID.",
+    description="Fetches an Insurance by ID from the MySQL database by giving a UUID in the path for the insurance and returns it as an 'InsuranceReturnResource'."
+)
 async def get_insurance(insurance_id: UUID, session: Session = Depends(get_db)):
-    error_message = "Failed to get insurance"
+    error_message = "Failed to get insurance from the MySQL database"
     try:
-        return service_insurances.get_by_id(MySQLInsuranceRepository(session), str(insurance_id))
+        return service_insurances.get_by_id(
+            repository=MySQLInsuranceRepository(session),
+            insurance_id=str(insurance_id)
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -66,15 +83,21 @@ async def get_insurance(insurance_id: UUID, session: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Unknown Error caught. {error_message}: {e}")
+            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
 
-@router.post("/insurance", response_model=InsuranceReturnResource, description="Not been implemented yet.")
+@router.post(
+    path="/insurance",
+    response_model=InsuranceReturnResource,
+    response_description="Successfully created an insurance, returns: InsuranceReturnResource.",
+    summary="Create an Insurance - NOT BEEN IMPLEMENTED YET.",
+    description="Creates an Insurance within the MySQL database by giving a request body 'InsuranceCreateResource' and returns it as an 'InsuranceReturnResource'."
+)
 async def create_insurance(insurance_create_data: InsuranceCreateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to create insurance"
+    error_message = "Failed to create insurance within the MySQL database"
     try:
-        raise NotImplementedError("Request POST '/insurance' has not been implemented yet.")
+        raise NotImplementedError("Request POST '/mysql/insurance' has not been implemented yet.")
     except AlreadyTakenFieldValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -96,11 +119,19 @@ async def create_insurance(insurance_create_data: InsuranceCreateResource, sessi
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.put("/insurance/{insurance_id}", response_model=InsuranceUpdateResource, description="Not been implemented yet.")
-async def update_insurance(insurance_id: UUID, insurance_update_data: InsuranceUpdateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to update insurance"
+@router.put(
+    path="/insurance/{insurance_id}",
+    response_model=InsuranceReturnResource,
+    response_description="Successfully updated an insurance, returns: InsuranceReturnResource.",
+    summary="Update an Insurance - NOT BEEN IMPLEMENTED YET.",
+    description="Updates an Insurance within the MySQL database by giving a UUID in the path for the insurance and by giving a request body 'InsuranceUpdateResource' and returns it as an 'InsuranceReturnResource'."
+)
+async def update_insurance(insurance_id: UUID = Path(..., description="The UUID of the insurance to update."),
+                           insurance_update_data: InsuranceUpdateResource = Body(..., title="InsuranceUpdateResource"),
+                           session: Session = Depends(get_db)):
+    error_message = "Failed to update insurance within the MySQL database"
     try:
-        raise NotImplementedError("Request PUT '/insurance/{insurance_id}' has not been implemented yet.")
+        raise NotImplementedError("Request PUT '/mysql/insurance/{insurance_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -127,11 +158,18 @@ async def update_insurance(insurance_id: UUID, insurance_update_data: InsuranceU
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.delete("/insurance/{insurance_id}", response_model=InsuranceCreateResource, description="Not been implemented yet.")
-async def delete_insurance(insurance_id: UUID, session: Session = Depends(get_db)):
-    error_message = "Failed to delete insurance"
+@router.delete(
+    path="/insurance/{insurance_id}",
+    response_model=InsuranceReturnResource,
+    response_description="Successfully deleted an insurance, returns: InsuranceReturnResource.",
+    summary="Delete an Insurance - NOT BEEN IMPLEMENTED YET.",
+    description="Deletes an Insurance within the MySQL database by giving a UUID in the path for the insurance and returns it as an 'InsuranceReturnResource'."
+)
+async def delete_insurance(insurance_id: UUID = Path(..., description="The UUID of the insurance to delete."),
+                           session: Session = Depends(get_db)):
+    error_message = "Failed to delete insurance within the MySQL database"
     try:
-        raise NotImplementedError("Request DELETE '/insurance/{insurance_id}' has not been implemented yet.")
+        raise NotImplementedError("Request DELETE '/mysql/insurance/{insurance_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

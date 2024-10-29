@@ -15,23 +15,23 @@ def calculate_purchase_deadline() -> date:
     return date.today() + timedelta(days=30)
 
 class CarBaseResource(BaseModel):
-    purchase_deadline: date = Field(..., examples=[calculate_purchase_deadline()])
+    purchase_deadline: date = Field(..., description="The deadline for when the car must be purchased.", examples=[calculate_purchase_deadline()])
 
     model_config = ConfigDict(from_attributes=True)
 
     @field_validator('purchase_deadline')
-    def validate_purchase_deadline(cls, value: date) -> date:
-        if value is None:
+    def validate_purchase_deadline(cls, purchase_deadline: date) -> date:
+        if purchase_deadline is None:
             raise ValueError(f"The given purchase deadline must not be None.")
-        return value
+        return purchase_deadline
 
 class CarCreateOrUpdateResource(CarBaseResource):
-    models_id: UUID4 = Field(..., examples=["ed996516-a141-4f4e-8991-3edeaba81c14"])
-    colors_id: UUID4 = Field(..., examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])
-    customers_id: UUID4 = Field(..., examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])
-    sales_people_id: UUID4 = Field(..., examples=["f9097a97-eca4-49b6-85a0-08423789c320"])
-    accessory_ids: List[UUID4] = Field(default_factory=list[UUID4], exclude=True, examples=[["e620ec3c-625d-4bde-9b77-f7449b6352d5","fc8f689e-9615-4cf6-9664-31400db7ebea"]])
-    insurance_ids: List[UUID4] = Field(default_factory=list[UUID4], exclude=True, examples=[["8456043d-5fb0-49bf-ac2c-51567a32cc87","76b21d38-2103-4464-84f2-c87178e4a30c"]])
+    models_id: UUID4 = Field(..., description="UUID for the car's Model.", examples=["ed996516-a141-4f4e-8991-3edeaba81c14"])
+    colors_id: UUID4 = Field(..., description="UUID for the car's Color.", examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])
+    customers_id: UUID4 = Field(..., description="UUID for the car's Customer.", examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])
+    sales_people_id: UUID4 = Field(..., description="UUID for the car's Sales Person.", examples=["f9097a97-eca4-49b6-85a0-08423789c320"])
+    accessory_ids: List[UUID4] = Field(default_factory=list[UUID4], exclude=True, description="UUIDs for the car's Accessories.", examples=[["e620ec3c-625d-4bde-9b77-f7449b6352d5","fc8f689e-9615-4cf6-9664-31400db7ebea"]])
+    insurance_ids: List[UUID4] = Field(default_factory=list[UUID4], exclude=True, description="UUIDs for the car's Insurances.", examples=[["8456043d-5fb0-49bf-ac2c-51567a32cc87","76b21d38-2103-4464-84f2-c87178e4a30c"]])
 
     @field_validator('accessory_ids')
     def validate_accessory_ids(cls, accessory_ids: List[UUID4]) -> List[UUID4]:
@@ -51,22 +51,22 @@ class CarCreateResource(CarCreateOrUpdateResource):
 
 
 class CarUpdateResource(CarCreateOrUpdateResource):
-    models_id: UUID4 = Field(None, examples=["ed996516-a141-4f4e-8991-3edeaba81c14"])
-    colors_id: UUID4 = Field(None, examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])
-    customers_id: UUID4 = Field(None, examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])
-    sales_people_id: UUID4 = Field(None, examples=["f9097a97-eca4-49b6-85a0-08423789c320"])
-    total_price: float = Field(None, gt=0, examples=[999.99])
-    purchase_deadline: date = Field(None, examples=[calculate_purchase_deadline()])
+    models_id: UUID4 = Field(None, description="Updated UUID for the car's Model.", examples=["ed996516-a141-4f4e-8991-3edeaba81c14"])
+    colors_id: UUID4 = Field(None, description="Updated UUID for the car's Color.", examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])
+    customers_id: UUID4 = Field(None, description="Updated UUID for the car's Customer.", examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])
+    sales_people_id: UUID4 = Field(None, description="Updated UUID for the car's Sales Person.", examples=["f9097a97-eca4-49b6-85a0-08423789c320"])
+    total_price: float = Field(None, gt=0, description="Updated total price for the car in kroner.", examples=[999.99])
+    purchase_deadline: date = Field(None, description="Updated deadline for when the car must be purchased.", examples=[calculate_purchase_deadline()])
 
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
 
 class CarReturnResource(CarBaseResource):
-    total_price: float = Field(..., gt=0, examples=[999.99])
-    id: str = Field(..., examples=["e7bd48c2-f1c4-4e1a-b0fc-dc09f2d8f28a"])
-    model: ModelReturnResource = Field(...)
-    color: ColorReturnResource = Field(...)
-    customer: CustomerReturnResource = Field(...)
-    sales_person: SalesPersonReturnResource = Field(...)
-    accessories: List[AccessoryReturnResource] = Field(...)
-    insurances: List[InsuranceReturnResource] = Field(...)
+    total_price: float = Field(..., gt=0, description="The total price for the car in kroner.", examples=[999.99])
+    id: str = Field(..., description="The UUID for the car", examples=["e7bd48c2-f1c4-4e1a-b0fc-dc09f2d8f28a"])
+    model: ModelReturnResource = Field(..., description="The car's Model as a ModelReturnResource.")
+    color: ColorReturnResource = Field(..., description="The car's Color as a ColorReturnResource.")
+    customer: CustomerReturnResource = Field(..., description="The car's Customer as a CustomerReturnResource.")
+    sales_person: SalesPersonReturnResource = Field(..., description="The car's Sales Person as a SalesPersonReturnResource.")
+    accessories: List[AccessoryReturnResource] = Field(..., description="The car's Accessories as a list of AccessoryReturnResource.")
+    insurances: List[InsuranceReturnResource] = Field(..., description="The car's Insurances as a list of InsuranceReturnResource.")
