@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, Body, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 # Internal library imports
 from app.services import service_cars
@@ -17,9 +17,6 @@ from app.repositories.sales_person_repositories import MySQLSalesPersonRepositor
 from app.repositories.car_repositories import MySQLCarRepository, CarReturnResource, CarCreateResource
 from app.exceptions.database_errors import UnableToFindIdError, UnableToGiveEntityWithValueFromOtherEntityError
 
-# These imports should come from repository, but the repo is not made for these resources,
-# but to let swagger give examples of what the endpoints should do, we import them here
-from app.resources.car_resource import CarUpdateResource
 
 router: APIRouter = APIRouter()
 
@@ -27,6 +24,8 @@ def get_db():
     with get_db_session() as session:
         yield session
 
+# TODO: Add so you can get cars that has been purchased or not been purchased,
+#  and to get cars that is past purchase deadline or not past purchase deadline
 @router.get(
     path="/cars",
     response_model=List[CarReturnResource],
@@ -154,40 +153,8 @@ async def create_car(car_create_data: CarCreateResource, session: Session = Depe
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-@router.put(
-    path="/car/{car_id}",
-    response_model=CarReturnResource,
-    response_description="Successfully updated a car, returns: CarReturnResource.",
-    summary="Update a Car - NOT BEEN IMPLEMENTED YET.",
-    description="Updates a Car within the MySQL database by giving a UUID in the path for the car and by giving a request body 'CarUpdateResource' and returns it as a 'CarReturnResource'."
-)
-async def update_car(car_id: UUID = Path(..., description="The UUID of the car to update."),
-                     car_update_data: CarUpdateResource = Body(..., title="CarUpdateResource"),
-                     session: Session = Depends(get_db)):
-    error_message = "Failed to update car within the MySQL database"
-    try:
-        raise NotImplementedError("Request PUT '/mysql/car/{car_id}' has not been implemented yet.")
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
-
+# TODO: Implement delete car so it deletes the car and all the accessories and insurances it has.
+#  And give it a boolean parameter for making certain that you are certain you want to delete the car with its purchase if it has one
 @router.delete(
     path="/car/{car_id}",
     response_model=CarReturnResource,
@@ -196,6 +163,7 @@ async def update_car(car_id: UUID = Path(..., description="The UUID of the car t
     description="Deletes a Car within the MySQL database by giving a UUID in the path for the car and returns it as a 'BrandReturnResource'."
 )
 async def delete_car(car_id: UUID = Path(..., description="The UUID of the car to delete."),
+                     delete_purchase_too: bool = Path(False, description="A boolean that is default False, for if you are certain you want to delete the car with its purchase if it has one."),
                      session: Session = Depends(get_db)):
     error_message = "Failed to delete car within the MySQL database"
     try:

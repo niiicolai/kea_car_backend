@@ -1,6 +1,6 @@
 # External Library imports
 from typing import List
-from datetime import date, timedelta
+from datetime import date, datetime, timezone, timedelta
 from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
 
 # Internal library imports
@@ -19,13 +19,8 @@ class CarBaseResource(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    @field_validator('purchase_deadline')
-    def validate_purchase_deadline(cls, purchase_deadline: date) -> date:
-        if purchase_deadline is None:
-            raise ValueError(f"The given purchase deadline must not be None.")
-        return purchase_deadline
-
-class CarCreateOrUpdateResource(CarBaseResource):
+class CarCreateResource(CarBaseResource):
+    purchase_deadline: date = Field(default_factory=calculate_purchase_deadline, description="The deadline for when the car must be purchased.", examples=[calculate_purchase_deadline()])
     models_id: UUID4 = Field(..., description="UUID for the car's Model.", examples=["ed996516-a141-4f4e-8991-3edeaba81c14"])
     colors_id: UUID4 = Field(..., description="UUID for the car's Color.", examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])
     customers_id: UUID4 = Field(..., description="UUID for the car's Customer.", examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])
@@ -45,21 +40,16 @@ class CarCreateOrUpdateResource(CarBaseResource):
             raise ValueError('insurance_ids must be unique')
         return insurance_ids
 
+    @field_validator('purchase_deadline')
+    def validate_purchase_deadline(cls, purchase_deadline: date) -> date:
+        if purchase_deadline is None:
+            raise ValueError(f"The given purchase deadline must not be None.")
+        current_utc_date = datetime.now(timezone.utc).date()
 
-class CarCreateResource(CarCreateOrUpdateResource):
-    purchase_deadline: date = Field(default_factory=calculate_purchase_deadline, examples=[calculate_purchase_deadline()])
+        if purchase_deadline < current_utc_date:
+            raise ValueError(f"The given purchase deadline '{purchase_deadline.strftime('%dY-%m-%Y')}' must be before the current date '{current_utc_date.strftime('%d-%m-%Y')}' (UTC).")
+        return purchase_deadline
 
-
-class CarUpdateResource(CarCreateOrUpdateResource):
-    models_id: UUID4 = Field(None, description="Updated UUID for the car's Model.", examples=["ed996516-a141-4f4e-8991-3edeaba81c14"])
-    colors_id: UUID4 = Field(None, description="Updated UUID for the car's Color.", examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])
-    customers_id: UUID4 = Field(None, description="Updated UUID for the car's Customer.", examples=["0ac1d668-55aa-46a1-898a-8fa61457facb"])
-    sales_people_id: UUID4 = Field(None, description="Updated UUID for the car's Sales Person.", examples=["f9097a97-eca4-49b6-85a0-08423789c320"])
-    total_price: float = Field(None, gt=0, description="Updated total price for the car in kroner.", examples=[999.99])
-    purchase_deadline: date = Field(None, description="Updated deadline for when the car must be purchased.", examples=[calculate_purchase_deadline()])
-
-    def get_updated_fields(self) -> dict:
-        return self.model_dump(exclude_unset=True)
 
 class CarReturnResource(CarBaseResource):
     total_price: float = Field(..., gt=0, description="The total price for the car in kroner.", examples=[999.99])
