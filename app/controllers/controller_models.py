@@ -3,18 +3,14 @@ from uuid import UUID
 from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, Body, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 # Internal library imports
 from app.services import service_models
 from db import Session, get_db as get_db_session
 from app.repositories.brand_repositories import MySQLBrandRepository
 from app.repositories.model_repositories import MySQLModelRepository, ModelReturnResource
-from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
-
-# These imports should come from repository, but the repo is not made for these resources,
-# but to let swagger give examples of what the endpoints should do, we import them here
-from app.resources.model_resource import ModelCreateResource, ModelUpdateResource
+from app.exceptions.database_errors import UnableToFindIdError
 
 router: APIRouter = APIRouter()
 
@@ -76,111 +72,6 @@ async def get_model(model_id: UUID = Path(..., description="The UUID of the mode
             repository=MySQLModelRepository(session),
             model_id=str(model_id)
         )
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
-
-
-@router.post(
-    path="/model",
-    response_model=ModelReturnResource,
-    response_description="Successfully created a model, returns: ModelReturnResource.",
-    summary="Create a Model.",
-    description="Creates a Model within the MySQL database by giving a request body 'ModelCreateResource' and returns it as a 'ModelReturnResource'."
-)
-async def create_model(model_create_data: ModelCreateResource, session: Session = Depends(get_db)):
-    error_message = "Failed to create model within the MySQL database"
-    try:
-        raise NotImplementedError("Request POST '/mysql/model' has not been implemented yet.")
-    except AlreadyTakenFieldValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(f"{error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
-
-@router.put(
-    path="/model/{model_id}",
-    response_model=ModelReturnResource,
-    response_description="Successfully updated a model, returns: ModelReturnResource.",
-    summary="Update a Model - NOT BEEN IMPLEMENTED YET.",
-    description="Updates a Model within the MySQL database by giving a UUID in the path for the model and by giving a request body 'ModelUpdateResource' and returns it as a 'ModelReturnResource'."
-)
-async def update_model(model_id: UUID = Path(..., description="The UUID of the model to update."),
-                       model_update_data: ModelUpdateResource = Body(..., title="ModelUpdateResource"),
-                       session: Session = Depends(get_db)):
-    error_message = "Failed to update model within the MySQL database"
-    try:
-        raise NotImplementedError("Request PUT '/mysql/model/{model_id}' has not been implemented yet.")
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
-        )
-    except AlreadyTakenFieldValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(f"{error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
-
-@router.delete(
-    path="/model/{model_id}",
-    response_model=ModelReturnResource,
-    response_description="Successfully deleted a model, returns: ModelReturnResource.",
-    summary="Delete a Model - NOT BEEN IMPLEMENTED YET.",
-    description="Deletes a Model within the MySQL database by giving a UUID in the path for the model and returns it as a 'ModelReturnResource'."
-)
-async def delete_model(model_id: UUID = Path(..., description="The UUID of the model to delete."),
-                       session: Session = Depends(get_db)):
-    error_message = "Failed to delete model within the MySQL database"
-    try:
-        raise NotImplementedError("Request DELETE '/model/{model_id}' has not been implemented yet.")
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
