@@ -1,5 +1,9 @@
 from pydantic import BaseModel, ConfigDict, Field, field_validator, EmailStr
 
+class SalesPersonLoginResource(BaseModel):
+    email: EmailStr = Field(..., description="Email of the sales person to login as.", examples=["hans@gmail.com"])
+    password: str = Field(..., description="Password of the sales person to login as.", examples=["hans123"])
+
 class SalesPersonBaseResource(BaseModel):
     email: EmailStr = Field(..., description="Email of the sales person.", examples=["hans@gmail.com"])
     first_name: str = Field(..., description="First name of the sales person.", examples=["Hans"])
@@ -27,10 +31,6 @@ class SalesPersonBaseResource(BaseModel):
         return last_name
     
 
-class SalesPersonLoginResource(BaseModel):
-    email: EmailStr = Field(..., description="Email of the sales person to login as.", examples=["hans@gmail.com"])
-    password: str = Field(..., description="Password of the sales person to login as.", examples=["hans123"])
-
 class SalesPersonCreateResource(SalesPersonBaseResource):
     password: str = Field(..., description="Password of the sales person to create.", examples=["hans123"])
 
@@ -42,13 +42,7 @@ class SalesPersonCreateResource(SalesPersonBaseResource):
             raise ValueError(f"The given password {password} contains whitespaces.")
         return password
 
-class SalesPersonUpdateResource(SalesPersonBaseResource):
-    email: EmailStr = Field(None, description="Updated email of the sales person.", examples=["hans@gmail.com"])
-    first_name: str = Field(None, description="Updated first name of the sales person.", examples=["Hans"])
-    last_name: str = Field(None, description="Updated last name of the sales person.", examples=["Hansen"])
-    
-    def get_updated_fields(self) -> dict:
-        return self.model_dump(exclude_unset=True)
+
 
 class SalesPersonReturnResource(SalesPersonBaseResource):
     id: str = Field(..., description="UUID of the sales person.", examples=["f9097a97-eca4-49b6-85a0-08423789c320"])

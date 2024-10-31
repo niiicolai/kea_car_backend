@@ -1,6 +1,6 @@
 # External Library imports
 from typing import List
-from datetime import date, datetime, timezone, timedelta
+from datetime import date, timedelta
 from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
 
 # Internal library imports
@@ -31,23 +31,23 @@ class CarCreateResource(CarBaseResource):
     @field_validator('accessory_ids')
     def validate_accessory_ids(cls, accessory_ids: List[UUID4]) -> List[UUID4]:
         if len(accessory_ids) != len(set(accessory_ids)):
-            raise ValueError('accessory_ids must be unique')
+            raise ValueError('accessories must be unique.')
         return accessory_ids
 
     @field_validator('insurance_ids')
     def validate_insurance_ids(cls, insurance_ids: List[UUID4]) -> List[UUID4]:
         if len(insurance_ids) != len(set(insurance_ids)):
-            raise ValueError('insurance_ids must be unique')
+            raise ValueError('insurances must be unique.')
         return insurance_ids
 
     @field_validator('purchase_deadline')
     def validate_purchase_deadline(cls, purchase_deadline: date) -> date:
         if purchase_deadline is None:
             raise ValueError(f"The given purchase deadline must not be None.")
-        current_utc_date = datetime.now(timezone.utc).date()
+        current_date = date.today()
 
-        if purchase_deadline < current_utc_date:
-            raise ValueError(f"The given purchase deadline '{purchase_deadline.strftime('%dY-%m-%Y')}' must be before the current date '{current_utc_date.strftime('%d-%m-%Y')}' (UTC).")
+        if purchase_deadline < current_date:
+            raise ValueError(f"The given purchase deadline '{purchase_deadline.strftime('%dd-%m-%Y')}' must be before the current date '{current_date.strftime('%d-%m-%Y')}'.")
         return purchase_deadline
 
 

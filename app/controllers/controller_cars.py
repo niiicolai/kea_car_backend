@@ -15,7 +15,7 @@ from app.repositories.customer_repositories import MySQLCustomerRepository
 from app.repositories.accessory_repositories import MySQLAccessoryRepository
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
 from app.repositories.car_repositories import MySQLCarRepository, CarReturnResource, CarCreateResource
-from app.exceptions.database_errors import UnableToFindIdError, UnableToGiveEntityWithValueFromOtherEntityError
+from app.exceptions.database_errors import UnableToFindIdError, TheColorIsNotAvailableInModelToGiveToCarError
 
 
 router: APIRouter = APIRouter()
@@ -132,7 +132,7 @@ async def create_car(car_create_data: CarCreateResource, session: Session = Depe
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
         )
-    except UnableToGiveEntityWithValueFromOtherEntityError as e:
+    except TheColorIsNotAvailableInModelToGiveToCarError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(f"Unable To Give Entity With Value From Other Entity Error caught. {error_message}: {e}")

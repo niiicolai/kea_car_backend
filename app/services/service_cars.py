@@ -9,7 +9,7 @@ from app.repositories.insurance_repository import InsuranceRepository, Insurance
 from app.repositories.accessory_repositories import AccessoryRepository, AccessoryReturnResource
 from app.repositories.car_repositories import CarRepository, CarReturnResource, CarCreateResource
 from app.repositories.sales_person_repositories import SalesPersonRepository, SalesPersonReturnResource
-from app.exceptions.database_errors import UnableToFindIdError, UnableToGiveEntityWithValueFromOtherEntityError
+from app.exceptions.database_errors import UnableToFindIdError, TheColorIsNotAvailableInModelToGiveToCarError
 
 def get_all(
         car_repository: CarRepository,
@@ -82,7 +82,7 @@ def create(
         raise UnableToFindIdError("Color", color_id)
     color_ids_within_model = [color.id for color in model_resource.colors]
     if color_id not in color_ids_within_model:
-        raise UnableToGiveEntityWithValueFromOtherEntityError("Car", "Color", color_resource.name, "Model")
+        raise TheColorIsNotAvailableInModelToGiveToCarError(model_resource, color_resource)
 
     accessory_resources: List[AccessoryReturnResource] = []
     for accessory_uuid in car_create_data.accessory_ids:
