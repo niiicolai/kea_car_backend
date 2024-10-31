@@ -163,7 +163,7 @@ async def create_car(car_create_data: CarCreateResource, session: Session = Depe
     description="Deletes a Car within the MySQL database by giving a UUID in the path for the car and returns it as a 'BrandReturnResource'."
 )
 async def delete_car(car_id: UUID = Path(..., description="The UUID of the car to delete."),
-                     delete_purchase_too: bool = Path(False, description="A boolean that is default False, for if you are certain you want to delete the car with its purchase if it has one."),
+                     delete_purchase_too: bool = Query(default=False, description="A boolean that is default False, for if you are certain you want to delete the car with its purchase if it has one."),
                      session: Session = Depends(get_db)):
     error_message = "Failed to delete car within the MySQL database"
     try:

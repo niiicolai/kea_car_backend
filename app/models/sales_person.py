@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, relationship
 
 # Internal library imports
 from db import Base
-from app.resources.sales_person_resource import SalesPersonBaseResource, SalesPersonReturnResource
+from app.resources.sales_person_resource import SalesPersonReturnResource
 
 
 
@@ -18,14 +18,7 @@ class SalesPerson(Base):
     last_name: Mapped[str] = Column(String(45), nullable=False)
 
     cars = relationship("Car", back_populates="sales_person")
-    
-    
-    def validate_data(self):
-        SalesPersonBaseResource(
-            email=self.email,
-            first_name=self.first_name,
-            last_name=self.last_name,
-        )
+
 
     def as_resource(self) -> SalesPersonReturnResource:
         return SalesPersonReturnResource(

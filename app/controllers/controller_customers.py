@@ -9,12 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Body, status
 from app.services import service_customers
 from db import Session, get_db as get_db_session
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
-from app.repositories.customer_repositories import MySQLCustomerRepository, CustomerReturnResource, CustomerCreateResource
-
-# These imports should come from repository, but the repo is not made for these resources,
-# but to let swagger give examples of what the endpoints should do, we import them here
-from app.resources.customer_resource import CustomerUpdateResource
-
+from app.repositories.customer_repositories import MySQLCustomerRepository, CustomerReturnResource, CustomerCreateResource, CustomerUpdateResource
 
 router: APIRouter = APIRouter()
 
@@ -123,11 +118,12 @@ async def create_customer(customer_create_data: CustomerCreateResource, session:
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
+
 @router.put(
     path="/customer/{customer_id}",
     response_model=CustomerReturnResource,
     response_description="Successfully updated a customer, returns: CustomerReturnResource.",
-    summary="Update a Customer - NOT BEEN IMPLEMENTED YET.",
+    summary="Update a Customer.",
     description="Updates a Customer within the MySQL database by giving a UUID in the path for the customer and by giving a request body 'CustomerUpdateResource' and returns it as a 'CustomerReturnResource'."
 )
 async def update_customer(customer_id: UUID = Path(..., description="The UUID of the customer to update."),
@@ -135,7 +131,11 @@ async def update_customer(customer_id: UUID = Path(..., description="The UUID of
                           session: Session = Depends(get_db)):
     error_message = "Failed to update customer within the MySQL database"
     try:
-        raise NotImplementedError("Request PUT '/mysql/customer/{customer_id}' has not been implemented yet.")
+        return service_customers.update(
+            repository=MySQLCustomerRepository(session),
+            customer_id=str(customer_id),
+            customer_update_data=customer_update_data
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -162,6 +162,7 @@ async def update_customer(customer_id: UUID = Path(..., description="The UUID of
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
+# TODO: Implement deleting a customer, make certain that all cars, insurances, accessories and purchases are deleted too
 @router.delete(
     path="/customer/{customer_id}",
     response_model=CustomerReturnResource,

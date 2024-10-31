@@ -13,7 +13,7 @@ from app.models.customer import Customer
 from app.models.sales_person import SalesPerson
 from app.models.insurance import Insurance, cars_has_insurances
 from app.models.accessory import Accessory, cars_has_accessories
-from app.resources.car_resource import CarBaseResource, CarReturnResource
+from app.resources.car_resource import CarReturnResource
 
 
 class Car(Base):
@@ -34,10 +34,6 @@ class Car(Base):
     accessories: Mapped[List[Accessory]] = relationship("Accessory", secondary=cars_has_accessories, back_populates="cars", lazy=False)
     insurances: Mapped[List[Insurance]] = relationship("Insurance", secondary=cars_has_insurances, back_populates="cars", lazy=False)
 
-    def validate_data(self):
-        CarBaseResource(
-            purchase_deadline=self.purchase_deadline,
-        )
 
     def as_resource(self) -> CarReturnResource:
         return CarReturnResource(

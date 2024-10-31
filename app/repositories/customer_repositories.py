@@ -5,7 +5,7 @@ from typing import Optional, List, cast
 
 # Internal library imports
 from app.models.customer import Customer
-from app.resources.customer_resource import CustomerReturnResource, CustomerCreateResource
+from app.resources.customer_resource import CustomerReturnResource, CustomerCreateResource, CustomerUpdateResource
 
 
 class CustomerRepository(ABC):
@@ -20,6 +20,10 @@ class CustomerRepository(ABC):
 
     @abstractmethod
     def create(self, customer_create_data: CustomerCreateResource) -> CustomerReturnResource:
+        pass
+
+    @abstractmethod
+    def update(self, customer_id: str, customer_update_data: CustomerUpdateResource) -> Optional[CustomerReturnResource]:
         pass
 
     @abstractmethod
@@ -53,6 +57,19 @@ class MySQLCustomerRepository(CustomerRepository):
         self.session.refresh(new_customer)
 
         return new_customer.as_resource()
+
+    def update(self, customer_id: str, customer_update_data: CustomerUpdateResource) -> Optional[CustomerReturnResource]:
+        customer: Optional[Customer] = self.session.query(Customer).get(customer_id)
+        if customer is None:
+            return None
+
+        for key, value in customer_update_data.get_updated_fields().items():
+            setattr(customer, key, value)
+
+        self.session.commit()
+        self.session.refresh(customer)
+
+        return customer.as_resource()
 
     def is_email_taken(self, email: str) -> bool:
         return self.session.query(Customer).filter_by(email=email).first() is not None

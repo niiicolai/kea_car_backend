@@ -7,7 +7,7 @@ from sqlalchemy import Column, String, Date, ForeignKey
 # Internal library imports
 from db import Base
 from app.models.car import Car
-from app.resources.purchase_resource import PurchaseBaseResource, PurchaseReturnResource
+from app.resources.purchase_resource import PurchaseReturnResource
 
 
 class Purchase(Base):
@@ -18,10 +18,6 @@ class Purchase(Base):
 
     car: Mapped[Car] = relationship('Car', back_populates='purchase', uselist=False, lazy=False)
 
-    def validate_data(self):
-        PurchaseBaseResource(
-            date_of_purchase=self.date_of_purchase,
-        )
 
     def as_resource(self) -> PurchaseReturnResource:
         return PurchaseReturnResource(

@@ -5,7 +5,7 @@ from sqlalchemy import Table, Column, String, Double, ForeignKey
 
 # Internal library imports
 from db import Base
-from app.resources.accessory_resource import AccessoryBaseResource, AccessoryReturnResource
+from app.resources.accessory_resource import AccessoryReturnResource
 
 
 cars_has_accessories = Table(
@@ -22,12 +22,7 @@ class Accessory(Base):
     price: Mapped[float] = Column(Double, nullable=False)
 
     cars = relationship('Car', secondary=cars_has_accessories, back_populates='accessories')
-    
-    def validate_data(self):
-        AccessoryBaseResource(
-            name=self.name,
-            price=self.price,
-        )
+
 
     def as_resource(self) -> AccessoryReturnResource:
         return AccessoryReturnResource(

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, relationship
 
 # Internal library imports
 from db import Base
-from app.resources.brand_resource import BrandBaseResource, BrandReturnResource
+from app.resources.brand_resource import BrandReturnResource
 
 
 class Brand(Base):
@@ -14,12 +14,7 @@ class Brand(Base):
     name: Mapped[str] = Column(String(60), unique=True, index=True, nullable=False)
     logo_url: Mapped[str] = Column(String(255), nullable=False)
     models = relationship('Model', back_populates='brand')
-    
-    def validate_data(self):
-        BrandBaseResource(
-            name=self.name,
-            logo_url=self.logo_url,
-        )
+
 
     def as_resource(self) -> BrandReturnResource:
         return BrandReturnResource(

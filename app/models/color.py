@@ -5,7 +5,7 @@ from sqlalchemy import Table, Column, Integer, String, Double, ForeignKey
 
 # Internal library imports
 from db import Base
-from app.resources.color_resource import ColorBaseResource, ColorReturnResource
+from app.resources.color_resource import ColorReturnResource
 
 
 models_has_colors = Table(
@@ -25,16 +25,7 @@ class Color(Base):
     blue_value: Mapped[int] = Column(Integer, nullable=False)
     models = relationship('Model', secondary=models_has_colors, back_populates='colors')
     cars = relationship('Car', back_populates='color')
-    
-    
-    def validate_data(self):
-        ColorBaseResource(
-            name=self.name,
-            price=self.price,
-            red_value=self.red_value,
-            green_value=self.green_value,
-            blue_value=self.blue_value,
-        )
+
 
     def as_resource(self) -> ColorReturnResource:
         return ColorReturnResource(

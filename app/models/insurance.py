@@ -5,7 +5,7 @@ from sqlalchemy import Table, Column, ForeignKey, String, Double
 
 # Internal library imports
 from db import Base
-from app.resources.insurance_resource import InsuranceBaseResource, InsuranceReturnResource
+from app.resources.insurance_resource import InsuranceReturnResource
 
 
 cars_has_insurances = Table(
@@ -22,12 +22,7 @@ class Insurance(Base):
     price: Mapped[float] = Column(Double, nullable=False)
 
     cars = relationship('Car', secondary=cars_has_insurances, back_populates='insurances')
-    
-    def validate_data(self):
-        InsuranceBaseResource(
-            name=self.name,
-            price=self.price,
-        )
+
 
     def as_resource(self) -> InsuranceReturnResource:
         return InsuranceReturnResource(
