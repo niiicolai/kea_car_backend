@@ -45,18 +45,6 @@ class ColorBaseResource(BaseModel):
             raise ValueError(f"The given color's blue RGB value cannot be set to None.")
         return blue_value
 
-class ColorCreateResource(ColorBaseResource):
-    pass
-
-class ColorUpdateResource(ColorBaseResource):
-    name: str = Field(None, description="Updated name of the color.", examples=["blue"])
-    price: float = Field(None, description="Updated price of the color in kroner", examples=[99.95])
-    red_value: int = Field(None, min_length=0, max_length=255, description="Updated red RGB value for the color.", examples=[0])
-    green_value: int = Field(None, min_length=0, max_length=255, description="Updated green RGB value for the color.", examples=[0])
-    blue_value: int = Field(None, min_length=0, max_length=255, description="Updated blue RGB value for the color.", examples=[255])
-    
-    def get_updated_fields(self) -> dict:
-        return self.model_dump(exclude_unset=True)
 
 class ColorReturnResource(ColorBaseResource):
     id: str = Field(..., description="The UUID for the color.", examples=["5e755eb3-0099-4cdd-b064-d8bd95968109"])
