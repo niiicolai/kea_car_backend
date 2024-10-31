@@ -3,7 +3,7 @@ from uuid import UUID
 from typing import List
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, Body, status
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 
 
 # Internal library imports
