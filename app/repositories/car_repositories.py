@@ -72,6 +72,7 @@ class MySQLCarRepository(CarRepository):
     def __init__(self, session: Session):
         self.session = session
 
+    # TODO: Make it in to a stored procedure
     def get_all(self,
             customer: Optional[CustomerReturnResource] = None,
             sales_person: Optional[SalesPersonReturnResource] = None,
