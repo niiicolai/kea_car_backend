@@ -16,33 +16,27 @@ def get_all(
         customer_repository: CustomerRepository,
         sales_person_repository: SalesPersonRepository,
         customer_id: Optional[str] = None,
-        sales_person_id: Optional[str] = None) -> List[CarReturnResource]:
-    filtering_by_customer: bool = customer_id is not None
-    filtering_by_sales_person: bool = sales_person_id is not None
+        sales_person_id: Optional[str] = None,
+        is_purchased: Optional[bool] = None,
+        is_past_purchase_deadline: Optional[bool] = None) -> List[CarReturnResource]:
 
-    if filtering_by_customer and filtering_by_sales_person:
-        customer_resource: Optional[CustomerReturnResource] = customer_repository.get_by_id(customer_id)
+    customer_resource: Optional[CustomerReturnResource] = None
+    if customer_id is not None:
+        customer_resource = customer_repository.get_by_id(customer_id)
         if customer_resource is None:
             raise UnableToFindIdError("Customer", customer_id)
-        sales_person_resource: Optional[SalesPersonReturnResource] = sales_person_repository.get_by_id(sales_person_id)
+    sales_person_resource: Optional[SalesPersonReturnResource] = None
+    if sales_person_id is not None:
+        sales_person_resource = sales_person_repository.get_by_id(sales_person_id)
         if sales_person_resource is None:
             raise UnableToFindIdError("Sales Person", sales_person_id)
-        return car_repository.get_all_by_customer_and_sales_person_id(customer_resource, sales_person_resource)
 
-    if filtering_by_customer:
-        customer_resource: Optional[CustomerReturnResource] = customer_repository.get_by_id(customer_id)
-        if customer_resource is None:
-            raise UnableToFindIdError("Customer", customer_id)
-        return car_repository.get_all_by_customer_id(customer_resource)
-
-    if filtering_by_sales_person:
-        sales_person_resource: Optional[SalesPersonReturnResource] = sales_person_repository.get_by_id(sales_person_id)
-        if sales_person_resource is None:
-            raise UnableToFindIdError("Sales Person", sales_person_id)
-        return car_repository.get_all_by_sales_person_id(sales_person_resource)
-
-
-    return car_repository.get_all()
+    return car_repository.get_all(
+        customer=customer_resource,
+        sales_person=sales_person_resource,
+        is_purchased=is_purchased,
+        is_past_purchase_deadline=is_past_purchase_deadline
+    )
 
 def get_by_id(repository: CarRepository, car_id: str) -> Optional[CarReturnResource]:
     car_resource: Optional[CarReturnResource] = repository.get_by_id(car_id)

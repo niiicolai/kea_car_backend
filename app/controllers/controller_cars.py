@@ -24,8 +24,7 @@ def get_db():
     with get_db_session() as session:
         yield session
 
-# TODO: Add so you can get cars that has been purchased or not been purchased,
-#  and to get cars that is past purchase deadline or not past purchase deadline
+
 @router.get(
     path="/cars",
     response_model=List[CarReturnResource],
@@ -35,6 +34,8 @@ def get_db():
 )
 async def get_cars(customer_id: Optional[UUID] = Query(default=None, description="The UUID of the customer, to retrieve cars belonging to that customer."),
                    sales_person_id: Optional[UUID] = Query(default=None, description="The UUID of the sales person, to retrieve cars belonging to that sales person."),
+                   is_purchased: Optional[bool] = Query(default=None, description="Set to 'true' to retrieve only purchased cars, 'false' to retrieve only cars that has not been purchased and default retrieves both purchased and non-purchased cars."),
+                   is_past_purchase_deadline: Optional[bool] = Query(default=None, description="Set to 'true' to retrieve only cars past purchase deadline, 'false' to retrieve only cars that has not past the purchased deadline and default retrieves cars that is past and not past purchase deadline."),
                    session: Session = Depends(get_db)):
     error_message = "Failed to get cars from the MySQL database"
     try:
@@ -47,7 +48,9 @@ async def get_cars(customer_id: Optional[UUID] = Query(default=None, description
             customer_repository=MySQLCustomerRepository(session),
             sales_person_repository=MySQLSalesPersonRepository(session),
             customer_id=customer_id,
-            sales_person_id=sales_person_id
+            sales_person_id=sales_person_id,
+            is_purchased=is_purchased,
+            is_past_purchase_deadline=is_past_purchase_deadline
         )
 
     except UnableToFindIdError as e:

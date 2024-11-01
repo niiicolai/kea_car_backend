@@ -30,7 +30,7 @@ def get_db_connection_string(is_test: bool = False) -> str:
 
 def get_engine(is_test: bool = False) -> Engine:
     connection_string = get_db_connection_string(is_test)
-    engine = create_engine(connection_string)
+    engine = create_engine(connection_string, echo=True)
     return engine
 
 session_local = sessionmaker(autocommit=False, autoflush=False)
