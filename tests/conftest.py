@@ -4,7 +4,7 @@ import pytest
 
 from main import app
 from db import get_db
-from app.models.color import Color
+from app.models.color import ColorMySQLEntity
 
 os.environ["TESTING"] = "true"
 
@@ -22,6 +22,6 @@ def session():
         try:
             yield session  # Transaction starts
         finally:
-            session.query(Color).delete()
+            session.query(ColorMySQLEntity).delete()
             session.commit()
             session.close()

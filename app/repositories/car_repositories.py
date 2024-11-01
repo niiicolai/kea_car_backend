@@ -3,16 +3,15 @@ from datetime import date
 from sqlalchemy import exists
 from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
-from typing import List, Optional, cast
+from typing import Optional, List, cast
 from sqlalchemy.exc import SQLAlchemyError
 
 
 # Internal library imports
-from app.models.purchase import Purchase
-from app.models.car import Car, cars_has_accessories, cars_has_insurances
+from app.models.purchase import PurchaseMySQLEntity
+from app.models.car import CarReturnResource, CarMySQLEntity, cars_has_accessories, cars_has_insurances
 from app.resources.car_resource import (
     CarCreateResource,
-    CarReturnResource,
     CustomerReturnResource,
     SalesPersonReturnResource,
     ModelReturnResource,
@@ -79,7 +78,7 @@ class MySQLCarRepository(CarRepository):
             is_purchased: Optional[bool] = None,
             is_past_purchase_deadline: Optional[bool] = None) -> List[CarReturnResource]:
 
-        car_query = self.session.query(Car)
+        car_query = self.session.query(CarMySQLEntity)
         if customer is not None and isinstance(customer, CustomerReturnResource):
             car_query = car_query.filter_by(customers_id=customer.id)
         if sales_person is not None and isinstance(sales_person, SalesPersonReturnResource):
@@ -87,25 +86,25 @@ class MySQLCarRepository(CarRepository):
         if is_purchased is not None and isinstance(is_purchased, bool):
             if is_purchased:
                 car_query = car_query.filter(
-                    exists().where(Purchase.cars_id == Car.id)
+                    exists().where(PurchaseMySQLEntity.cars_id == CarMySQLEntity.id)
                 )
             else:
                 car_query = car_query.filter(
-                    ~exists().where(Purchase.cars_id == Car.id)
+                    ~exists().where(PurchaseMySQLEntity.cars_id == CarMySQLEntity.id)
                 )
         if is_past_purchase_deadline is not None and isinstance(is_past_purchase_deadline, bool):
             current_date = date.today()
             if is_past_purchase_deadline:
-                car_query = car_query.filter(Car.purchase_deadline < current_date)
+                car_query = car_query.filter(CarMySQLEntity.purchase_deadline < current_date)
             else:
-                car_query = car_query.filter(Car.purchase_deadline >= current_date)
+                car_query = car_query.filter(CarMySQLEntity.purchase_deadline >= current_date)
 
-        cars: List[Car] = cast(List[Car], car_query.all())
+        cars: List[CarMySQLEntity] = cast(List[CarMySQLEntity], car_query.all())
         return [car.as_resource() for car in cars]
 
 
     def get_by_id(self, car_id: str) -> Optional[CarReturnResource]:
-        car: Optional[Car] = self.session.query(Car).get(car_id)
+        car: Optional[CarMySQLEntity] = self.session.query(CarMySQLEntity).get(car_id)
         if car is not None:
             return car.as_resource()
         return None
@@ -133,7 +132,7 @@ class MySQLCarRepository(CarRepository):
 
         try:
 
-            new_car = Car(
+            new_car = CarMySQLEntity(
                 models_id=model_id,
                 colors_id=color_id,
                 customers_id=customer_id,

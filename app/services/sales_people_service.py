@@ -3,8 +3,8 @@ from typing import List
 
 # Internal library imports
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
-from app.exceptions.invalid_credentials_errors import IncorrectEmailError, IncorrectPasswordError
 from app.core.security import Token, create_access_token, verify_password, get_password_hash
+from app.exceptions.invalid_credentials_errors import IncorrectEmailError, IncorrectPasswordError
 from app.repositories.sales_person_repositories import (
     SalesPersonRepository,
     SalesPersonReturnResource,
@@ -24,7 +24,7 @@ def get_by_id(repository: SalesPersonRepository, sales_person_id: str) -> SalesP
 
 
 def login(repository: SalesPersonRepository, sales_person_login_data: SalesPersonLoginResource) -> Token:
-    verified_email = repository.fetch_by_email(sales_person_login_data)
+    verified_email = repository.login_by_email(sales_person_login_data)
     if verified_email is None:
         raise IncorrectEmailError(sales_person_login_data.email)
 

@@ -6,11 +6,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 # Internal library imports
-from app.services import service_models
 from db import Session, get_db as get_db_session
+from app.services import models_service as service
+from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.brand_repositories import MySQLBrandRepository
 from app.repositories.model_repositories import MySQLModelRepository, ModelReturnResource
-from app.exceptions.database_errors import UnableToFindIdError
 
 router: APIRouter = APIRouter()
 
@@ -31,7 +31,7 @@ async def get_models(brand_id: Optional[UUID] = Query(default=None, description=
     try:
         if brand_id is not None:
             brand_id = str(brand_id)
-        return service_models.get_all(
+        return service.get_all(
             model_repository=MySQLModelRepository(session),
             brand_repository=MySQLBrandRepository(session),
             brand_id=brand_id
@@ -68,7 +68,7 @@ async def get_model(model_id: UUID = Path(..., description="The UUID of the mode
                     session: Session = Depends(get_db)):
     error_message = "Failed to get model from the MySQL database"
     try:
-        return service_models.get_by_id(
+        return service.get_by_id(
             repository=MySQLModelRepository(session),
             model_id=str(model_id)
         )

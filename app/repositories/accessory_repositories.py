@@ -4,8 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 
 # Internal library imports
-from app.models.accessory import Accessory
-from app.resources.accessory_resource import AccessoryReturnResource
+from app.models.accessory import AccessoryReturnResource, AccessoryMySQLEntity
 
 
 
@@ -23,11 +22,11 @@ class MySQLAccessoryRepository(AccessoryRepository):
         self.session = session
 
     def get_all(self) -> List[AccessoryReturnResource]:
-        accessories: List[Accessory] = cast(List[Accessory], self.session.query(Accessory).all())
+        accessories: List[AccessoryMySQLEntity] = cast(List[AccessoryMySQLEntity], self.session.query(AccessoryMySQLEntity).all())
         return [accessory.as_resource() for accessory in accessories]
 
     def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:
-        accessory: Optional[Accessory] = self.session.query(Accessory).get(accessory_id)
+        accessory: Optional[AccessoryMySQLEntity] = self.session.query(AccessoryMySQLEntity).get(accessory_id)
         if accessory is not None:
             return accessory.as_resource()
         return None

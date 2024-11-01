@@ -7,15 +7,15 @@ from sqlalchemy import Column, String, Double, Date, ForeignKey
 
 # Internal library imports
 from db import Base
-from app.models.customer import Customer
-from app.models.model import Model, Color
-from app.models.sales_person import SalesPerson
+from app.models.customer import CustomerMySQLEntity
 from app.resources.car_resource import CarReturnResource
-from app.models.insurance import Insurance, cars_has_insurances
-from app.models.accessory import Accessory, cars_has_accessories
+from app.models.sales_person import SalesPersonMySQLEntity
+from app.models.model import ModelMySQLEntity, ColorMySQLEntity
+from app.models.insurance import InsuranceMySQLEntity, cars_has_insurances
+from app.models.accessory import AccessoryMySQLEntity, cars_has_accessories
 
 
-class Car(Base):
+class CarMySQLEntity(Base):
     __tablename__ = 'cars'
     id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
     models_id: Mapped[str] = Column(String(36), ForeignKey('models.id'), nullable=False)
@@ -25,13 +25,13 @@ class Car(Base):
     total_price: Mapped[float] = Column(Double, nullable=False)
     purchase_deadline: Mapped[date] = Column(Date, nullable=False)
 
-    purchase = relationship("Purchase", back_populates="car", uselist=False)
-    model: Mapped[Model] = relationship("Model", back_populates="cars", lazy=False)
-    color: Mapped[Color] = relationship("Color", back_populates="cars", lazy=False)
-    customer: Mapped[Customer] = relationship("Customer", back_populates="cars", lazy=False)
-    sales_person: Mapped[SalesPerson] = relationship("SalesPerson", back_populates="cars", lazy=False)
-    accessories: Mapped[List[Accessory]] = relationship("Accessory", secondary=cars_has_accessories, back_populates="cars", lazy=False)
-    insurances: Mapped[List[Insurance]] = relationship("Insurance", secondary=cars_has_insurances, back_populates="cars", lazy=False)
+    purchase = relationship("PurchaseMySQLEntity", back_populates="car", uselist=False)
+    model: Mapped[ModelMySQLEntity] = relationship("ModelMySQLEntity", back_populates="cars", lazy=False)
+    color: Mapped[ColorMySQLEntity] = relationship("ColorMySQLEntity", back_populates="cars", lazy=False)
+    customer: Mapped[CustomerMySQLEntity] = relationship("CustomerMySQLEntity", back_populates="cars", lazy=False)
+    sales_person: Mapped[SalesPersonMySQLEntity] = relationship("SalesPersonMySQLEntity", back_populates="cars", lazy=False)
+    accessories: Mapped[List[AccessoryMySQLEntity]] = relationship("AccessoryMySQLEntity", secondary=cars_has_accessories, back_populates="cars", lazy=False)
+    insurances: Mapped[List[InsuranceMySQLEntity]] = relationship("InsuranceMySQLEntity", secondary=cars_has_insurances, back_populates="cars", lazy=False)
 
 
     def as_resource(self) -> CarReturnResource:

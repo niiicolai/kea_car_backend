@@ -15,7 +15,7 @@ models_has_colors = Table(
     Column('colors_id', String(36), ForeignKey('colors.id'), primary_key=True, nullable=False),
 )
 
-class Color(Base):
+class ColorMySQLEntity(Base):
     __tablename__ = 'colors'
     id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
     name: Mapped[str] = Column(String(45), unique=True, index=True, nullable=False)
@@ -23,8 +23,8 @@ class Color(Base):
     red_value: Mapped[int] = Column(Integer, nullable=False)
     green_value: Mapped[int] = Column(Integer, nullable=False)
     blue_value: Mapped[int] = Column(Integer, nullable=False)
-    models = relationship('Model', secondary=models_has_colors, back_populates='colors')
-    cars = relationship('Car', back_populates='color')
+    models = relationship('ModelMySQLEntity', secondary=models_has_colors, back_populates='colors')
+    cars = relationship('CarMySQLEntity', back_populates='color')
 
 
     def as_resource(self) -> ColorReturnResource:

@@ -6,10 +6,15 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import APIRouter, Depends, HTTPException, Path, Body, status
 
 # Internal library imports
-from app.services import service_customers
 from db import Session, get_db as get_db_session
+from app.services import customers_service as service
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
-from app.repositories.customer_repositories import MySQLCustomerRepository, CustomerReturnResource, CustomerCreateResource, CustomerUpdateResource
+from app.repositories.customer_repositories import (
+    MySQLCustomerRepository,
+    CustomerReturnResource,
+    CustomerCreateResource,
+    CustomerUpdateResource
+)
 
 router: APIRouter = APIRouter()
 
@@ -27,7 +32,7 @@ def get_db():
 async def get_customers(session: Session = Depends(get_db)):
     error_message = "Failed to get customers from the MySQL database"
     try:
-        return service_customers.get_all(
+        return service.get_all(
             repository=MySQLCustomerRepository(session)
         )
     except SQLAlchemyError as e:
@@ -57,7 +62,7 @@ async def get_customer(customer_id: UUID = Path(..., description="The UUID of th
                        session: Session = Depends(get_db)):
     error_message = "Failed to get customer from the MySQL database"
     try:
-        return service_customers.get_by_id(
+        return service.get_by_id(
             repository=MySQLCustomerRepository(session),
             customer_id=str(customer_id)
         )
@@ -93,7 +98,7 @@ async def get_customer(customer_id: UUID = Path(..., description="The UUID of th
 async def create_customer(customer_create_data: CustomerCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create customer within the MySQL database"
     try:
-        return service_customers.create(
+        return service.create(
             repository=MySQLCustomerRepository(session),
             customer_create_data=customer_create_data
         )
@@ -131,7 +136,7 @@ async def update_customer(customer_id: UUID = Path(..., description="The UUID of
                           session: Session = Depends(get_db)):
     error_message = "Failed to update customer within the MySQL database"
     try:
-        return service_customers.update(
+        return service.update(
             repository=MySQLCustomerRepository(session),
             customer_id=str(customer_id),
             customer_update_data=customer_update_data

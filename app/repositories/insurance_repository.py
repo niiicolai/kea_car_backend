@@ -4,8 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 
 # Internal library imports
-from app.models.insurance import Insurance
-from app.resources.insurance_resource import InsuranceReturnResource
+from app.models.insurance import InsuranceReturnResource, InsuranceMySQLEntity
 
 
 class InsuranceRepository(ABC):
@@ -22,11 +21,11 @@ class MySQLInsuranceRepository(InsuranceRepository):
         self.session = session
 
     def get_all(self) -> List[InsuranceReturnResource]:
-        insurances: List[Insurance] = cast(List[Insurance], self.session.query(Insurance).all())
+        insurances: List[InsuranceMySQLEntity] = cast(List[InsuranceMySQLEntity], self.session.query(InsuranceMySQLEntity).all())
         return [insurance.as_resource() for insurance in insurances]
 
     def get_by_id(self, insurance_id: str) -> Optional[InsuranceReturnResource]:
-        insurance: Optional[Insurance] = self.session.query(Insurance).get(insurance_id)
+        insurance: Optional[InsuranceMySQLEntity] = self.session.query(InsuranceMySQLEntity).get(insurance_id)
         if insurance is not None:
             return insurance.as_resource()
         return None

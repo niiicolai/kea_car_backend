@@ -6,17 +6,17 @@ from sqlalchemy import Column, String, Date, ForeignKey
 
 # Internal library imports
 from db import Base
-from app.models.car import Car
+from app.models.car import CarMySQLEntity
 from app.resources.purchase_resource import PurchaseReturnResource
 
 
-class Purchase(Base):
+class PurchaseMySQLEntity(Base):
     __tablename__ = 'purchases'
     id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
     cars_id: Mapped[str] = Column(String(36), ForeignKey('cars.id'), nullable=False)
-    date_of_purchase: Mapped[date] = Column(Date, default=lambda: date.today(), nullable=False)
+    date_of_purchase: Mapped[date] = Column(Date, nullable=False)
 
-    car: Mapped[Car] = relationship('Car', back_populates='purchase', uselist=False, lazy=False)
+    car: Mapped[CarMySQLEntity] = relationship('CarMySQLEntity', back_populates='purchase', uselist=False, lazy=False)
 
 
     def as_resource(self) -> PurchaseReturnResource:

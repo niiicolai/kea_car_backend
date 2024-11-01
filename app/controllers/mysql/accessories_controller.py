@@ -7,8 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException, Path, status
 
 
 # Internal library imports
-from app.services import service_accessories
 from db import Session, get_db as get_db_session
+from app.services import accessories_service as service
 from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.accessory_repositories import MySQLAccessoryRepository, AccessoryReturnResource
 
@@ -29,7 +29,7 @@ def get_db():
 async def get_accessories(session: Session = Depends(get_db)):
     error_message = "Failed to get accessories from the MySQL database"
     try:
-        return service_accessories.get_all(
+        return service.get_all(
             repository=MySQLAccessoryRepository(session)
         )
     except SQLAlchemyError as e:
@@ -59,7 +59,7 @@ async def get_accessory(accessory_id: UUID = Path(..., description="The UUID of 
                         session: Session = Depends(get_db)):
     error_message = "Failed to get accessory from the MySQL database"
     try:
-        return service_accessories.get_by_id(
+        return service.get_by_id(
             repository=MySQLAccessoryRepository(session),
             accessory_id=str(accessory_id)
         )

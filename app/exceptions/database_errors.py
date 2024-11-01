@@ -22,8 +22,8 @@ class UnableToFindIdError(DatabaseError):
         return f"UnableToFindIdException: {self.message}"
 
 class PurchaseDeadlineHasPastError(DatabaseError):
-    def __init__(self, car_resource: CarReturnResource):
-        self.message = f'Car with ID: {car_resource.id} has a Purchase Deadline: {car_resource.purchase_deadline.strftime("%d-%m-%Y")} has past the current date: {date.today().strftime("%d-%m-%Y")}.'
+    def __init__(self, car_resource: CarReturnResource, date_of_purchase: date):
+        self.message = f'Car with ID: {car_resource.id} has a Purchase Deadline: {car_resource.purchase_deadline.strftime("%d-%m-%Y")} that has past the date of purchase: {date_of_purchase.strftime("%d-%m-%Y")}.'
         super().__init__(self.message)  # Initialize the base Exception with the message
 
     def __str__(self):

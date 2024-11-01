@@ -1,7 +1,7 @@
 # External Library imports
 from typing import List
 from datetime import date, timedelta
-from pydantic import BaseModel, ConfigDict, Field, UUID4, field_validator
+from pydantic import BaseModel, ConfigDict, UUID4, Field, field_validator
 
 # Internal library imports
 from app.resources.customer_resource import CustomerReturnResource

@@ -1,17 +1,17 @@
 # External Library imports
 from uuid import uuid4
+from typing import Optional, List
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy import Column, String, Double, ForeignKey
 
 # Internal library imports
 from db import Base
-from app.models.brand import Brand
-from app.models.color import Color, models_has_colors
+from app.models.brand import BrandMySQLEntity
 from app.resources.model_resource import ModelReturnResource
+from app.models.color import ColorMySQLEntity, models_has_colors
 
-from typing import Optional, List
 
-class Model(Base):
+class ModelMySQLEntity(Base):
     __tablename__ = 'models'
     id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
     brands_id: Mapped[str] = Column(String(36), ForeignKey('brands.id'), nullable=False)
@@ -19,9 +19,9 @@ class Model(Base):
     price: Mapped[float] = Column(Double, nullable=False)
     image_url: Mapped[Optional[str]] = Column(String(255), nullable=False)
 
-    brand: Mapped[Brand] = relationship('Brand', back_populates='models', lazy=False)
-    colors: Mapped[List[Color]] = relationship('Color', secondary=models_has_colors, back_populates='models', lazy=False)
-    cars = relationship('Car', back_populates='model')
+    brand: Mapped[BrandMySQLEntity] = relationship('BrandMySQLEntity', back_populates='models', lazy=False)
+    colors: Mapped[List[ColorMySQLEntity]] = relationship('ColorMySQLEntity', secondary=models_has_colors, back_populates='models', lazy=False)
+    cars = relationship('CarMySQLEntity', back_populates='model')
 
 
     def as_resource(self) -> ModelReturnResource:

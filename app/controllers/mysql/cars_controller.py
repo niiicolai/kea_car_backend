@@ -6,7 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 # Internal library imports
-from app.services import service_cars
+from app.services import cars_service as service
 from db import Session, get_db as get_db_session
 from app.repositories.model_repositories import MySQLModelRepository
 from app.repositories.color_repositories import MySQLColorRepository
@@ -43,7 +43,7 @@ async def get_cars(customer_id: Optional[UUID] = Query(default=None, description
             customer_id = str(customer_id)
         if sales_person_id is not None:
             sales_person_id = str(sales_person_id)
-        return service_cars.get_all(
+        return service.get_all(
             car_repository=MySQLCarRepository(session),
             customer_repository=MySQLCustomerRepository(session),
             sales_person_repository=MySQLSalesPersonRepository(session),
@@ -85,7 +85,7 @@ async def get_car(car_id: UUID = Path(..., description="The UUID of the car to r
                   session: Session = Depends(get_db)):
     error_message = "Failed to get car from the MySQL database"
     try:
-        return service_cars.get_by_id(
+        return service.get_by_id(
             repository=MySQLCarRepository(session),
             car_id=str(car_id)
         )
@@ -121,7 +121,7 @@ async def get_car(car_id: UUID = Path(..., description="The UUID of the car to r
 async def create_car(car_create_data: CarCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create car within the MySQL database"
     try:
-        return service_cars.create(
+        return service.create(
             car_repository=MySQLCarRepository(session),
             customer_repository=MySQLCustomerRepository(session),
             sales_person_repository=MySQLSalesPersonRepository(session),

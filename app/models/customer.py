@@ -9,7 +9,7 @@ from db import Base
 from app.resources.customer_resource import CustomerReturnResource
 
 
-class Customer(Base):
+class CustomerMySQLEntity(Base):
     __tablename__ = 'customers'
     id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
     email: Mapped[str] = Column(String(50), unique=True, index=True, nullable=False)
@@ -18,7 +18,7 @@ class Customer(Base):
     last_name: Mapped[str] = Column(String(45), nullable=False)
     address: Mapped[Optional[str]] = Column(String(255), nullable=True)
 
-    cars = relationship('Car', back_populates='customer')
+    cars = relationship('CarMySQLEntity', back_populates='customer')
 
 
     def as_resource(self) -> CustomerReturnResource:

@@ -3,7 +3,12 @@ from typing import List
 
 # Internal library imports
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
-from app.repositories.customer_repositories import CustomerRepository, CustomerReturnResource, CustomerCreateResource, CustomerUpdateResource
+from app.repositories.customer_repositories import (
+    CustomerRepository,
+    CustomerReturnResource,
+    CustomerCreateResource,
+    CustomerUpdateResource
+)
 
 
 def get_all(repository: CustomerRepository) -> List[CustomerReturnResource]:

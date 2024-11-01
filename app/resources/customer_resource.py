@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, ValidationInfo, field_validator
 
 
 class CustomerBaseResource(BaseModel):

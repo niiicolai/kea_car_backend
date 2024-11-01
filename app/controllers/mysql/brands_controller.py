@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import APIRouter, Depends, HTTPException, Path, status
 
 # Internal library imports
-from app.services import service_brands
 from db import Session, get_db as get_db_session
+from app.services import brands_service as service
 from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.brand_repositories import MySQLBrandRepository, BrandReturnResource
 
@@ -28,7 +28,7 @@ def get_db():
 async def get_brands(session: Session = Depends(get_db)):
     error_message = "Failed to get brands from the MySQL database"
     try:
-        return service_brands.get_all(
+        return service.get_all(
             repository=MySQLBrandRepository(session)
         )
     except SQLAlchemyError as e:
@@ -58,7 +58,7 @@ async def get_brand(brand_id: UUID = Path(..., description="The UUID of the bran
                     session: Session = Depends(get_db)):
     error_message = "Failed to get brand from the MySQL database"
     try:
-        return service_brands.get_by_id(
+        return service.get_by_id(
             repository=MySQLBrandRepository(session),
             brand_id=str(brand_id)
         )

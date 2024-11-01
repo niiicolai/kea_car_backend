@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import APIRouter, Depends, HTTPException, status
 
 # Internal library imports
-from app.services import service_insurances
 from db import Session, get_db as get_db_session
+from app.services import insurances_service as service
 from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.insurance_repository import MySQLInsuranceRepository, InsuranceReturnResource
 
@@ -29,7 +29,7 @@ def get_db():
 async def get_insurances(session: Session = Depends(get_db)):
     error_message = "Failed to get insurances from the MySQL database"
     try:
-        return service_insurances.get_all(
+        return service.get_all(
             repository=MySQLInsuranceRepository(session)
         )
     except SQLAlchemyError as e:
@@ -58,7 +58,7 @@ async def get_insurances(session: Session = Depends(get_db)):
 async def get_insurance(insurance_id: UUID, session: Session = Depends(get_db)):
     error_message = "Failed to get insurance from the MySQL database"
     try:
-        return service_insurances.get_by_id(
+        return service.get_by_id(
             repository=MySQLInsuranceRepository(session),
             insurance_id=str(insurance_id)
         )

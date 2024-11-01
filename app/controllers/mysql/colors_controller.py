@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import APIRouter, Depends, HTTPException, Path, status
 
 # Internal library imports
-from app.services import service_colors
 from db import Session, get_db as get_db_session
+from app.services import colors_service as service
 from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.color_repositories import MySQLColorRepository, ColorReturnResource
 
@@ -28,7 +28,7 @@ def get_db():
 async def get_colors(session: Session = Depends(get_db)):
     error_message = "Failed to get colors from the MySQL database"
     try:
-        return service_colors.get_all(
+        return service.get_all(
             repository=MySQLColorRepository(session)
         )
     except SQLAlchemyError as e:
@@ -57,7 +57,7 @@ async def get_color(color_id: UUID = Path(..., description="The UUID of the colo
                     session: Session = Depends(get_db)):
     error_message = "Failed to get color from the MySQL database"
     try:
-        return service_colors.get_by_id(
+        return service.get_by_id(
             repository=MySQLColorRepository(session),
             color_id=str(color_id)
         )

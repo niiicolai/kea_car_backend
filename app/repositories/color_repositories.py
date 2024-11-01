@@ -4,8 +4,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 
 # Internal library imports
-from app.models.color import Color
-from app.resources.color_resource import ColorReturnResource
+from app.models.color import ColorReturnResource, ColorMySQLEntity
 
 
 class ColorRepository(ABC):
@@ -24,11 +23,11 @@ class MySQLColorRepository(ColorRepository):
         self.session = session
 
     def get_all(self) -> List[ColorReturnResource]:
-        colors: List[Color] = cast(List[Color], self.session.query(Color).all())
+        colors: List[ColorMySQLEntity] = cast(List[ColorMySQLEntity], self.session.query(ColorMySQLEntity).all())
         return [color.as_resource() for color in colors]
 
     def get_by_id(self, color_id: str) -> Optional[ColorReturnResource]:
-        color: Optional[Color] = self.session.query(Color).get(color_id)
+        color: Optional[ColorMySQLEntity] = self.session.query(ColorMySQLEntity).get(color_id)
         if color is not None:
             return color.as_resource()
         return None

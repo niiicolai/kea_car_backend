@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 
 # Internal library imports
-from app.models.purchase import Purchase
-from app.resources.purchase_resource import PurchaseReturnResource, PurchaseCreateResource, CarReturnResource
+from app.models.purchase import PurchaseReturnResource, PurchaseMySQLEntity
+from app.resources.purchase_resource import PurchaseCreateResource, CarReturnResource
 
 
 
@@ -25,7 +25,7 @@ class PurchaseRepository(ABC):
         pass
 
     @abstractmethod
-    def create(self, car_resource: CarReturnResource) -> PurchaseReturnResource:
+    def create(self, purchase_create_data: PurchaseCreateResource, car_resource: CarReturnResource) -> PurchaseReturnResource:
         pass
 
     @abstractmethod
@@ -38,24 +38,25 @@ class MySQLPurchaseRepository(PurchaseRepository):
         self.session = session
 
     def get_all(self) -> List[PurchaseReturnResource]:
-        purchases: List[Purchase] = cast(List[Purchase], self.session.query(Purchase).all())
+        purchases: List[PurchaseMySQLEntity] = cast(List[PurchaseMySQLEntity], self.session.query(PurchaseMySQLEntity).all())
         return [purchase.as_resource() for purchase in purchases]
 
     def get_by_id(self, purchase_id: str) -> Optional[PurchaseReturnResource]:
-        purchase: Optional[Purchase] = self.session.query(Purchase).get(purchase_id)
+        purchase: Optional[PurchaseMySQLEntity] = self.session.query(PurchaseMySQLEntity).get(purchase_id)
         if purchase is not None:
             return purchase.as_resource()
         return None
 
     def get_by_car_id(self, car_resource: CarReturnResource) -> Optional[PurchaseReturnResource]:
-        purchase: Optional[Purchase] = self.session.query(Purchase).filter_by(cars_id=car_resource.id).first()
+        purchase: Optional[PurchaseMySQLEntity] = self.session.query(PurchaseMySQLEntity).filter_by(cars_id=car_resource.id).first()
         if purchase is not None:
             return purchase.as_resource()
         return None
 
-    def create(self, car_resource: CarReturnResource) -> PurchaseReturnResource:
-        new_purchase = Purchase(
+    def create(self, purchase_create_data: PurchaseCreateResource, car_resource: CarReturnResource) -> PurchaseReturnResource:
+        new_purchase = PurchaseMySQLEntity(
             cars_id=car_resource.id,
+            date_of_purchase=purchase_create_data.date_of_purchase
         )
         self.session.add(new_purchase)
         self.session.commit()
@@ -64,7 +65,7 @@ class MySQLPurchaseRepository(PurchaseRepository):
         return new_purchase.as_resource()
 
     def is_car_taken(self, car_resource: CarReturnResource) -> bool:
-        return self.session.query(Purchase).filter_by(cars_id=car_resource.id).first() is not None
+        return self.session.query(PurchaseMySQLEntity).filter_by(cars_id=car_resource.id).first() is not None
 
 # Placeholder for future repositories
 # class OtherDBPurchaseRepository(PurchaseRepository):

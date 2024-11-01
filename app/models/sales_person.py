@@ -9,7 +9,7 @@ from app.resources.sales_person_resource import SalesPersonReturnResource
 
 
 
-class SalesPerson(Base):
+class SalesPersonMySQLEntity(Base):
     __tablename__ = 'sales_people'
     id: Mapped[str] = Column(String(36), primary_key=True, default=lambda: str(uuid4()), index=True, nullable=False)
     email: Mapped[str] = Column(String(100), index=True, unique=True, nullable=False)
@@ -17,7 +17,7 @@ class SalesPerson(Base):
     first_name: Mapped[str] = Column(String(45), nullable=False)
     last_name: Mapped[str] = Column(String(45), nullable=False)
 
-    cars = relationship("Car", back_populates="sales_person")
+    cars = relationship("CarMySQLEntity", back_populates="sales_person")
 
 
     def as_resource(self) -> SalesPersonReturnResource:

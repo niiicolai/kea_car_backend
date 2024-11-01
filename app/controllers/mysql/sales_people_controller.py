@@ -6,8 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from fastapi import APIRouter, Depends, Form, HTTPException, Path, status
 
 # Internal library imports
-from app.services import service_sales_people
 from db import Session, get_db as get_db_session
+from app.services import sales_people_service as service
 from app.exceptions.invalid_credentials_errors import IncorrectCredentialError
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
 from app.repositories.sales_person_repositories import (
@@ -26,7 +26,7 @@ def get_db():
 
 @router.post(
     path="/token",
-    response_model=service_sales_people.Token,
+    response_model=service.Token,
     response_description="Successfully created a token, returns: Token.",
     summary="Create an Access Token for a Sales Person.",
     description="Works the same as the '/mysql/login' endpoint, but requires forms in stead of a request body, this endpoint is needed for the Swagger UI can authorize access to endpoints that needs authorization. Creates an Access Token from a sales person within the MySQL database by giving Forms for the email and password of that sales person and returns a 'Token'."
@@ -38,7 +38,7 @@ async def login_for_access_token(
 ):
     error_message = "Failed to create an access token from a Sales Person in the MySQL database"
     try:
-        return service_sales_people.login(
+        return service.login(
             repository=MySQLSalesPersonRepository(session),
             sales_person_login_data=SalesPersonLoginResource(email=username, password=password)
         )
@@ -65,7 +65,7 @@ async def login_for_access_token(
 
 @router.post(
     path="/login",
-    response_model=service_sales_people.Token,
+    response_model=service.Token,
     response_description="Successfully logged in, returns: Token.",
     summary="Logs in as a Sales Person.",
     description="Works the same as the '/mysql/token' endpoint, but requires a request body in stead of forms, this endpoint is to make it easier for the frontend to log in and access endpoints that needs authorization. Logs in as a sales person within the MySQL database by giving a request body 'SalesPersonLoginResource' of that sales person and returns a 'Token'."
@@ -73,7 +73,7 @@ async def login_for_access_token(
 async def login(sales_person_login_data: SalesPersonLoginResource, session: Session = Depends(get_db)):
     error_message = "Failed to login from a Sales Person in the MySQL database"
     try:
-        return service_sales_people.login(
+        return service.login(
             repository=MySQLSalesPersonRepository(session),
             sales_person_login_data=sales_person_login_data
         )
@@ -109,7 +109,7 @@ async def login(sales_person_login_data: SalesPersonLoginResource, session: Sess
 async def get_sales_people(session: Session = Depends(get_db)):
     error_message = "Failed to get sales people from the MySQL database"
     try:
-        return service_sales_people.get_all(
+        return service.get_all(
             repository=MySQLSalesPersonRepository(session)
         )
     except SQLAlchemyError as e:
@@ -139,7 +139,7 @@ async def get_sales_person(sales_person_id: UUID = Path(..., description="The UU
                            session: Session = Depends(get_db)):
     error_message = "Failed to get sales person from the MySQL database"
     try:
-        return service_sales_people.get_by_id(
+        return service.get_by_id(
             repository=MySQLSalesPersonRepository(session),
             sales_person_id=str(sales_person_id)
         )
@@ -175,7 +175,7 @@ async def get_sales_person(sales_person_id: UUID = Path(..., description="The UU
 async def create_sales_person(sales_person_create_data: SalesPersonCreateResource, session: Session = Depends(get_db)):
     error_message = "Failed to create sales person within the MySQL database"
     try:
-        return service_sales_people.create(
+        return service.create(
             repository=MySQLSalesPersonRepository(session),
             sales_person_create_data=sales_person_create_data
         )

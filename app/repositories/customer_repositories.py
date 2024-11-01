@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 
 # Internal library imports
-from app.models.customer import Customer
-from app.resources.customer_resource import CustomerReturnResource, CustomerCreateResource, CustomerUpdateResource
+from app.models.customer import CustomerReturnResource, CustomerMySQLEntity
+from app.resources.customer_resource import CustomerCreateResource, CustomerUpdateResource
 
 
 class CustomerRepository(ABC):
@@ -35,17 +35,17 @@ class MySQLCustomerRepository(CustomerRepository):
         self.session = session
 
     def get_all(self) -> List[CustomerReturnResource]:
-        customers: List[Customer] = cast(List[Customer], self.session.query(Customer).all())
+        customers: List[CustomerMySQLEntity] = cast(List[CustomerMySQLEntity], self.session.query(CustomerMySQLEntity).all())
         return [customer.as_resource() for customer in customers]
 
     def get_by_id(self, customer_id: str) -> Optional[CustomerReturnResource]:
-        customer: Optional[Customer] = self.session.query(Customer).get(customer_id)
+        customer: Optional[CustomerMySQLEntity] = self.session.query(CustomerMySQLEntity).get(customer_id)
         if customer is not None:
             return customer.as_resource()
         return None
 
     def create(self, customer_create_data: CustomerCreateResource) -> CustomerReturnResource:
-        new_customer = Customer(
+        new_customer = CustomerMySQLEntity(
             email=customer_create_data.email,
             phone_number=customer_create_data.phone_number,
             first_name=customer_create_data.first_name,
@@ -59,7 +59,7 @@ class MySQLCustomerRepository(CustomerRepository):
         return new_customer.as_resource()
 
     def update(self, customer_id: str, customer_update_data: CustomerUpdateResource) -> Optional[CustomerReturnResource]:
-        customer: Optional[Customer] = self.session.query(Customer).get(customer_id)
+        customer: Optional[CustomerMySQLEntity] = self.session.query(CustomerMySQLEntity).get(customer_id)
         if customer is None:
             return None
 
@@ -72,7 +72,7 @@ class MySQLCustomerRepository(CustomerRepository):
         return customer.as_resource()
 
     def is_email_taken(self, email: str) -> bool:
-        return self.session.query(Customer).filter_by(email=email).first() is not None
+        return self.session.query(CustomerMySQLEntity).filter_by(email=email).first() is not None
 
 # Placeholder for future repositories
 # class OtherDBCustomerRepository(CustomerRepository):
