@@ -25,12 +25,12 @@ def get_db_connection_string(is_test: bool = False) -> str:
         db_password = os.getenv('DB_PASSWORD')
         db_port = os.getenv('DB_PORT')
 
-    connection_string = f'mysql+mysqlconnector://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
+    connection_string = f'mysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
     return connection_string
 
 def get_engine(is_test: bool = False) -> Engine:
     connection_string = get_db_connection_string(is_test)
-    engine = create_engine(connection_string, echo=True)
+    engine = create_engine(connection_string, echo=True, pool_pre_ping=True)
     return engine
 
 session_local = sessionmaker(autocommit=False, autoflush=False)
