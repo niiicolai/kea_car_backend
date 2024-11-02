@@ -1,0 +1,238 @@
+{
+	"info": {
+		"_postman_id": "3a371534-e20d-407e-9f4f-15b5c074d9f1",
+		"name": "KEA Car API Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18056195"
+	},
+	"item": [
+		{
+			"name": "Car",
+			"item": [
+				{
+					"name": "Create Car 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const { v4: uuidV4 } = require('uuid');\r",
+									"const now = new Date();\r",
+									"\r",
+									"const uuid = uuidV4();\r",
+									"const purchase_deadline = `${now.getFullYear()}-${(now.getMonth()+1)%12}-${now.getDay().toString().length == 1 ? '0' + now.getDay() : now.getDay()}`;\r",
+									"const customers_id = pm.environment.get('TestCustomerId');\r",
+									"const sales_people_id = pm.environment.get('TestSalesPeopleId');\r",
+									"const models_id = pm.environment.get('TestModelsId');\r",
+									"const colors_id = pm.environment.get('TestColorId');\r",
+									"const accessory_ids = [pm.environment.get('TestAccessoryId')];\r",
+									"const insurance_ids = [pm.environment.get('TestInsuranceId')];\r",
+									"\r",
+									"pm.environment.set('CreateCarBody', JSON.stringify({ \r",
+									"    uuid,\r",
+									"    purchase_deadline,\r",
+									"    customers_id,\r",
+									"    sales_people_id,\r",
+									"    models_id,\r",
+									"    accessory_ids,\r",
+									"    insurance_ids,\r",
+									"    colors_id\r",
+									"}));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"\r",
+									"pm.test(\"reponse must be an object\", function () {\r",
+									"    pm.expect(responseJSON).to.be.an('object');\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    \"purchase_deadline\",\r",
+									"    \"total_price\",\r",
+									"    \"id\",\r",
+									"    \"model\",\r",
+									"    \"color\",\r",
+									"    \"customer\",\r",
+									"    \"sales_person\",\r",
+									"    \"accessories\",\r",
+									"    \"insurances\",\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response must include ${expected} property`, function () {\r",
+									"        pm.expect(responseJSON).to.have.property(expected);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    { prop: \"purchase_deadline\", type: \"string\" },\r",
+									"    { prop: \"total_price\", type: \"number\" },\r",
+									"    { prop: \"id\", type: \"string\" },\r",
+									"    { prop: \"model\", type: \"object\" },\r",
+									"    { prop: \"color\", type: \"object\" },\r",
+									"    { prop: \"customer\", type: \"object\" },\r",
+									"    { prop: \"sales_person\", type: \"object\" },\r",
+									"    { prop: \"accessories\", type: \"object\" },\r",
+									"    { prop: \"insurances\", type: \"object\" },\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"        pm.expect(responseJSON[expected.prop])\r",
+									"            .to.be.a(expected.type);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    \"name\",\r",
+									"    \"price\",\r",
+									"    \"image_url\",\r",
+									"    \"id\",\r",
+									"    \"brand\",\r",
+									"    \"colors\",\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response.model must include ${expected} property`, function () {\r",
+									"        pm.expect(responseJSON.model).to.have.property(expected);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    { prop: \"name\", type: \"string\" },\r",
+									"    { prop: \"price\", type: \"number\" },\r",
+									"    { prop: \"email\", type: \"string\" },\r",
+									"    { prop: \"image_url\", type: \"string\" },\r",
+									"    { prop: \"id\", type: \"string\" },\r",
+									"    { prop: \"brand\", type: \"object\" },\r",
+									"    { prop: \"colors\", type: \"array\" },\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response.model's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"        pm.expect(responseJSON.model[expected.prop])\r",
+									"            .to.be.a(expected.type);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    \"name\",\r",
+									"    \"logo_url\",\r",
+									"    \"id\",\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response.model.brand include ${expected} property`, function () {\r",
+									"        pm.expect(responseJSON.model.brand).to.have.property(expected);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    { prop: \"name\", type: \"string\" },\r",
+									"    { prop: \"logo_url\", type: \"string\" },\r",
+									"    { prop: \"id\", type: \"string\" },\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response.model.brand's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"        pm.expect(responseJSON.model.brand[expected.prop])\r",
+									"            .to.be.a(expected.type);\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{CreateCarBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/car",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"car"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"reponse must return 200 status code\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/cars?customer_id={{TestCustomerId}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"cars"
+							],
+							"query": [
+								{
+									"key": "customer_id",
+									"value": "{{TestCustomerId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Brand",
+			"item": []
+		},
+		{
+			"name": "Accessory",
+			"item": []
+		},
+		{
+			"name": "Color",
+			"item": []
+		},
+		{
+			"name": "Customer",
+			"item": []
+		},
+		{
+			"name": "Insurance",
+			"item": []
+		},
+		{
+			"name": "Purchase",
+			"item": []
+		},
+		{
+			"name": "Model",
+			"item": []
+		}
+	]
+}
