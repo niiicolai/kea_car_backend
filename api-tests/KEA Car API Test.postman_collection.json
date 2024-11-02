@@ -10,7 +10,7 @@
 			"name": "Car",
 			"item": [
 				{
-					"name": "Create Car 200",
+					"name": "Create 200",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1435,7 +1435,420 @@
 		},
 		{
 			"name": "Customer",
-			"item": []
+			"item": [
+				{
+					"name": "Create 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date().getTime() / 1000;\r",
+									"\r",
+									"const randomPhoneNumber = (length = 8) => {\r",
+									"    const numbers = '0123456789';\r",
+									"    let result = '+45';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += numbers.charAt(Math.floor(Math.random() * numbers.length));\r",
+									"    }\r",
+									"    return result;\r",
+									"};\r",
+									"\r",
+									"const email = `${now}@test.com`;\r",
+									"const phone_number = randomPhoneNumber(8);\r",
+									"const first_name = `${now}`;\r",
+									"const last_name = `${now}`;\r",
+									"const address = `${now}`;\r",
+									"\r",
+									"pm.environment.set('CreateCustomerBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    phone_number,\r",
+									"    first_name,\r",
+									"    last_name,\r",
+									"    address,\r",
+									"}));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidCustomer = (customer) => {\r",
+									"    pm.test(\"customer must be an object\", function () {\r",
+									"        pm.expect(customer).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"phone_number\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"address\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer must include ${expected} property`, function () {\r",
+									"            pm.expect(customer).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", types: [\"string\"] },\r",
+									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"first_name\", types: [\"string\"] },\r",
+									"        { prop: \"last_name\", types: [\"string\"] },\r",
+									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"id\", types: [\"string\"] },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
+									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
+									"                .to.equal(true);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a customer`, function () {\r",
+									"    isValidCustomer(responseJSON);\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('CustomerUuid', responseJSON.id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{CreateCustomerBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/customer",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidCustomer = (customer) => {\r",
+									"    pm.test(\"customer must be an object\", function () {\r",
+									"        pm.expect(customer).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"phone_number\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"address\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer must include ${expected} property`, function () {\r",
+									"            pm.expect(customer).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", types: [\"string\"] },\r",
+									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"first_name\", types: [\"string\"] },\r",
+									"        { prop: \"last_name\", types: [\"string\"] },\r",
+									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"id\", types: [\"string\"] },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
+									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
+									"                .to.equal(true);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a customer`, function () {\r",
+									"    isValidCustomer(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date().getTime() / 1000;\r",
+									"\r",
+									"const randomPhoneNumber = (length = 8) => {\r",
+									"    const numbers = '0123456789';\r",
+									"    let result = '+45';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += numbers.charAt(Math.floor(Math.random() * numbers.length));\r",
+									"    }\r",
+									"    return result;\r",
+									"};\r",
+									"\r",
+									"const email = `${now}@test.com`;\r",
+									"const phone_number = randomPhoneNumber(8);\r",
+									"const first_name = `${now}`;\r",
+									"const last_name = `${now}`;\r",
+									"const address = `${now}`;\r",
+									"\r",
+									"pm.environment.set('UpdateCustomerBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    phone_number,\r",
+									"    first_name,\r",
+									"    last_name,\r",
+									"    address,\r",
+									"}));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{UpdateCustomerBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/customer/{{CustomerUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer",
+								"{{CustomerUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidCustomer = (customer) => {\r",
+									"    pm.test(\"customer must be an object\", function () {\r",
+									"        pm.expect(customer).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"phone_number\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"address\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer must include ${expected} property`, function () {\r",
+									"            pm.expect(customer).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", types: [\"string\"] },\r",
+									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"first_name\", types: [\"string\"] },\r",
+									"        { prop: \"last_name\", types: [\"string\"] },\r",
+									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"id\", types: [\"string\"] },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
+									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
+									"                .to.equal(true);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid customers`, function () {\r",
+									"    responseJSON.forEach(customer => isValidCustomer(customer));\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/customers?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customers"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidCustomer = (customer) => {\r",
+									"    pm.test(\"customer must be an object\", function () {\r",
+									"        pm.expect(customer).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"phone_number\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"address\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer must include ${expected} property`, function () {\r",
+									"            pm.expect(customer).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", types: [\"string\"] },\r",
+									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"first_name\", types: [\"string\"] },\r",
+									"        { prop: \"last_name\", types: [\"string\"] },\r",
+									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"id\", types: [\"string\"] },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
+									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
+									"                .to.equal(true);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a customer`, function () {\r",
+									"    isValidCustomer(responseJSON);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/customer/{{CustomerUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer",
+								"{{CustomerUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/customer/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Insurance",
@@ -1623,7 +2036,973 @@
 		},
 		{
 			"name": "Purchase",
-			"item": []
+			"item": [
+				{
+					"name": "Create 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date();\r",
+									"\r",
+									"const date_of_purchase = `${now.getFullYear()}-${(now.getMonth()+1)%12}-${now.getDay().toString().length == 1 ? '0' + now.getDay() : now.getDay()}`;\r",
+									"const cars_id = pm.environment.get('TestCarUuid');\r",
+									"\r",
+									"pm.environment.set('CreatePurchaseBody', JSON.stringify({ \r",
+									"    date_of_purchase,\r",
+									"    cars_id,\r",
+									"}));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidPurchase = (purchase) => {\r",
+									"    pm.test(\"purchase must be an object\", function () {\r",
+									"        pm.expect(purchase).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"id\",\r",
+									"        \"date_of_purchase\",\r",
+									"        \"car\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`purchase must include ${expected} property`, function () {\r",
+									"            pm.expect(purchase).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"        { prop: \"date_of_purchase\", type: \"string\" },\r",
+									"        { prop: \"car\", type: \"object\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`purchase property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(purchase[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    const isValidCar = (car) => {\r",
+									"        pm.test(\"car must be an object\", function () {\r",
+									"            pm.expect(car).to.be.an('object');\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"purchase_deadline\",\r",
+									"            \"total_price\",\r",
+									"            \"id\",\r",
+									"            \"model\",\r",
+									"            \"color\",\r",
+									"            \"customer\",\r",
+									"            \"sales_person\",\r",
+									"            \"accessories\",\r",
+									"            \"insurances\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car must include ${expected} property`, function () {\r",
+									"                pm.expect(car).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"purchase_deadline\", type: \"string\" },\r",
+									"            { prop: \"total_price\", type: \"number\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"            { prop: \"model\", type: \"object\" },\r",
+									"            { prop: \"color\", type: \"object\" },\r",
+									"            { prop: \"customer\", type: \"object\" },\r",
+									"            { prop: \"sales_person\", type: \"object\" },\r",
+									"            { prop: \"accessories\", type: \"array\" },\r",
+									"            { prop: \"insurances\", type: \"array\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"name\",\r",
+									"            \"price\",\r",
+									"            \"image_url\",\r",
+									"            \"id\",\r",
+									"            \"brand\",\r",
+									"            \"colors\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model must include ${expected} property`, function () {\r",
+									"                pm.expect(car.model).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"name\", type: \"string\" },\r",
+									"            { prop: \"price\", type: \"number\" },\r",
+									"            { prop: \"image_url\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"            { prop: \"brand\", type: \"object\" },\r",
+									"            { prop: \"colors\", type: \"array\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.model[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"name\",\r",
+									"            \"logo_url\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model.brand include ${expected} property`, function () {\r",
+									"                pm.expect(car.model.brand).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"name\", type: \"string\" },\r",
+									"            { prop: \"logo_url\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model.brand's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.model.brand[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        const isValidColor = (color) => {\r",
+									"            [\r",
+									"                \"name\",\r",
+									"                \"price\",\r",
+									"                \"red_value\",\r",
+									"                \"green_value\",\r",
+									"                \"blue_value\",\r",
+									"                \"id\",\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`color include ${expected} property`, function () {\r",
+									"                    pm.expect(color).to.have.property(expected);\r",
+									"                });\r",
+									"            });\r",
+									"\r",
+									"            [\r",
+									"                { prop: \"name\", type: \"string\" },\r",
+									"                { prop: \"price\", type: \"number\" },\r",
+									"                { prop: \"red_value\", type: \"number\" },\r",
+									"                { prop: \"green_value\", type: \"number\" },\r",
+									"                { prop: \"blue_value\", type: \"number\" },\r",
+									"                { prop: \"id\", type: \"string\" },\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                    pm.expect(color[expected.prop])\r",
+									"                        .to.be.a(expected.type);\r",
+									"                });\r",
+									"            });\r",
+									"        }\r",
+									"\r",
+									"        pm.test(`response.model.colors must be valid`, function () {\r",
+									"            car.model.colors.forEach(color => isValidColor(color));\r",
+									"        });\r",
+									"\r",
+									"        pm.test(`response.color must be valid`, function () {\r",
+									"            isValidColor(car.color);\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"email\",\r",
+									"            \"phone_number\",\r",
+									"            \"first_name\",\r",
+									"            \"last_name\",\r",
+									"            \"address\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.customer include ${expected} property`, function () {\r",
+									"                pm.expect(car.customer).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"email\", type: \"string\" },\r",
+									"            { prop: \"phone_number\", type: \"string\" },\r",
+									"            { prop: \"first_name\", type: \"string\" },\r",
+									"            { prop: \"last_name\", type: \"string\" },\r",
+									"            { prop: \"address\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.customer's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.customer[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"email\",\r",
+									"            \"first_name\",\r",
+									"            \"last_name\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.sales_person include ${expected} property`, function () {\r",
+									"                pm.expect(car.sales_person).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"email\", type: \"string\" },\r",
+									"            { prop: \"first_name\", type: \"string\" },\r",
+									"            { prop: \"last_name\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.sales_person's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.sales_person[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        const isValidAccessory = (accessory) => {\r",
+									"            [\r",
+									"                \"name\",\r",
+									"                \"price\",\r",
+									"                \"id\",\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`accessory include ${expected} property`, function () {\r",
+									"                    pm.expect(accessory).to.have.property(expected);\r",
+									"                });\r",
+									"            });\r",
+									"\r",
+									"            [\r",
+									"                { prop: \"name\", type: \"string\" },\r",
+									"                { prop: \"price\", type: \"number\" },\r",
+									"                { prop: \"id\", type: \"string\" },\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`response.sales_person's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                    pm.expect(accessory[expected.prop])\r",
+									"                        .to.be.a(expected.type);\r",
+									"                });\r",
+									"            });\r",
+									"        }\r",
+									"\r",
+									"        pm.test(`response.accessories must be valid`, function () {\r",
+									"            car.accessories.forEach(accessory => isValidAccessory(accessory));\r",
+									"        });\r",
+									"\r",
+									"        const isValidInsurance = (insurance) => {\r",
+									"            [\r",
+									"                \"name\",\r",
+									"                \"price\",\r",
+									"                \"id\",\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`insurance include ${expected} property`, function () {\r",
+									"                    pm.expect(insurance).to.have.property(expected);\r",
+									"                });\r",
+									"            });\r",
+									"\r",
+									"            [\r",
+									"                { prop: \"name\", type: \"string\" },\r",
+									"                { prop: \"price\", type: \"number\" },\r",
+									"                { prop: \"id\", type: \"string\" },\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`insurance's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                    pm.expect(insurance[expected.prop])\r",
+									"                        .to.be.a(expected.type);\r",
+									"                });\r",
+									"            });\r",
+									"        }\r",
+									"\r",
+									"        pm.test(`response.insurances must be valid`, function () {\r",
+									"            car.insurances.forEach(insurance => isValidInsurance(insurance));\r",
+									"        });\r",
+									"    }\r",
+									"\r",
+									"    pm.test(`purchase.car must be a valid car`, function () {\r",
+									"        isValidCar(purchase.car);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a purchase`, function () {\r",
+									"    isValidPurchase(responseJSON);\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('PurchaseUuid', responseJSON.id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{CreatePurchaseBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/purchase",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"purchase"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidPurchase = (purchase) => {\r",
+									"    pm.test(\"purchase must be an object\", function () {\r",
+									"        pm.expect(purchase).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"id\",\r",
+									"        \"date_of_purchase\",\r",
+									"        \"car\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`purchase must include ${expected} property`, function () {\r",
+									"            pm.expect(purchase).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"        { prop: \"date_of_purchase\", type: \"string\" },\r",
+									"        { prop: \"car\", type: \"object\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`purchase property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(purchase[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    const isValidCar = (car) => {\r",
+									"        pm.test(\"car must be an object\", function () {\r",
+									"            pm.expect(car).to.be.an('object');\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"purchase_deadline\",\r",
+									"            \"total_price\",\r",
+									"            \"id\",\r",
+									"            \"model\",\r",
+									"            \"color\",\r",
+									"            \"customer\",\r",
+									"            \"sales_person\",\r",
+									"            \"accessories\",\r",
+									"            \"insurances\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car must include ${expected} property`, function () {\r",
+									"                pm.expect(car).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"purchase_deadline\", type: \"string\" },\r",
+									"            { prop: \"total_price\", type: \"number\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"            { prop: \"model\", type: \"object\" },\r",
+									"            { prop: \"color\", type: \"object\" },\r",
+									"            { prop: \"customer\", type: \"object\" },\r",
+									"            { prop: \"sales_person\", type: \"object\" },\r",
+									"            { prop: \"accessories\", type: \"array\" },\r",
+									"            { prop: \"insurances\", type: \"array\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"name\",\r",
+									"            \"price\",\r",
+									"            \"image_url\",\r",
+									"            \"id\",\r",
+									"            \"brand\",\r",
+									"            \"colors\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model must include ${expected} property`, function () {\r",
+									"                pm.expect(car.model).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"name\", type: \"string\" },\r",
+									"            { prop: \"price\", type: \"number\" },\r",
+									"            { prop: \"image_url\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"            { prop: \"brand\", type: \"object\" },\r",
+									"            { prop: \"colors\", type: \"array\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.model[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"name\",\r",
+									"            \"logo_url\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model.brand include ${expected} property`, function () {\r",
+									"                pm.expect(car.model.brand).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"name\", type: \"string\" },\r",
+									"            { prop: \"logo_url\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model.brand's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.model.brand[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        const isValidColor = (color) => {\r",
+									"            [\r",
+									"                \"name\",\r",
+									"                \"price\",\r",
+									"                \"red_value\",\r",
+									"                \"green_value\",\r",
+									"                \"blue_value\",\r",
+									"                \"id\",\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`color include ${expected} property`, function () {\r",
+									"                    pm.expect(color).to.have.property(expected);\r",
+									"                });\r",
+									"            });\r",
+									"\r",
+									"            [\r",
+									"                { prop: \"name\", type: \"string\" },\r",
+									"                { prop: \"price\", type: \"number\" },\r",
+									"                { prop: \"red_value\", type: \"number\" },\r",
+									"                { prop: \"green_value\", type: \"number\" },\r",
+									"                { prop: \"blue_value\", type: \"number\" },\r",
+									"                { prop: \"id\", type: \"string\" },\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                    pm.expect(color[expected.prop])\r",
+									"                        .to.be.a(expected.type);\r",
+									"                });\r",
+									"            });\r",
+									"        }\r",
+									"\r",
+									"        pm.test(`response.model.colors must be valid`, function () {\r",
+									"            car.model.colors.forEach(color => isValidColor(color));\r",
+									"        });\r",
+									"\r",
+									"        pm.test(`response.color must be valid`, function () {\r",
+									"            isValidColor(car.color);\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"email\",\r",
+									"            \"phone_number\",\r",
+									"            \"first_name\",\r",
+									"            \"last_name\",\r",
+									"            \"address\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.customer include ${expected} property`, function () {\r",
+									"                pm.expect(car.customer).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"email\", type: \"string\" },\r",
+									"            { prop: \"phone_number\", type: \"string\" },\r",
+									"            { prop: \"first_name\", type: \"string\" },\r",
+									"            { prop: \"last_name\", type: \"string\" },\r",
+									"            { prop: \"address\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.customer's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.customer[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"email\",\r",
+									"            \"first_name\",\r",
+									"            \"last_name\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.sales_person include ${expected} property`, function () {\r",
+									"                pm.expect(car.sales_person).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"email\", type: \"string\" },\r",
+									"            { prop: \"first_name\", type: \"string\" },\r",
+									"            { prop: \"last_name\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.sales_person's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.sales_person[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        const isValidAccessory = (accessory) => {\r",
+									"            [\r",
+									"                \"name\",\r",
+									"                \"price\",\r",
+									"                \"id\",\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`accessory include ${expected} property`, function () {\r",
+									"                    pm.expect(accessory).to.have.property(expected);\r",
+									"                });\r",
+									"            });\r",
+									"\r",
+									"            [\r",
+									"                { prop: \"name\", type: \"string\" },\r",
+									"                { prop: \"price\", type: \"number\" },\r",
+									"                { prop: \"id\", type: \"string\" },\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`response.sales_person's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                    pm.expect(accessory[expected.prop])\r",
+									"                        .to.be.a(expected.type);\r",
+									"                });\r",
+									"            });\r",
+									"        }\r",
+									"\r",
+									"        pm.test(`response.accessories must be valid`, function () {\r",
+									"            car.accessories.forEach(accessory => isValidAccessory(accessory));\r",
+									"        });\r",
+									"\r",
+									"        const isValidInsurance = (insurance) => {\r",
+									"            [\r",
+									"                \"name\",\r",
+									"                \"price\",\r",
+									"                \"id\",\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`insurance include ${expected} property`, function () {\r",
+									"                    pm.expect(insurance).to.have.property(expected);\r",
+									"                });\r",
+									"            });\r",
+									"\r",
+									"            [\r",
+									"                { prop: \"name\", type: \"string\" },\r",
+									"                { prop: \"price\", type: \"number\" },\r",
+									"                { prop: \"id\", type: \"string\" },\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`insurance's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                    pm.expect(insurance[expected.prop])\r",
+									"                        .to.be.a(expected.type);\r",
+									"                });\r",
+									"            });\r",
+									"        }\r",
+									"\r",
+									"        pm.test(`response.insurances must be valid`, function () {\r",
+									"            car.insurances.forEach(insurance => isValidInsurance(insurance));\r",
+									"        });\r",
+									"    }\r",
+									"\r",
+									"    pm.test(`purchase.car must be a valid car`, function () {\r",
+									"        isValidCar(purchase.car);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid purchases`, function () {\r",
+									"    responseJSON.forEach(purchase => isValidPurchase(purchase));\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/purchases?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"purchases"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidPurchase = (purchase) => {\r",
+									"    pm.test(\"purchase must be an object\", function () {\r",
+									"        pm.expect(purchase).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"id\",\r",
+									"        \"date_of_purchase\",\r",
+									"        \"car\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`purchase must include ${expected} property`, function () {\r",
+									"            pm.expect(purchase).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"        { prop: \"date_of_purchase\", type: \"string\" },\r",
+									"        { prop: \"car\", type: \"object\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`purchase property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(purchase[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    const isValidCar = (car) => {\r",
+									"        pm.test(\"car must be an object\", function () {\r",
+									"            pm.expect(car).to.be.an('object');\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"purchase_deadline\",\r",
+									"            \"total_price\",\r",
+									"            \"id\",\r",
+									"            \"model\",\r",
+									"            \"color\",\r",
+									"            \"customer\",\r",
+									"            \"sales_person\",\r",
+									"            \"accessories\",\r",
+									"            \"insurances\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car must include ${expected} property`, function () {\r",
+									"                pm.expect(car).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"purchase_deadline\", type: \"string\" },\r",
+									"            { prop: \"total_price\", type: \"number\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"            { prop: \"model\", type: \"object\" },\r",
+									"            { prop: \"color\", type: \"object\" },\r",
+									"            { prop: \"customer\", type: \"object\" },\r",
+									"            { prop: \"sales_person\", type: \"object\" },\r",
+									"            { prop: \"accessories\", type: \"array\" },\r",
+									"            { prop: \"insurances\", type: \"array\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"name\",\r",
+									"            \"price\",\r",
+									"            \"image_url\",\r",
+									"            \"id\",\r",
+									"            \"brand\",\r",
+									"            \"colors\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model must include ${expected} property`, function () {\r",
+									"                pm.expect(car.model).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"name\", type: \"string\" },\r",
+									"            { prop: \"price\", type: \"number\" },\r",
+									"            { prop: \"image_url\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"            { prop: \"brand\", type: \"object\" },\r",
+									"            { prop: \"colors\", type: \"array\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.model[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"name\",\r",
+									"            \"logo_url\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model.brand include ${expected} property`, function () {\r",
+									"                pm.expect(car.model.brand).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"name\", type: \"string\" },\r",
+									"            { prop: \"logo_url\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`car.model.brand's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.model.brand[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        const isValidColor = (color) => {\r",
+									"            [\r",
+									"                \"name\",\r",
+									"                \"price\",\r",
+									"                \"red_value\",\r",
+									"                \"green_value\",\r",
+									"                \"blue_value\",\r",
+									"                \"id\",\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`color include ${expected} property`, function () {\r",
+									"                    pm.expect(color).to.have.property(expected);\r",
+									"                });\r",
+									"            });\r",
+									"\r",
+									"            [\r",
+									"                { prop: \"name\", type: \"string\" },\r",
+									"                { prop: \"price\", type: \"number\" },\r",
+									"                { prop: \"red_value\", type: \"number\" },\r",
+									"                { prop: \"green_value\", type: \"number\" },\r",
+									"                { prop: \"blue_value\", type: \"number\" },\r",
+									"                { prop: \"id\", type: \"string\" },\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                    pm.expect(color[expected.prop])\r",
+									"                        .to.be.a(expected.type);\r",
+									"                });\r",
+									"            });\r",
+									"        }\r",
+									"\r",
+									"        pm.test(`response.model.colors must be valid`, function () {\r",
+									"            car.model.colors.forEach(color => isValidColor(color));\r",
+									"        });\r",
+									"\r",
+									"        pm.test(`response.color must be valid`, function () {\r",
+									"            isValidColor(car.color);\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"email\",\r",
+									"            \"phone_number\",\r",
+									"            \"first_name\",\r",
+									"            \"last_name\",\r",
+									"            \"address\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.customer include ${expected} property`, function () {\r",
+									"                pm.expect(car.customer).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"email\", type: \"string\" },\r",
+									"            { prop: \"phone_number\", type: \"string\" },\r",
+									"            { prop: \"first_name\", type: \"string\" },\r",
+									"            { prop: \"last_name\", type: \"string\" },\r",
+									"            { prop: \"address\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.customer's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.customer[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"email\",\r",
+									"            \"first_name\",\r",
+									"            \"last_name\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.sales_person include ${expected} property`, function () {\r",
+									"                pm.expect(car.sales_person).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"email\", type: \"string\" },\r",
+									"            { prop: \"first_name\", type: \"string\" },\r",
+									"            { prop: \"last_name\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`response.sales_person's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(car.sales_person[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        const isValidAccessory = (accessory) => {\r",
+									"            [\r",
+									"                \"name\",\r",
+									"                \"price\",\r",
+									"                \"id\",\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`accessory include ${expected} property`, function () {\r",
+									"                    pm.expect(accessory).to.have.property(expected);\r",
+									"                });\r",
+									"            });\r",
+									"\r",
+									"            [\r",
+									"                { prop: \"name\", type: \"string\" },\r",
+									"                { prop: \"price\", type: \"number\" },\r",
+									"                { prop: \"id\", type: \"string\" },\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`response.sales_person's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                    pm.expect(accessory[expected.prop])\r",
+									"                        .to.be.a(expected.type);\r",
+									"                });\r",
+									"            });\r",
+									"        }\r",
+									"\r",
+									"        pm.test(`response.accessories must be valid`, function () {\r",
+									"            car.accessories.forEach(accessory => isValidAccessory(accessory));\r",
+									"        });\r",
+									"\r",
+									"        const isValidInsurance = (insurance) => {\r",
+									"            [\r",
+									"                \"name\",\r",
+									"                \"price\",\r",
+									"                \"id\",\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`insurance include ${expected} property`, function () {\r",
+									"                    pm.expect(insurance).to.have.property(expected);\r",
+									"                });\r",
+									"            });\r",
+									"\r",
+									"            [\r",
+									"                { prop: \"name\", type: \"string\" },\r",
+									"                { prop: \"price\", type: \"number\" },\r",
+									"                { prop: \"id\", type: \"string\" },\r",
+									"            ].forEach(expected => {\r",
+									"                pm.test(`insurance's property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                    pm.expect(insurance[expected.prop])\r",
+									"                        .to.be.a(expected.type);\r",
+									"                });\r",
+									"            });\r",
+									"        }\r",
+									"\r",
+									"        pm.test(`response.insurances must be valid`, function () {\r",
+									"            car.insurances.forEach(insurance => isValidInsurance(insurance));\r",
+									"        });\r",
+									"    }\r",
+									"\r",
+									"    pm.test(`purchase.car must be a valid car`, function () {\r",
+									"        isValidCar(purchase.car);\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a purchase`, function () {\r",
+									"    isValidPurchase(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/purchase/{{PurchaseUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"purchase",
+								"{{PurchaseUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/purchase/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"purchase",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Model",
@@ -1959,7 +3338,525 @@
 		},
 		{
 			"name": "Sales People",
-			"item": []
+			"item": [
+				{
+					"name": "Create Sales Person 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidSalesPerson = (salesPerson) => {\r",
+									"    pm.test(\"salesPerson must be an object\", function () {\r",
+									"        pm.expect(salesPerson).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
+									"            pm.expect(salesPerson).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", type: \"string\" },\r",
+									"        { prop: \"first_name\", type: \"string\" },\r",
+									"        { prop: \"last_name\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(salesPerson[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a sales person`, function () {\r",
+									"    isValidSalesPerson(responseJSON);\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('SalesPersonUuid', responseJSON.id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date().getTime() / 1000;\r",
+									"\r",
+									"const email = `${now}@test.com`;\r",
+									"const first_name = `${now}`;\r",
+									"const last_name = `${now}`;\r",
+									"const password = `${now}`;\r",
+									"\r",
+									"pm.environment.set('CreateSalesPersonBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    first_name,\r",
+									"    last_name,\r",
+									"    password,\r",
+									"}));\r",
+									"\r",
+									"pm.environment.set('TestSalesPersonEmail', email);\r",
+									"pm.environment.set('TestSalesPersonPassword', password);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{CreateSalesPersonBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/sales_person",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"sales_person"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Token 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidSalesPerson = (salesPerson) => {\r",
+									"    pm.test(\"salesPerson must be an object\", function () {\r",
+									"        pm.expect(salesPerson).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
+									"            pm.expect(salesPerson).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", type: \"string\" },\r",
+									"        { prop: \"first_name\", type: \"string\" },\r",
+									"        { prop: \"last_name\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(salesPerson[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response.sales_person must be valid a sales person`, function () {\r",
+									"    isValidSalesPerson(responseJSON.sales_person);\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    \"access_token\",\r",
+									"    \"token_type\",\r",
+									"    \"sales_person\",\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response must include ${expected} property`, function () {\r",
+									"        pm.expect(responseJSON).to.have.property(expected);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    { prop: \"access_token\", type: \"string\" },\r",
+									"    { prop: \"token_type\", type: \"string\" },\r",
+									"    { prop: \"sales_person\", type: \"object\" },\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"        pm.expect(responseJSON[expected.prop])\r",
+									"            .to.be.a(expected.type);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date().getTime() / 1000;\r",
+									"\r",
+									"const email = `${now}@test.com`;\r",
+									"const first_name = `${now}`;\r",
+									"const last_name = `${now}`;\r",
+									"const password = `${now}`;\r",
+									"\r",
+									"pm.environment.set('CreateSalesPersonBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    first_name,\r",
+									"    last_name,\r",
+									"    password,\r",
+									"}));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "{{TestSalesPersonEmail}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{TestSalesPersonPassword}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/token",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidSalesPerson = (salesPerson) => {\r",
+									"    pm.test(\"salesPerson must be an object\", function () {\r",
+									"        pm.expect(salesPerson).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
+									"            pm.expect(salesPerson).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", type: \"string\" },\r",
+									"        { prop: \"first_name\", type: \"string\" },\r",
+									"        { prop: \"last_name\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(salesPerson[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response.sales_person must be valid a sales person`, function () {\r",
+									"    isValidSalesPerson(responseJSON.sales_person);\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    \"access_token\",\r",
+									"    \"token_type\",\r",
+									"    \"sales_person\",\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response must include ${expected} property`, function () {\r",
+									"        pm.expect(responseJSON).to.have.property(expected);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    { prop: \"access_token\", type: \"string\" },\r",
+									"    { prop: \"token_type\", type: \"string\" },\r",
+									"    { prop: \"sales_person\", type: \"object\" },\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"        pm.expect(responseJSON[expected.prop])\r",
+									"            .to.be.a(expected.type);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const email = pm.environment.get('TestSalesPersonEmail');\r",
+									"const password = pm.environment.get('TestSalesPersonPassword');\r",
+									"\r",
+									"pm.environment.set('LoginSalesPersonBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    password,\r",
+									"}));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{LoginSalesPersonBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/login",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidSalesPerson = (salesPerson) => {\r",
+									"    pm.test(\"salesPerson must be an object\", function () {\r",
+									"        pm.expect(salesPerson).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
+									"            pm.expect(salesPerson).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", type: \"string\" },\r",
+									"        { prop: \"first_name\", type: \"string\" },\r",
+									"        { prop: \"last_name\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(salesPerson[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid sales people`, function () {\r",
+									"    responseJSON.forEach(salesPerson => isValidSalesPerson(salesPerson));\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/sales_people?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"sales_people"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidSalesPerson = (salesPerson) => {\r",
+									"    pm.test(\"salesPerson must be an object\", function () {\r",
+									"        pm.expect(salesPerson).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
+									"            pm.expect(salesPerson).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", type: \"string\" },\r",
+									"        { prop: \"first_name\", type: \"string\" },\r",
+									"        { prop: \"last_name\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(salesPerson[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a sales person`, function () {\r",
+									"    isValidSalesPerson(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/sales_person/{{SalesPersonUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"sales_person",
+								"{{SalesPersonUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/sales_person/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"sales_person",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
