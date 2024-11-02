@@ -844,20 +844,594 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/car/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"car",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
 			"name": "Brand",
-			"item": []
+			"item": [
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidBrand = (brand) => {\r",
+									"    pm.test(\"brand must be an object\", function () {\r",
+									"        pm.expect(brand).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"logo_url\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`brand must include ${expected} property`, function () {\r",
+									"            pm.expect(brand).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"logo_url\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`brand property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(brand[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid brands`, function () {\r",
+									"    responseJSON.forEach(brand => isValidBrand(brand));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('BrandUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/brands?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"brands"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidBrand = (brand) => {\r",
+									"    pm.test(\"brand must be an object\", function () {\r",
+									"        pm.expect(brand).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"logo_url\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`brand must include ${expected} property`, function () {\r",
+									"            pm.expect(brand).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"logo_url\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`brand property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(brand[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a brand`, function () {\r",
+									"    isValidBrand(responseJSON);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/brand/{{BrandUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"brand",
+								"{{BrandUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/brand/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"brand",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Accessory",
-			"item": []
+			"item": [
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidAccessory = (accessory) => {\r",
+									"    pm.test(\"accessory must be an object\", function () {\r",
+									"        pm.expect(accessory).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`accessory must include ${expected} property`, function () {\r",
+									"            pm.expect(accessory).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`accessory property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(accessory[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid accessories`, function () {\r",
+									"    responseJSON.forEach(accessory => isValidAccessory(accessory));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('AccessoryUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/accessories?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"accessories"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidAccessory = (accessory) => {\r",
+									"    pm.test(\"accessory must be an object\", function () {\r",
+									"        pm.expect(accessory).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`accessory must include ${expected} property`, function () {\r",
+									"            pm.expect(accessory).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`accessory property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(accessory[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid accessory`, function () {\r",
+									"    isValidAccessory(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/accessory/{{AccessoryUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"accessory",
+								"{{AccessoryUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/accessory/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"accessory",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Color",
-			"item": []
+			"item": [
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidColor = (color) => {\r",
+									"    pm.test(\"color must be an object\", function () {\r",
+									"        pm.expect(color).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"red_value\",\r",
+									"        \"green_value\",\r",
+									"        \"blue_value\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`color must include ${expected} property`, function () {\r",
+									"            pm.expect(color).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"red_value\", type: \"number\" },\r",
+									"        { prop: \"green_value\", type: \"number\" },\r",
+									"        { prop: \"blue_value\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(color[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid colors`, function () {\r",
+									"    responseJSON.forEach(color => isValidColor(color));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('ColorUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/colors?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"colors"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidColor = (color) => {\r",
+									"    pm.test(\"color must be an object\", function () {\r",
+									"        pm.expect(color).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"red_value\",\r",
+									"        \"green_value\",\r",
+									"        \"blue_value\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`color must include ${expected} property`, function () {\r",
+									"            pm.expect(color).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"red_value\", type: \"number\" },\r",
+									"        { prop: \"green_value\", type: \"number\" },\r",
+									"        { prop: \"blue_value\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(color[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid colors`, function () {\r",
+									"    isValidColor(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/color/{{ColorUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"color",
+								"{{ColorUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/color/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"color",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Customer",
@@ -865,7 +1439,187 @@
 		},
 		{
 			"name": "Insurance",
-			"item": []
+			"item": [
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidInsurance = (insurance) => {\r",
+									"    pm.test(\"insurance must be an object\", function () {\r",
+									"        pm.expect(insurance).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`insurance must include ${expected} property`, function () {\r",
+									"            pm.expect(insurance).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`insurance property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(insurance[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid insurances`, function () {\r",
+									"    responseJSON.forEach(insurance => isValidInsurance(insurance));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('InsuranceUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/insurances?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"insurances"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidInsurance = (insurance) => {\r",
+									"    pm.test(\"insurance must be an object\", function () {\r",
+									"        pm.expect(insurance).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`insurance must include ${expected} property`, function () {\r",
+									"            pm.expect(insurance).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`insurance property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(insurance[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid insurance`, function () {\r",
+									"    isValidInsurance(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/insurance/{{InsuranceUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"insurance",
+								"{{InsuranceUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/insurance/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"insurance",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Purchase",
@@ -873,6 +1627,338 @@
 		},
 		{
 			"name": "Model",
+			"item": [
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidModel = (model) => {\r",
+									"    pm.test(\"model must be an object\", function () {\r",
+									"        pm.expect(model).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"image_url\",\r",
+									"        \"id\",\r",
+									"        \"brand\",\r",
+									"        \"colors\"\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`model must include ${expected} property`, function () {\r",
+									"            pm.expect(model).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"image_url\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"        { prop: \"brand\", type: \"object\" },\r",
+									"        { prop: \"colors\", type: \"array\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`model property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(model[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    const isValidBrand = (brand) => {\r",
+									"        pm.test(\"brand must be an object\", function () {\r",
+									"            pm.expect(brand).to.be.an('object');\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"name\",\r",
+									"            \"logo_url\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`brand must include ${expected} property`, function () {\r",
+									"                pm.expect(brand).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"name\", type: \"string\" },\r",
+									"            { prop: \"logo_url\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`brand property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(brand[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"    }\r",
+									"\r",
+									"    const isValidColor = (color) => {\r",
+									"        pm.test(\"color must be an object\", function () {\r",
+									"            pm.expect(color).to.be.an('object');\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"name\",\r",
+									"            \"price\",\r",
+									"            \"red_value\",\r",
+									"            \"green_value\",\r",
+									"            \"blue_value\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`color must include ${expected} property`, function () {\r",
+									"                pm.expect(color).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"name\", type: \"string\" },\r",
+									"            { prop: \"price\", type: \"number\" },\r",
+									"            { prop: \"red_value\", type: \"number\" },\r",
+									"            { prop: \"green_value\", type: \"number\" },\r",
+									"            { prop: \"blue_value\", type: \"number\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(color[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"    }\r",
+									"\r",
+									"    pm.test(`model.brand must be valid a brand`, function () {\r",
+									"        isValidBrand(model.brand);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(`model.colors must be valid colors`, function () {\r",
+									"        model.colors.forEach(color => isValidColor(color));\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid models`, function () {\r",
+									"    responseJSON.forEach(model => isValidModel(model));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('ModelUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/models?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"models"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidModel = (model) => {\r",
+									"    pm.test(\"model must be an object\", function () {\r",
+									"        pm.expect(model).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"image_url\",\r",
+									"        \"id\",\r",
+									"        \"brand\",\r",
+									"        \"colors\"\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`model must include ${expected} property`, function () {\r",
+									"            pm.expect(model).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"image_url\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"        { prop: \"brand\", type: \"object\" },\r",
+									"        { prop: \"colors\", type: \"array\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`model property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(model[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    const isValidBrand = (brand) => {\r",
+									"        pm.test(\"brand must be an object\", function () {\r",
+									"            pm.expect(brand).to.be.an('object');\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"name\",\r",
+									"            \"logo_url\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`brand must include ${expected} property`, function () {\r",
+									"                pm.expect(brand).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"name\", type: \"string\" },\r",
+									"            { prop: \"logo_url\", type: \"string\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`brand property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(brand[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"    }\r",
+									"\r",
+									"    const isValidColor = (color) => {\r",
+									"        pm.test(\"color must be an object\", function () {\r",
+									"            pm.expect(color).to.be.an('object');\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            \"name\",\r",
+									"            \"price\",\r",
+									"            \"red_value\",\r",
+									"            \"green_value\",\r",
+									"            \"blue_value\",\r",
+									"            \"id\",\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`color must include ${expected} property`, function () {\r",
+									"                pm.expect(color).to.have.property(expected);\r",
+									"            });\r",
+									"        });\r",
+									"\r",
+									"        [\r",
+									"            { prop: \"name\", type: \"string\" },\r",
+									"            { prop: \"price\", type: \"number\" },\r",
+									"            { prop: \"red_value\", type: \"number\" },\r",
+									"            { prop: \"green_value\", type: \"number\" },\r",
+									"            { prop: \"blue_value\", type: \"number\" },\r",
+									"            { prop: \"id\", type: \"string\" },\r",
+									"        ].forEach(expected => {\r",
+									"            pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"                pm.expect(color[expected.prop])\r",
+									"                    .to.be.a(expected.type);\r",
+									"            });\r",
+									"        });\r",
+									"    }\r",
+									"\r",
+									"    pm.test(`model.brand must be valid a brand`, function () {\r",
+									"        isValidBrand(model.brand);\r",
+									"    });\r",
+									"\r",
+									"    pm.test(`model.colors must be valid colors`, function () {\r",
+									"        model.colors.forEach(color => isValidColor(color));\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a model`, function () {\r",
+									"    isValidModel(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/model/{{ModelUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"model",
+								"{{ModelUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/model/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"model",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sales People",
 			"item": []
 		}
 	]
