@@ -1,5 +1,5 @@
 # External Library imports
-from typing import List
+from typing import List, Optional
 
 # Internal library imports
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
@@ -13,8 +13,8 @@ from app.repositories.sales_person_repositories import (
 )
 
 
-def get_all(repository: SalesPersonRepository) -> List[SalesPersonReturnResource]:
-    return repository.get_all()
+def get_all(repository: SalesPersonRepository, sales_people_limit: Optional[int] = None) -> List[SalesPersonReturnResource]:
+    return repository.get_all(limit=sales_people_limit)
 
 def get_by_id(repository: SalesPersonRepository, sales_person_id: str) -> SalesPersonReturnResource:
     sales_person = repository.get_by_id(sales_person_id)

@@ -19,7 +19,8 @@ def get_all(
         customer_id: Optional[str] = None,
         sales_person_id: Optional[str] = None,
         is_purchased: Optional[bool] = None,
-        is_past_purchase_deadline: Optional[bool] = None) -> List[CarReturnResource]:
+        is_past_purchase_deadline: Optional[bool] = None,
+        cars_limit: Optional[int] = None) -> List[CarReturnResource]:
 
     customer_resource: Optional[CustomerReturnResource] = None
     if customer_id is not None:
@@ -36,7 +37,8 @@ def get_all(
         customer=customer_resource,
         sales_person=sales_person_resource,
         is_purchased=is_purchased,
-        is_past_purchase_deadline=is_past_purchase_deadline
+        is_past_purchase_deadline=is_past_purchase_deadline,
+        limit=cars_limit
     )
 
 def get_by_id(repository: CarRepository, car_id: str) -> Optional[CarReturnResource]:

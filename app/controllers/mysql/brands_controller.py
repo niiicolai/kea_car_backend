@@ -1,9 +1,9 @@
 # External Library imports
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 # Internal library imports
 from db import Session, get_db as get_db_session
@@ -25,11 +25,14 @@ def get_db():
     summary="Retrieve all Brands.",
     description="Fetches all Brands from the MySQL database and returns a list of 'BrandReturnResource'."
 )
-async def get_brands(session: Session = Depends(get_db)):
+async def get_brands(
+        limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of brands that is returned."),
+        session: Session = Depends(get_db)):
     error_message = "Failed to get brands from the MySQL database"
     try:
         return service.get_all(
-            repository=MySQLBrandRepository(session)
+            repository=MySQLBrandRepository(session),
+            brands_limit=limit
         )
     except SQLAlchemyError as e:
         raise HTTPException(

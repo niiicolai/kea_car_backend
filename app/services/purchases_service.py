@@ -16,8 +16,8 @@ from app.exceptions.database_errors import (
 
 
 
-def get_all(repository: PurchaseRepository) -> List[PurchaseReturnResource]:
-    return repository.get_all()
+def get_all(repository: PurchaseRepository, purchases_limit: Optional[int] = None)  -> List[PurchaseReturnResource]:
+    return repository.get_all(limit=purchases_limit)
 
 def get_by_id(repository: PurchaseRepository, purchase_id: str) -> PurchaseReturnResource:
     purchase = repository.get_by_id(purchase_id)
@@ -41,7 +41,7 @@ def create(purchase_repository: PurchaseRepository, car_repository: CarRepositor
         raise UnableToFindIdError(entity_name="Car", entity_id=car_id)
     if purchase_repository.is_car_taken(car):
         raise AlreadyTakenFieldValueError(entity_name="Purchase", field="cars_id", value=car_id)
-    date_of_purchase = purchase_create_data.date_of_purchase
+    date_of_purchase: date = purchase_create_data.date_of_purchase
     if car.purchase_deadline < date_of_purchase:
         raise PurchaseDeadlineHasPastError(car, date_of_purchase)
     return purchase_repository.create(purchase_create_data=purchase_create_data, car_resource=car)

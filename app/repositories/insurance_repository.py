@@ -9,7 +9,7 @@ from app.models.insurance import InsuranceReturnResource, InsuranceMySQLEntity
 
 class InsuranceRepository(ABC):
     @abstractmethod
-    def get_all(self) -> List[InsuranceReturnResource]:
+    def get_all(self, limit: Optional[int]) -> List[InsuranceReturnResource]:
         pass
 
     @abstractmethod
@@ -20,8 +20,11 @@ class MySQLInsuranceRepository(InsuranceRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self) -> List[InsuranceReturnResource]:
-        insurances: List[InsuranceMySQLEntity] = cast(List[InsuranceMySQLEntity], self.session.query(InsuranceMySQLEntity).all())
+    def get_all(self, limit: Optional[int]) -> List[InsuranceReturnResource]:
+        insurances_query = self.session.query(InsuranceMySQLEntity)
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            insurances_query = insurances_query.limit(limit)
+        insurances: List[InsuranceMySQLEntity] = cast(List[InsuranceMySQLEntity], insurances_query.all())
         return [insurance.as_resource() for insurance in insurances]
 
     def get_by_id(self, insurance_id: str) -> Optional[InsuranceReturnResource]:

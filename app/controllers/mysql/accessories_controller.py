@@ -1,9 +1,9 @@
 # External Library imports
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 
 # Internal library imports
@@ -26,11 +26,14 @@ def get_db():
     summary="Retrieve all Accessories.",
     description="Fetches all Accessories from the MySQL database and returns a list of 'AccessoryReturnResource'."
 )
-async def get_accessories(session: Session = Depends(get_db)):
+async def get_accessories(
+        limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of accessories that is returned."),
+        session: Session = Depends(get_db)):
     error_message = "Failed to get accessories from the MySQL database"
     try:
         return service.get_all(
-            repository=MySQLAccessoryRepository(session)
+            repository=MySQLAccessoryRepository(session),
+            accessory_limit=limit
         )
     except SQLAlchemyError as e:
         raise HTTPException(

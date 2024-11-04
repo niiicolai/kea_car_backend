@@ -37,6 +37,7 @@ async def get_cars(customer_id: Optional[UUID] = Query(default=None, description
                    sales_person_id: Optional[UUID] = Query(default=None, description="The UUID of the sales person, to retrieve cars belonging to that sales person."),
                    is_purchased: Optional[bool] = Query(default=None, description="Set to 'true' to retrieve only purchased cars, 'false' to retrieve only cars that has not been purchased and default retrieves both purchased and non-purchased cars."),
                    is_past_purchase_deadline: Optional[bool] = Query(default=None, description="Set to 'true' to retrieve only cars past purchase deadline, 'false' to retrieve only cars that has not past the purchased deadline and default retrieves cars that is past and not past purchase deadline."),
+                   limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of cars that is returned."),
                    session: Session = Depends(get_db)):
     error_message = "Failed to get cars from the MySQL database"
     try:
@@ -51,7 +52,8 @@ async def get_cars(customer_id: Optional[UUID] = Query(default=None, description
             customer_id=customer_id,
             sales_person_id=sales_person_id,
             is_purchased=is_purchased,
-            is_past_purchase_deadline=is_past_purchase_deadline
+            is_past_purchase_deadline=is_past_purchase_deadline,
+            cars_limit=limit
         )
 
     except UnableToFindIdError as e:

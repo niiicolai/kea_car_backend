@@ -1,9 +1,9 @@
 # External Library imports
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 # Internal library imports
 from db import Session, get_db as get_db_session
@@ -26,11 +26,13 @@ def get_db():
     summary="Retrieve all Insurances.",
     description="Fetches all Insurances from the MySQL database and returns a list of 'InsuranceReturnResource'."
 )
-async def get_insurances(session: Session = Depends(get_db)):
+async def get_insurances(limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of insurances that is returned."),
+                         session: Session = Depends(get_db)):
     error_message = "Failed to get insurances from the MySQL database"
     try:
         return service.get_all(
-            repository=MySQLInsuranceRepository(session)
+            repository=MySQLInsuranceRepository(session),
+            insurances_limit=limit
         )
     except SQLAlchemyError as e:
         raise HTTPException(

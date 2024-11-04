@@ -10,7 +10,7 @@ from app.models.brand import BrandReturnResource, BrandMySQLEntity
 class BrandRepository(ABC):
 
     @abstractmethod
-    def get_all(self) -> List[BrandReturnResource]:
+    def get_all(self, limit: Optional[int]) -> List[BrandReturnResource]:
         pass
 
     @abstractmethod
@@ -21,8 +21,12 @@ class MySQLBrandRepository(BrandRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self) -> List[BrandReturnResource]:
-        brands: List[BrandMySQLEntity] = cast(List[BrandMySQLEntity], self.session.query(BrandMySQLEntity).all())
+    def get_all(self, limit: Optional[int]) -> List[BrandReturnResource]:
+        brands_query = self.session.query(BrandMySQLEntity)
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            brands_query = brands_query.limit(limit)
+
+        brands: List[BrandMySQLEntity] = cast(List[BrandMySQLEntity], brands_query.all())
         return [brand.as_resource() for brand in brands]
 
     def get_by_id(self, brand_id: str) -> Optional[BrandReturnResource]:

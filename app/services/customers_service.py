@@ -1,5 +1,5 @@
 # External Library imports
-from typing import List
+from typing import List, Optional
 
 # Internal library imports
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
@@ -11,8 +11,8 @@ from app.repositories.customer_repositories import (
 )
 
 
-def get_all(repository: CustomerRepository) -> List[CustomerReturnResource]:
-    return repository.get_all()
+def get_all(repository: CustomerRepository, customers_limit: Optional[int] = None) -> List[CustomerReturnResource]:
+    return repository.get_all(limit=customers_limit)
 
 
 def get_by_id(repository: CustomerRepository, customer_id: str) -> CustomerReturnResource:

@@ -1,9 +1,9 @@
 # External Library imports
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 # Internal library imports
 from db import Session, get_db as get_db_session
@@ -30,11 +30,13 @@ def get_db():
     summary="Retrieve all Purchases.",
     description="Fetches all Purchases from the MySQL database and returns a list of 'PurchaseReturnResource'."
 )
-async def get_purchases(session: Session = Depends(get_db)):
+async def get_purchases(limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of purchases that is returned."),
+                        session: Session = Depends(get_db)):
     error_message = "Failed to get purchases from the MySQL database"
     try:
         return service.get_all(
-            repository=MySQLPurchaseRepository(session)
+            repository=MySQLPurchaseRepository(session),
+            purchases_limit=limit
         )
     except SQLAlchemyError as e:
         raise HTTPException(

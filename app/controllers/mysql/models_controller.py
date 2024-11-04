@@ -26,6 +26,7 @@ def get_db():
     description="Fetches all Models or all Models belonging to a brand from the MySQL database and returns a list of 'ModelReturnResource'."
 )
 async def get_models(brand_id: Optional[UUID] = Query(default=None, description="The UUID of the brand, to retrieve models belonging to that brand."),
+                     limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of models that is returned."),
                      session: Session = Depends(get_db)):
     error_message = "Failed to get models from the MySQL database"
     try:
@@ -34,7 +35,8 @@ async def get_models(brand_id: Optional[UUID] = Query(default=None, description=
         return service.get_all(
             model_repository=MySQLModelRepository(session),
             brand_repository=MySQLBrandRepository(session),
-            brand_id=brand_id
+            brand_id=brand_id,
+            brands_limit=limit
         )
     except UnableToFindIdError as e:
         raise HTTPException(

@@ -42,10 +42,11 @@ class CarRepository(ABC):
     @abstractmethod
     def get_all(
             self,
-            customer: Optional[CustomerReturnResource] = None,
-            sales_person: Optional[SalesPersonReturnResource] = None,
-            is_purchased: Optional[bool] = None,
-            is_past_purchase_deadline: Optional[bool] = None) -> List[CarReturnResource]:
+            customer: Optional[CustomerReturnResource],
+            sales_person: Optional[SalesPersonReturnResource],
+            is_purchased: Optional[bool],
+            is_past_purchase_deadline: Optional[bool],
+            limit: Optional[int]) -> List[CarReturnResource]:
         pass
 
 
@@ -75,10 +76,11 @@ class MySQLCarRepository(CarRepository):
 
     # TODO: Make it in to a stored procedure
     def get_all(self,
-            customer: Optional[CustomerReturnResource] = None,
-            sales_person: Optional[SalesPersonReturnResource] = None,
-            is_purchased: Optional[bool] = None,
-            is_past_purchase_deadline: Optional[bool] = None) -> List[CarReturnResource]:
+                customer: Optional[CustomerReturnResource],
+                sales_person: Optional[SalesPersonReturnResource],
+                is_purchased: Optional[bool],
+                is_past_purchase_deadline: Optional[bool],
+                limit: Optional[int]) -> List[CarReturnResource]:
 
         car_query = self.session.query(CarMySQLEntity)
         if customer is not None and isinstance(customer, CustomerReturnResource):
@@ -100,6 +102,9 @@ class MySQLCarRepository(CarRepository):
                 car_query = car_query.filter(CarMySQLEntity.purchase_deadline < current_date)
             else:
                 car_query = car_query.filter(CarMySQLEntity.purchase_deadline >= current_date)
+
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            car_query = car_query.limit(limit)
 
         cars: List[CarMySQLEntity] = cast(List[CarMySQLEntity], car_query.all())
         return [car.as_resource() for car in cars]

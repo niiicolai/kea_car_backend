@@ -14,7 +14,7 @@ class SalesPersonRepository(ABC):
         pass
 
     @abstractmethod
-    def get_all(self) -> List[SalesPersonReturnResource]:
+    def get_all(self, limit: Optional[int]) -> List[SalesPersonReturnResource]:
         pass
 
     @abstractmethod
@@ -45,8 +45,11 @@ class MySQLSalesPersonRepository(SalesPersonRepository):
         return sales_person_resource, hashed_password
 
 
-    def get_all(self) -> List[SalesPersonReturnResource]:
-        sales_people: List[SalesPersonMySQLEntity] = cast(List[SalesPersonMySQLEntity], self.session.query(SalesPersonMySQLEntity).all())
+    def get_all(self, limit: Optional[int]) -> List[SalesPersonReturnResource]:
+        sales_people_query = self.session.query(SalesPersonMySQLEntity)
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            sales_people_query = sales_people_query.limit(limit)
+        sales_people: List[SalesPersonMySQLEntity] = cast(List[SalesPersonMySQLEntity], sales_people_query.all())
         return [sales_person.as_resource() for sales_person in sales_people]
 
 

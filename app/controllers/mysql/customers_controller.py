@@ -1,9 +1,9 @@
 # External Library imports
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, Body, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Body, status
 
 # Internal library imports
 from db import Session, get_db as get_db_session
@@ -29,11 +29,13 @@ def get_db():
     summary="Retrieve all Customers.",
     description="Fetches all Customers from the MySQL database and returns a list of 'CustomerReturnResource'."
 )
-async def get_customers(session: Session = Depends(get_db)):
+async def get_customers(limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of customers that is returned."),
+                        session: Session = Depends(get_db)):
     error_message = "Failed to get customers from the MySQL database"
     try:
         return service.get_all(
-            repository=MySQLCustomerRepository(session)
+            repository=MySQLCustomerRepository(session),
+            customers_limit=limit
         )
     except SQLAlchemyError as e:
         raise HTTPException(

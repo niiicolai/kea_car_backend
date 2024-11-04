@@ -1,9 +1,9 @@
 # External Library imports
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, Form, HTTPException, Path, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query, status
 
 # Internal library imports
 from db import Session, get_db as get_db_session
@@ -106,11 +106,13 @@ async def login(sales_person_login_data: SalesPersonLoginResource, session: Sess
     summary="Retrieve all Sales People.",
     description="Fetches all Sales People from the MySQL database and returns a list of 'SalesPersonReturnResource'."
 )
-async def get_sales_people(session: Session = Depends(get_db)):
+async def get_sales_people(limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of sales people that is returned."),
+                           session: Session = Depends(get_db)):
     error_message = "Failed to get sales people from the MySQL database"
     try:
         return service.get_all(
-            repository=MySQLSalesPersonRepository(session)
+            repository=MySQLSalesPersonRepository(session),
+            sales_people_limit=limit
         )
     except SQLAlchemyError as e:
         raise HTTPException(

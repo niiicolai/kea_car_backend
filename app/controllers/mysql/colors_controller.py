@@ -1,9 +1,9 @@
 # External Library imports
 from uuid import UUID
-from typing import List
+from typing import List, Optional
 from pydantic import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
 # Internal library imports
 from db import Session, get_db as get_db_session
@@ -25,11 +25,13 @@ def get_db():
     summary="Retrieve all Colors.",
     description="Fetches all Colors from the MySQL database by giving a UUID in the path for the color and returns a list of 'ColorReturnResource'."
 )
-async def get_colors(session: Session = Depends(get_db)):
+async def get_colors(limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of colors that is returned."),
+                     session: Session = Depends(get_db)):
     error_message = "Failed to get colors from the MySQL database"
     try:
         return service.get_all(
-            repository=MySQLColorRepository(session)
+            repository=MySQLColorRepository(session),
+            colors_limit=limit
         )
     except SQLAlchemyError as e:
         raise HTTPException(

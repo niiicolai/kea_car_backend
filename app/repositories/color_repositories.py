@@ -10,7 +10,7 @@ from app.models.color import ColorReturnResource, ColorMySQLEntity
 class ColorRepository(ABC):
 
     @abstractmethod
-    def get_all(self) -> List[ColorReturnResource]:
+    def get_all(self, limit: Optional[int]) -> List[ColorReturnResource]:
         pass
 
     @abstractmethod
@@ -22,8 +22,11 @@ class MySQLColorRepository(ColorRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self) -> List[ColorReturnResource]:
-        colors: List[ColorMySQLEntity] = cast(List[ColorMySQLEntity], self.session.query(ColorMySQLEntity).all())
+    def get_all(self, limit: Optional[int]) -> List[ColorReturnResource]:
+        colors_query = self.session.query(ColorMySQLEntity)
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            colors_query = colors_query.limit(limit)
+        colors: List[ColorMySQLEntity] = cast(List[ColorMySQLEntity], colors_query.all())
         return [color.as_resource() for color in colors]
 
     def get_by_id(self, color_id: str) -> Optional[ColorReturnResource]:
