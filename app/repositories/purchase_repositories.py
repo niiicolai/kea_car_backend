@@ -64,6 +64,7 @@ class MySQLPurchaseRepository(PurchaseRepository):
 
         return new_purchase.as_resource()
 
+
     def is_car_taken(self, car_resource: CarReturnResource) -> bool:
         return self.session.query(PurchaseMySQLEntity).filter_by(cars_id=car_resource.id).first() is not None
 

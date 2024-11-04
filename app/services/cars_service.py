@@ -4,12 +4,13 @@ from typing import List, Optional
 # Internal library imports
 from app.repositories.model_repositories import ModelRepository, ModelReturnResource
 from app.repositories.color_repositories import ColorRepository, ColorReturnResource
+from app.repositories.purchase_repositories import PurchaseRepository, PurchaseReturnResource
 from app.repositories.customer_repositories import CustomerRepository, CustomerReturnResource
 from app.repositories.insurance_repository import InsuranceRepository, InsuranceReturnResource
 from app.repositories.accessory_repositories import AccessoryRepository, AccessoryReturnResource
 from app.repositories.car_repositories import CarRepository, CarReturnResource, CarCreateResource
 from app.repositories.sales_person_repositories import SalesPersonRepository, SalesPersonReturnResource
-from app.exceptions.database_errors import UnableToFindIdError, TheColorIsNotAvailableInModelToGiveToCarError
+from app.exceptions.database_errors import UnableToFindIdError, TheColorIsNotAvailableInModelToGiveToCarError, UnableToDeleteCarWithoutDeletingPurchaseTooError
 
 def get_all(
         car_repository: CarRepository,
@@ -102,3 +103,13 @@ def create(
         color_resource,
         accessory_resources,
         insurance_resources)
+
+def delete(car_repository: CarRepository, purchase_repository: PurchaseRepository, car_id: str, delete_purchase_too: bool) -> CarReturnResource:
+    car_resource = car_repository.get_by_id(car_id)
+    if car_resource is None:
+        raise UnableToFindIdError("Car", car_id)
+    car_has_purchase = purchase_repository.is_car_taken(car_resource)
+    if car_has_purchase and not delete_purchase_too:
+        raise UnableToDeleteCarWithoutDeletingPurchaseTooError(car_resource)
+
+    return car_repository.delete(car_resource, delete_purchase_too)

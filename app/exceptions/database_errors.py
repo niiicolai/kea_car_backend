@@ -1,5 +1,7 @@
 from datetime import date
 from app.resources.car_resource import CarReturnResource, ModelReturnResource, ColorReturnResource
+from app.resources.purchase_resource import PurchaseReturnResource
+
 
 class DatabaseError(Exception):
     pass
@@ -44,3 +46,11 @@ class TheColorIsNotAvailableInModelToGiveToCarError(DatabaseError):
 
     def __str__(self):
         return f"TheColorIsNotAvailableInModelToGiveToCarException: {self.message}"
+
+class UnableToDeleteCarWithoutDeletingPurchaseTooError(DatabaseError):
+    def __init__(self, car_resource: CarReturnResource):
+        self.message = f"The car with ID: '{car_resource.id}' must delete its purchase too."
+        super().__init__(self.message)  # Call the base class constructor
+
+    def __str__(self):
+        return f"UnableToDeleteCarWithoutDeletingPurchaseTooException: {self.message}"

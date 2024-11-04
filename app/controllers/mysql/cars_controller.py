@@ -10,12 +10,13 @@ from app.services import cars_service as service
 from db import Session, get_db as get_db_session
 from app.repositories.model_repositories import MySQLModelRepository
 from app.repositories.color_repositories import MySQLColorRepository
+from app.repositories.purchase_repositories import MySQLPurchaseRepository
 from app.repositories.insurance_repository import MySQLInsuranceRepository
 from app.repositories.customer_repositories import MySQLCustomerRepository
 from app.repositories.accessory_repositories import MySQLAccessoryRepository
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
 from app.repositories.car_repositories import MySQLCarRepository, CarReturnResource, CarCreateResource
-from app.exceptions.database_errors import UnableToFindIdError, TheColorIsNotAvailableInModelToGiveToCarError
+from app.exceptions.database_errors import UnableToFindIdError, TheColorIsNotAvailableInModelToGiveToCarError, UnableToDeleteCarWithoutDeletingPurchaseTooError
 
 
 router: APIRouter = APIRouter()
@@ -156,25 +157,34 @@ async def create_car(car_create_data: CarCreateResource, session: Session = Depe
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-# TODO: Implement delete car so it deletes the car and all the accessories and insurances it has.
-#  And give it a boolean parameter for making certain that you are certain you want to delete the car with its purchase if it has one
+
 @router.delete(
     path="/car/{car_id}",
     response_model=CarReturnResource,
     response_description="Successfully deleted a car, returns: CarReturnResource.",
-    summary="Delete a Car - NOT BEEN IMPLEMENTED YET.",
-    description="Deletes a Car within the MySQL database by giving a UUID in the path for the car and returns it as a 'BrandReturnResource'."
+    summary="Delete a Car.",
+    description="Deletes a Car within the MySQL database by giving a UUID in the path for the car and returns it as a 'CarReturnResource'."
 )
 async def delete_car(car_id: UUID = Path(..., description="The UUID of the car to delete."),
                      delete_purchase_too: bool = Query(default=False, description="A boolean that is default False, for if you are certain you want to delete the car with its purchase if it has one."),
                      session: Session = Depends(get_db)):
     error_message = "Failed to delete car within the MySQL database"
     try:
-        raise NotImplementedError("Request DELETE '/mysql/car/{car_id}' has not been implemented yet.")
+        return service.delete(
+            car_repository=MySQLCarRepository(session),
+            purchase_repository=MySQLPurchaseRepository(session),
+            car_id=str(car_id),
+            delete_purchase_too=delete_purchase_too
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
+        )
+    except UnableToDeleteCarWithoutDeletingPurchaseTooError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"Unable To Delete Car Without Deleting Purchase Too Error caught. {error_message}: {e}")
         )
     except SQLAlchemyError as e:
         raise HTTPException(

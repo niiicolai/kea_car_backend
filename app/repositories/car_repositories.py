@@ -21,9 +21,6 @@ from app.resources.car_resource import (
 )
 
 
-
-
-
 def calculate_total_price_for_car(
         model_resource: ModelReturnResource,
         color_resource: ColorReturnResource,
@@ -66,6 +63,10 @@ class CarRepository(ABC):
             color_resource: ColorReturnResource,
             accessory_resources: List[AccessoryReturnResource],
             insurance_resources: List[InsuranceReturnResource]) -> CarReturnResource:
+        pass
+
+    @abstractmethod
+    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool) -> CarReturnResource:
         pass
 
 class MySQLCarRepository(CarRepository):
@@ -159,6 +160,18 @@ class MySQLCarRepository(CarRepository):
             self.session.commit()
             self.session.refresh(new_car)
             return new_car.as_resource()
+        except Exception as e:
+            self.session.rollback()
+            raise SQLAlchemyError(f"{e}")
+
+    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool) -> CarReturnResource:
+        try:
+            if delete_purchase_too:
+                self.session.query(PurchaseMySQLEntity).filter_by(cars_id=car_resource.id).delete()
+                self.session.flush()
+            self.session.query(CarMySQLEntity).filter_by(id=car_resource.id).delete()
+            self.session.commit()
+            return car_resource
         except Exception as e:
             self.session.rollback()
             raise SQLAlchemyError(f"{e}")
