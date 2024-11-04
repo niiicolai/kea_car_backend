@@ -167,19 +167,22 @@ async def update_customer(customer_id: UUID = Path(..., description="The UUID of
             detail=str(f"Internal Server Error Caught. {error_message}: {e}")
         )
 
-# TODO: Implement deleting a customer, make certain that all cars, insurances, accessories and purchases are deleted too
+
 @router.delete(
     path="/customer/{customer_id}",
     response_model=CustomerReturnResource,
     response_description="Successfully deleted a customer, returns: CustomerReturnResource.",
-    summary="Delete a Customer - NOT BEEN IMPLEMENTED YET.",
+    summary="Delete a Customer.",
     description="Deletes a Customer within the MySQL database by giving a UUID in the path for the customer and returns it as a 'CustomerReturnResource'."
 )
 async def delete_customer(customer_id: UUID = Path(..., description="The UUID of the customer to delete."),
                           session: Session = Depends(get_db)):
     error_message = "Failed to delete customer within the MySQL database"
     try:
-        raise NotImplementedError("Request DELETE '/mysql/customer/{customer_id}' has not been implemented yet.")
+        return service.delete(
+            repository=MySQLCustomerRepository(session),
+            customer_id=str(customer_id)
+        )
     except UnableToFindIdError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

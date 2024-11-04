@@ -36,3 +36,9 @@ def update(repository: CustomerRepository, customer_id: str, customer_update_dat
         raise UnableToFindIdError(entity_name="Customer", entity_id=customer_id)
 
     return updated_customer
+
+def delete(repository: CustomerRepository, customer_id: str) -> CustomerReturnResource:
+    customer_resourcer = repository.delete(customer_id)
+    if customer_resourcer is None:
+        raise UnableToFindIdError(entity_name="Customer", entity_id=customer_id)
+    return customer_resourcer

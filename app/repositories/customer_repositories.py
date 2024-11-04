@@ -27,6 +27,10 @@ class CustomerRepository(ABC):
         pass
 
     @abstractmethod
+    def delete(self, customer_id: str) -> Optional[CustomerReturnResource]:
+        pass
+
+    @abstractmethod
     def is_email_taken(self, email: str) -> bool:
         pass
 
@@ -70,6 +74,17 @@ class MySQLCustomerRepository(CustomerRepository):
         self.session.refresh(customer)
 
         return customer.as_resource()
+
+    def delete(self, customer_id: str) -> Optional[CustomerReturnResource]:
+        customer: Optional[CustomerMySQLEntity] = self.session.query(CustomerMySQLEntity).get(customer_id)
+        if customer is None:
+            return None
+        customer_resource = customer.as_resource()
+        self.session.query(CustomerMySQLEntity).filter_by(id=customer_id).delete(
+            synchronize_session=False
+        )
+        self.session.commit()
+        return customer_resource
 
     def is_email_taken(self, email: str) -> bool:
         return self.session.query(CustomerMySQLEntity).filter_by(email=email).first() is not None
