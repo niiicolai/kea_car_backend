@@ -1,11 +1,11 @@
 # External Library imports
 from datetime import date
-from sqlalchemy import exists
+from sqlalchemy import text, exists
 from sqlalchemy.orm import Session
+from sqlalchemy.engine import ResultProxy
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy.exc import SQLAlchemyError
-
 
 # Internal library imports
 from app.models.purchase import PurchaseMySQLEntity
@@ -49,7 +49,6 @@ class CarRepository(ABC):
             limit: Optional[int]) -> List[CarReturnResource]:
         pass
 
-
     @abstractmethod
     def get_by_id(self, car_id: str) -> Optional[CarReturnResource]:
         pass
@@ -70,17 +69,18 @@ class CarRepository(ABC):
     def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool) -> CarReturnResource:
         pass
 
+
 class MySQLCarRepository(CarRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    # TODO: Make it in to a stored procedure
-    def get_all(self,
-                customer: Optional[CustomerReturnResource],
-                sales_person: Optional[SalesPersonReturnResource],
-                is_purchased: Optional[bool],
-                is_past_purchase_deadline: Optional[bool],
-                limit: Optional[int]) -> List[CarReturnResource]:
+    # This is the past function for get_all,that now uses a stored procedure to handle the logic of filtering all the cars to get
+    def get_all_past_function(self,
+                              customer: Optional[CustomerReturnResource],
+                              sales_person: Optional[SalesPersonReturnResource],
+                              is_purchased: Optional[bool],
+                              is_past_purchase_deadline: Optional[bool],
+                              limit: Optional[int]) -> List[CarReturnResource]:
 
         car_query = self.session.query(CarMySQLEntity)
         if customer is not None and isinstance(customer, CustomerReturnResource):
@@ -109,6 +109,50 @@ class MySQLCarRepository(CarRepository):
         cars: List[CarMySQLEntity] = cast(List[CarMySQLEntity], car_query.all())
         return [car.as_resource() for car in cars]
 
+    def get_all(self,
+                customer: Optional[CustomerReturnResource],
+                sales_person: Optional[SalesPersonReturnResource],
+                is_purchased: Optional[bool],
+                is_past_purchase_deadline: Optional[bool],
+                limit: Optional[int]) -> List[CarReturnResource]:
+
+        # Define parameters
+        customer_id = customer.id if customer else None
+        sales_person_id = sales_person.id if sales_person else None
+
+        cars_result = self.session.execute(
+            text("""
+                        CALL get_all_cars(
+                            :p_customer_id,
+                            :p_sales_person_id,
+                            :p_is_purchased,
+                            :p_is_past_purchase_deadline,
+                            :p_current_date,
+                            :p_limit
+                        );
+                    """),
+            {
+                "p_customer_id": customer_id,
+                "p_sales_person_id": sales_person_id,
+                "p_is_purchased": is_purchased,
+                "p_is_past_purchase_deadline": is_past_purchase_deadline,
+                "p_current_date": date.today(),
+                "p_limit": limit
+            }
+        ).fetchall()
+
+        cars: List[CarMySQLEntity] = []
+        for car_result in cars_result:
+            # Construct the dictionary directly
+            car_id: str = car_result[0]
+            if not isinstance(car_id, str):
+                raise SQLAlchemyError(f"The car_id '{car_id}' was not a string but a '{type(car_id).__name__}'.")
+            car = self.session.get(CarMySQLEntity, car_id)
+            if car is None:
+                raise SQLAlchemyError(f"The car with id: '{car_id}' did not exist in the database.")
+            car = cast(CarMySQLEntity, car)
+            cars.append(car)
+        return [car.as_resource() for car in cars]
 
     def get_by_id(self, car_id: str) -> Optional[CarReturnResource]:
         car: Optional[CarMySQLEntity] = self.session.query(CarMySQLEntity).get(car_id)
@@ -116,15 +160,14 @@ class MySQLCarRepository(CarRepository):
             return car.as_resource()
         return None
 
-
     def create(self,
-            car_create_data: CarCreateResource,
-            customer_resource: CustomerReturnResource,
-            sales_person_resource: SalesPersonReturnResource,
-            model_resource: ModelReturnResource,
-            color_resource: ColorReturnResource,
-            accessory_resources: List[AccessoryReturnResource],
-            insurance_resources: List[InsuranceReturnResource]) -> CarReturnResource:
+               car_create_data: CarCreateResource,
+               customer_resource: CustomerReturnResource,
+               sales_person_resource: SalesPersonReturnResource,
+               model_resource: ModelReturnResource,
+               color_resource: ColorReturnResource,
+               accessory_resources: List[AccessoryReturnResource],
+               insurance_resources: List[InsuranceReturnResource]) -> CarReturnResource:
 
         customer_id: str = customer_resource.id
         sales_person_id: str = sales_person_resource.id
@@ -161,7 +204,6 @@ class MySQLCarRepository(CarRepository):
                 ).values(cars_id=new_car.id, insurances_id=insurance_resource.id)
                 self.session.execute(insert)
 
-
             self.session.commit()
             self.session.refresh(new_car)
             return new_car.as_resource()
@@ -180,7 +222,6 @@ class MySQLCarRepository(CarRepository):
         except Exception as e:
             self.session.rollback()
             raise SQLAlchemyError(f"{e}")
-
 
 # Placeholder for future repositories
 # class OtherDBCarRepository(CarRepository):
