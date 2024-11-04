@@ -2,15 +2,19 @@
 from typing import List, Optional
 
 # Internal library imports
+from app.repositories.purchase_repositories import PurchaseRepository
 from app.repositories.model_repositories import ModelRepository, ModelReturnResource
 from app.repositories.color_repositories import ColorRepository, ColorReturnResource
-from app.repositories.purchase_repositories import PurchaseRepository, PurchaseReturnResource
 from app.repositories.customer_repositories import CustomerRepository, CustomerReturnResource
 from app.repositories.insurance_repository import InsuranceRepository, InsuranceReturnResource
 from app.repositories.accessory_repositories import AccessoryRepository, AccessoryReturnResource
 from app.repositories.car_repositories import CarRepository, CarReturnResource, CarCreateResource
 from app.repositories.sales_person_repositories import SalesPersonRepository, SalesPersonReturnResource
-from app.exceptions.database_errors import UnableToFindIdError, TheColorIsNotAvailableInModelToGiveToCarError, UnableToDeleteCarWithoutDeletingPurchaseTooError
+from app.exceptions.database_errors import (
+    UnableToFindIdError,
+    TheColorIsNotAvailableInModelToGiveToCarError,
+    UnableToDeleteCarWithoutDeletingPurchaseTooError
+)
 
 def get_all(
         car_repository: CarRepository,

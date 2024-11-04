@@ -1,11 +1,11 @@
 # External Library imports
-import logging
 import jwt
-from jwt import ExpiredSignatureError, InvalidTokenError
+import logging
 from typing import Optional, Union
 from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
+from jwt import ExpiredSignatureError, InvalidTokenError
 
 # Internal library imports
 from app.resources.sales_person_resource import SalesPersonReturnResource
@@ -15,16 +15,26 @@ logger = logging.getLogger(__name__)
 
 
 class TokenPayload(BaseModel):
-    email: str = Field(..., examples=["hans@gmail.com"])
+    email: str = Field(...,
+                       description="The email of the sales person that the token belongs to.",
+                       examples=["hans@gmail.com"]
+                       )
     expires_at: datetime = Field(...,
-                                 examples=[(datetime.utcnow() + timedelta(minutes=15)).strftime("%Y-%m-%dT%H:%M:%S")])
+                                 description="The date and time as UTC for when the token expires.",
+                                 examples=[(datetime.utcnow() + timedelta(minutes=15)).strftime("%Y-%m-%dT%H:%M:%S")]
+                                 )
 
 
 class Token(BaseModel):
-    access_token: str = Field(..., examples=[
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXNhbiIsImV4cCI6MTcyOTE2NTEyOX0.U1wCg1dyIX2U1dSjLHSpi3EGc99lXK1458G8j39TCiw"])
-    token_type: str = Field(..., examples=["bearer"])
-    sales_person: SalesPersonReturnResource = Field(...)
+    access_token: str = Field(...,
+                              description="The access token needed for accessing endpoints that requires authorization.",
+                              examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXNhbiIsImV4cCI6MTcyOTE2NTEyOX0.U1wCg1dyIX2U1dSjLHSpi3EGc99lXK1458G8j39TCiw"]
+                              )
+    token_type: str = Field(...,
+                            description="The type of token that is needed for authorization.",
+                            examples=["bearer"]
+                            )
+    sales_person: SalesPersonReturnResource = Field(..., description="The sales person that the token belongs to.")
 
 
 class TokenData(BaseModel):
@@ -58,7 +68,7 @@ def get_password_hash(password: str) -> str:
 def create_access_token(sales_person: SalesPersonReturnResource) -> Token:
     email = sales_person.email
     data: TokenData = TokenData(sub=email)
-    encoded_jwt = jwt.encode(data.dict(), SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(data.model_dump(), SECRET_KEY, algorithm=ALGORITHM)
     return Token(access_token=encoded_jwt, token_type="bearer", sales_person=sales_person)
 
 

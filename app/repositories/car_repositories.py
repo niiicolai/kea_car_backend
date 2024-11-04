@@ -2,7 +2,6 @@
 from datetime import date
 from sqlalchemy import text, exists
 from sqlalchemy.orm import Session
-from sqlalchemy.engine import ResultProxy
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy.exc import SQLAlchemyError

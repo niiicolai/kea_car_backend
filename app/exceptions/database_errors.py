@@ -1,7 +1,5 @@
 from datetime import date
 from app.resources.car_resource import CarReturnResource, ModelReturnResource, ColorReturnResource
-from app.resources.purchase_resource import PurchaseReturnResource
-
 
 class DatabaseError(Exception):
     pass
