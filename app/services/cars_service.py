@@ -110,7 +110,7 @@ def create(
         accessory_resources,
         insurance_resources)
 
-def delete(car_repository: CarRepository, purchase_repository: PurchaseRepository, car_id: str, delete_purchase_too: bool) -> CarReturnResource:
+def delete(car_repository: CarRepository, purchase_repository: PurchaseRepository, car_id: str, delete_purchase_too: bool):
     car_resource = car_repository.get_by_id(car_id)
     if car_resource is None:
         raise UnableToFindIdError("Car", car_id)
@@ -118,4 +118,4 @@ def delete(car_repository: CarRepository, purchase_repository: PurchaseRepositor
     if car_has_purchase and not delete_purchase_too:
         raise UnableToDeleteCarWithoutDeletingPurchaseTooError(car_resource)
 
-    return car_repository.delete(car_resource, delete_purchase_too)
+    car_repository.delete(car_resource, delete_purchase_too)

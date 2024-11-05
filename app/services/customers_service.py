@@ -37,8 +37,8 @@ def update(repository: CustomerRepository, customer_id: str, customer_update_dat
 
     return updated_customer
 
-def delete(repository: CustomerRepository, customer_id: str) -> CustomerReturnResource:
-    customer_resourcer = repository.delete(customer_id)
-    if customer_resourcer is None:
+def delete(repository: CustomerRepository, customer_id: str):
+    customer_resource = repository.get_by_id(customer_id)
+    if customer_resource is None:
         raise UnableToFindIdError(entity_name="Customer", entity_id=customer_id)
-    return customer_resourcer
+    repository.delete(customer_resource)

@@ -65,7 +65,7 @@ class CarRepository(ABC):
         pass
 
     @abstractmethod
-    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool) -> CarReturnResource:
+    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool):
         pass
 
 
@@ -210,14 +210,13 @@ class MySQLCarRepository(CarRepository):
             self.session.rollback()
             raise SQLAlchemyError(f"{e}")
 
-    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool) -> CarReturnResource:
+    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool):
         try:
             if delete_purchase_too:
                 self.session.query(PurchaseMySQLEntity).filter_by(cars_id=car_resource.id).delete()
                 self.session.flush()
             self.session.query(CarMySQLEntity).filter_by(id=car_resource.id).delete()
             self.session.commit()
-            return car_resource
         except Exception as e:
             self.session.rollback()
             raise SQLAlchemyError(f"{e}")

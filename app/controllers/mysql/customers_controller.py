@@ -172,16 +172,16 @@ async def update_customer(customer_id: UUID = Path(..., description="The UUID of
 
 @router.delete(
     path="/customer/{customer_id}",
-    response_model=CustomerReturnResource,
-    response_description="Successfully deleted a customer, returns: CustomerReturnResource.",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_description="Successfully deleted a customer.",
     summary="Delete a Customer.",
-    description="Deletes a Customer within the MySQL database by giving a UUID in the path for the customer and returns it as a 'CustomerReturnResource'."
+    description="Deletes a Customer within the MySQL database by giving a UUID in the path for the customer and returns a 204 status code."
 )
 async def delete_customer(customer_id: UUID = Path(..., description="The UUID of the customer to delete."),
                           session: Session = Depends(get_db)):
     error_message = "Failed to delete customer within the MySQL database"
     try:
-        return service.delete(
+        service.delete(
             repository=MySQLCustomerRepository(session),
             customer_id=str(customer_id)
         )
