@@ -24,3 +24,10 @@
    SECRET_KEY=Ask for the key
 5. Run the project:
    python main.py
+
+## Coverage
+Generate coverage report:
+```bash
+scripts/coverage.sh           # Generate coverage report for default directory
+scripts/coverage.sh path      # Generate coverage report for specific directory
+```
