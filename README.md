@@ -1,4 +1,5 @@
 # Python Project
+[![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
 
 ## Setup Instructions
 
@@ -24,3 +25,10 @@
    SECRET_KEY=Ask for the key
 5. Run the project:
    python main.py
+
+## Pylint
+For linting the project, run the following command:
+```bash	
+pylint app                    # Lint the app directory
+```
+Note: The configuration file for pylint is `.pylintrc`.
