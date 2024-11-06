@@ -11,6 +11,7 @@ from app.services import colors_service as service
 from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.color_repositories import MySQLColorRepository, ColorReturnResource
 
+from app.controllers.error_handler import error_handler
 
 router: APIRouter = APIRouter()
 
@@ -25,28 +26,10 @@ def get_db():
     summary="Retrieve all Colors.",
     description="Fetches all Colors from the MySQL database by giving a UUID in the path for the color and returns a list of 'ColorReturnResource'."
 )
-async def get_colors(limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of colors that is returned."),
-                     session: Session = Depends(get_db)):
-    error_message = "Failed to get colors from the MySQL database"
-    try:
-        return service.get_all(
-            repository=MySQLColorRepository(session),
-            colors_limit=limit
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}"))
+async def get_colors(
+        limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of colors that is returned."),
+        session: Session = Depends(get_db)):
+    return error_handler(lambda: service.get_all(repository=MySQLColorRepository(session), colors_limit=limit))
 
 @router.get(
     path="/color/{color_id}",
