@@ -26,9 +26,18 @@
 5. Run the project:
    python main.py
 
+
+## Coverage
+Generate coverage report:
+```bash
+scripts/coverage.sh           # Generate coverage report for default directory
+scripts/coverage.sh path      # Generate coverage report for specific directory
+```
+
 ## Pylint
 For linting the project, run the following command:
 ```bash	
 pylint app                    # Lint the app directory
 ```
 Note: The configuration file for pylint is `.pylintrc`.
+
