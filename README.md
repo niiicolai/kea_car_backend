@@ -38,3 +38,28 @@ pylint app                    # Lint the app directory
 ```
 Note: The configuration file for pylint is `.pylintrc`.
 
+## MySQL Dump
+To dump the database, run the following command:
+```bash
+# Dump the database to the specified directory
+python scripts/dump_mysql.py --directory="path/to/dump" 
+
+# Dump the database to the specified directory with the specified filename
+python scripts/dump_mysql.py --directory="path/to/dump" --filename="filename"
+
+# Show the help message
+python scripts/dump_mysql.py --help
+```
+
+**Examples**:
+```bash
+# Dump the database to the '/scripts' directory with the name 'mysql'
+# to update the MySQL script used in the CI pipeline.
+python scripts/dump_mysql.py --directory="./scripts" --filename="mysql"
+
+# Create a backup of the database in the '/backups' directory with the default name.
+# The default name is a timestamp to keep track of the backups.
+python scripts/dump_mysql.py --directory="./backups/mysql"
+```
+
+Note: The script will create the output directory if it does not exist.
