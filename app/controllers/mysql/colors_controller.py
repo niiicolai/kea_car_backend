@@ -8,7 +8,7 @@ from db import Session, get_db as get_db_session
 from app.services import colors_service as service
 from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.color_repositories import MySQLColorRepository, ColorReturnResource
-from app.controllers.error_handler import error_handler
+from app.controllers.mysql_error_handler import mysql_error_handler
 
 router: APIRouter = APIRouter()
 
@@ -27,7 +27,7 @@ def get_db():
 async def get_colors(
         limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of colors that is returned."),
         session: Session = Depends(get_db)):
-    return error_handler(lambda: service.get_all(MySQLColorRepository(session), limit))
+    return mysql_error_handler(lambda: service.get_all(MySQLColorRepository(session), limit))
 
 
 @router.get(
@@ -40,6 +40,6 @@ async def get_colors(
 async def get_color(
         color_id: str = Path(..., description="The UUID of the color to retrieve."),
         session: Session = Depends(get_db)):
-    return error_handler(lambda: service.get_by_id(MySQLColorRepository(session), color_id), {
+    return mysql_error_handler(lambda: service.get_by_id(MySQLColorRepository(session), color_id), {
         UnableToFindIdError: { "status_code": status.HTTP_404_NOT_FOUND }
     })

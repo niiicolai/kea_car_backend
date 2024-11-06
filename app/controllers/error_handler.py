@@ -1,8 +1,6 @@
 
 from typing import Callable
 from fastapi import HTTPException, status
-from sqlalchemy.exc import SQLAlchemyError
-from pydantic import ValidationError
 import logging
 
 """
@@ -35,10 +33,7 @@ return error_handler(lambda: service.get_by_id(repository=MySQLColorRepository(s
 
 ```
 """
-def error_handler(callback: Callable, customExceptions: dict = {}, defaultExceptions: dict = {
-    SQLAlchemyError: { "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY },
-    ValidationError: { "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY },
-}):
+def error_handler(callback: Callable, customExceptions: dict = {}, defaultExceptions: dict = {}):
     try:
         return callback()
     except Exception as e:
