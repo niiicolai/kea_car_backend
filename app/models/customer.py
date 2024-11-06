@@ -20,6 +20,9 @@ class CustomerMySQLEntity(Base):
 
     cars = relationship('CarMySQLEntity', back_populates='customer')
 
+    car_purchase_view = relationship("CarPurchaseView", back_populates="car_customer", viewonly=True)
+
+
 
     def as_resource(self) -> CustomerReturnResource:
         return CustomerReturnResource(

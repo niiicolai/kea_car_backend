@@ -14,8 +14,9 @@ class ModelBaseResource(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
-    
-class ModelReturnResource(ModelBaseResource):
+class ModelBaseReturnResource(ModelBaseResource):
     id: str = Field(..., description="The UUID for the model.", examples=["ed996516-a141-4f4e-8991-3edeaba81c14"])
     brand: BrandReturnResource = Field(..., description="The model's Brand as a BrandReturnResource.")
+    
+class ModelReturnResource(ModelBaseReturnResource):
     colors: List[ColorReturnResource] = Field(..., description="The model's Colors as a list of ColorReturnResource.")

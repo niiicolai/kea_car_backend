@@ -17,15 +17,32 @@ from app.exceptions.database_errors import (
 
 
 def get_all(repository: PurchaseRepository, purchases_limit: Optional[int] = None)  -> List[PurchaseReturnResource]:
+    if not isinstance(repository, PurchaseRepository):
+        raise TypeError(f"repository must be of type PurchaseRepository, not {type(repository)}")
+    if not (isinstance(purchases_limit, int) or purchases_limit is None):
+        raise TypeError(f"purchases_limit must be of type int or None, not {type(purchases_limit)}")
+
     return repository.get_all(limit=purchases_limit)
 
 def get_by_id(repository: PurchaseRepository, purchase_id: str) -> PurchaseReturnResource:
+    if not isinstance(repository, PurchaseRepository):
+        raise TypeError(f"repository must be of type PurchaseRepository, not {type(repository)}")
+    if not isinstance(purchase_id, str):
+        raise TypeError(f"purchase_id must be of type str, not {type(purchase_id)}")
+
     purchase = repository.get_by_id(purchase_id)
     if purchase is None:
         raise UnableToFindIdError(entity_name="Purchase", entity_id=purchase_id)
     return purchase
 
 def get_by_car_id(purchase_repository: PurchaseRepository, car_repository: CarRepository, car_id: str) -> PurchaseReturnResource:
+    if not isinstance(purchase_repository, PurchaseRepository):
+        raise TypeError(f"purchase_repository must be of type PurchaseRepository, not {type(purchase_repository)}")
+    if not isinstance(car_repository, CarRepository):
+        raise TypeError(f"car_repository must be of type CarRepository, not {type(car_repository)}")
+    if not isinstance(car_id, str):
+        raise TypeError(f"car_id must be of type str, not {type(car_id)}")
+
     car: Optional[CarReturnResource] = car_repository.get_by_id(car_id)
     if car is None:
         raise UnableToFindIdError(entity_name="Car", entity_id=car_id)
@@ -35,6 +52,13 @@ def get_by_car_id(purchase_repository: PurchaseRepository, car_repository: CarRe
     return purchase
 
 def create(purchase_repository: PurchaseRepository, car_repository: CarRepository, purchase_create_data: PurchaseCreateResource) -> PurchaseReturnResource:
+    if not isinstance(purchase_repository, PurchaseRepository):
+        raise TypeError(f"purchase_repository must be of type PurchaseRepository, not {type(purchase_repository)}")
+    if not isinstance(car_repository, CarRepository):
+        raise TypeError(f"car_repository must be of type CarRepository, not {type(car_repository)}")
+    if not isinstance(purchase_create_data, PurchaseCreateResource):
+        raise TypeError(f"purchase_create_data must be of type PurchaseCreateResource, not {type(purchase_create_data)}")
+
     car_id: str = str(purchase_create_data.cars_id)
     car: Optional[CarReturnResource] = car_repository.get_by_id(car_id)
     if car is None:

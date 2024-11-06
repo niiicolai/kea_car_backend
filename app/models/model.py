@@ -7,7 +7,7 @@ from sqlalchemy import Column, String, Double, ForeignKey
 # Internal library imports
 from db import Base
 from app.models.brand import BrandMySQLEntity
-from app.resources.model_resource import ModelReturnResource
+from app.resources.model_resource import ModelReturnResource, ModelBaseReturnResource
 from app.models.color import ColorMySQLEntity, models_has_colors
 
 
@@ -19,10 +19,18 @@ class ModelMySQLEntity(Base):
     price: Mapped[float] = Column(Double, nullable=False)
     image_url: Mapped[Optional[str]] = Column(String(255), nullable=False)
 
-    brand: Mapped[BrandMySQLEntity] = relationship('BrandMySQLEntity', back_populates='models', lazy=False)
+    brand: Mapped[BrandMySQLEntity] = relationship('BrandMySQLEntity', back_populates='models', lazy=False, uselist=False)
     colors: Mapped[List[ColorMySQLEntity]] = relationship('ColorMySQLEntity', secondary=models_has_colors, back_populates='models', lazy=False)
     cars = relationship('CarMySQLEntity', back_populates='model')
 
+    def as_resource_without_colors(self) -> ModelBaseReturnResource:
+        return ModelBaseReturnResource(
+            id=self.id,
+            brand=self.brand.as_resource(),
+            name=self.name,
+            price=self.price,
+            image_url=self.image_url,
+        )
 
     def as_resource(self) -> ModelReturnResource:
         return ModelReturnResource(

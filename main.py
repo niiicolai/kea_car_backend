@@ -7,6 +7,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from db import Session
 from db import get_db as get_db_session
 from app.core.security import TokenPayload, get_current_mysql_sales_person_token
+
 from app.controllers.mysql import (
     accessories_controller as mysql_accessories_controller,
     brands_controller as mysql_brands_controller,
@@ -18,6 +19,7 @@ from app.controllers.mysql import (
     purchases_controller as mysql_purchases_controller,
     sales_people_controller as mysql_sales_people_controller
 )
+from app.controllers.mysql.views import car_purchase_controller as mysql_car_purchase_controller
 
 app = FastAPI()
 
@@ -39,6 +41,7 @@ app.include_router(mysql_insurances_controller.router, prefix="/mysql", tags=["M
 app.include_router(mysql_models_controller.router, prefix="/mysql", tags=["MySQL - Models"])
 app.include_router(mysql_purchases_controller.router, prefix="/mysql", tags=["MySQL - Purchases"])
 app.include_router(mysql_sales_people_controller.router, prefix="/mysql", tags=["MySQL - Sales People"])
+app.include_router(mysql_car_purchase_controller.router, prefix="/mysql", tags=["MySQL View - Cars Purchases"])
 
 
 
