@@ -8,7 +8,7 @@ from app.resources.customer_resource import CustomerReturnResource
 from app.resources.accessory_resource import AccessoryReturnResource
 from app.resources.insurance_resource import InsuranceReturnResource
 from app.resources.sales_person_resource import SalesPersonReturnResource
-from app.resources.model_resource import ModelReturnResource, ColorReturnResource
+from app.resources.model_resource import ModelReturnResource, ColorReturnResource, ModelBaseReturnResource
 
 
 def calculate_purchase_deadline() -> date:
@@ -50,13 +50,14 @@ class CarCreateResource(CarBaseResource):
             raise ValueError(f"The given purchase deadline '{purchase_deadline.strftime('%dd-%m-%Y')}' must be before the current date '{current_date.strftime('%d-%m-%Y')}'.")
         return purchase_deadline
 
-
-class CarReturnResource(CarBaseResource):
-    total_price: float = Field(..., gt=0, description="The total price for the car in kroner.", examples=[999.99])
-    id: str = Field(..., description="The UUID for the car", examples=["e7bd48c2-f1c4-4e1a-b0fc-dc09f2d8f28a"])
-    model: ModelReturnResource = Field(..., description="The car's Model as a ModelReturnResource.")
+class CarBaseReturnResource(CarBaseResource):
+    id: str = Field(..., description="The UUID for the car.", examples=["e7bd48c2-f1c4-4e1a-b0fc-dc09f2d8f28a"])
+    model: ModelBaseReturnResource = Field(..., description="The car's Model as a ModelBaseReturnResource.")
     color: ColorReturnResource = Field(..., description="The car's Color as a ColorReturnResource.")
-    customer: CustomerReturnResource = Field(..., description="The car's Customer as a CustomerReturnResource.")
-    sales_person: SalesPersonReturnResource = Field(..., description="The car's Sales Person as a SalesPersonReturnResource.")
     accessories: List[AccessoryReturnResource] = Field(..., description="The car's Accessories as a list of AccessoryReturnResource.")
     insurances: List[InsuranceReturnResource] = Field(..., description="The car's Insurances as a list of InsuranceReturnResource.")
+
+class CarReturnResource(CarBaseReturnResource):
+    model: ModelReturnResource = Field(..., description="The car's Model as a ModelReturnResource.")
+    customer: CustomerReturnResource = Field(..., description="The car's Customer as a CustomerReturnResource.")
+    sales_person: SalesPersonReturnResource = Field(..., description="The car's Sales Person as a SalesPersonReturnResource.")

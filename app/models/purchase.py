@@ -7,7 +7,7 @@ from sqlalchemy import Column, String, Date, ForeignKey
 # Internal library imports
 from db import Base
 from app.models.car import CarMySQLEntity
-from app.resources.purchase_resource import PurchaseReturnResource
+from app.resources.purchase_resource import PurchaseReturnResource, PurchaseBaseReturnResource
 
 
 class PurchaseMySQLEntity(Base):
@@ -18,10 +18,17 @@ class PurchaseMySQLEntity(Base):
 
     car: Mapped[CarMySQLEntity] = relationship('CarMySQLEntity', back_populates='purchase', uselist=False, lazy=False)
 
+    car_purchase_view = relationship("CarPurchaseView", back_populates="car_purchase", viewonly=True)
+
+    def as_resource_without_car(self) -> PurchaseBaseReturnResource:
+        return PurchaseBaseReturnResource(
+            id=self.id,
+            date_of_purchase=self.date_of_purchase,
+        )
 
     def as_resource(self) -> PurchaseReturnResource:
         return PurchaseReturnResource(
             id=self.id,
             date_of_purchase=self.date_of_purchase,
-            car=self.car,
+            car=self.car.as_resource(),
         )
