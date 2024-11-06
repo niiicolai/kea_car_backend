@@ -38,6 +38,24 @@ pylint app                    # Lint the app directory
 ```
 Note: The configuration file for pylint is `.pylintrc`.
 
+## API Testing
+To test the API tests, you can either import the collection and environment files into Postman or use newman to run the tests from the command line and the `scripts/api_test.py` script.
+```bash
+# Install newman globally if you haven't already
+# Note: This requires Node.js to be installed on your system
+# Note: Only required the first time
+npm install -g newman
+
+# Usage
+newman run <collection> -e <environment>
+```
+
+**Examples**:
+```bash
+# Run the API tests with the MySQL environment
+newman run "./api-tests/KEA Car API Test.postman_collection.json" -e "./api-tests/KEA Car Mysql.postman_environment.json"
+```
+
 ## MySQL Dump
 To dump the database, run the following command:
 ```bash
