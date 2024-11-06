@@ -14,9 +14,19 @@ from app.repositories.sales_person_repositories import (
 
 
 def get_all(repository: SalesPersonRepository, sales_people_limit: Optional[int] = None) -> List[SalesPersonReturnResource]:
+    if not isinstance(repository, SalesPersonRepository):
+        raise TypeError(f"repository must be of type SalesPersonRepository, not {type(repository)}")
+    if not (isinstance(sales_people_limit, int) or sales_people_limit is None):
+        raise TypeError(f"sales_people_limit must be of type int or None, not {type(sales_people_limit)}")
+
     return repository.get_all(limit=sales_people_limit)
 
 def get_by_id(repository: SalesPersonRepository, sales_person_id: str) -> SalesPersonReturnResource:
+    if not isinstance(repository, SalesPersonRepository):
+        raise TypeError(f"repository must be of type SalesPersonRepository, not {type(repository)}")
+    if not isinstance(sales_person_id, str):
+        raise TypeError(f"sales_person_id must be of type str, not {type(sales_person_id)}")
+
     sales_person = repository.get_by_id(sales_person_id)
     if sales_person is None:
         raise UnableToFindIdError(entity_name="Sales Person", entity_id=sales_person_id)
@@ -24,6 +34,11 @@ def get_by_id(repository: SalesPersonRepository, sales_person_id: str) -> SalesP
 
 
 def login(repository: SalesPersonRepository, sales_person_login_data: SalesPersonLoginResource) -> Token:
+    if not isinstance(repository, SalesPersonRepository):
+        raise TypeError(f"repository must be of type SalesPersonRepository, not {type(repository)}")
+    if not isinstance(sales_person_login_data, SalesPersonLoginResource):
+        raise TypeError(f"sales_person_login_data must be of type SalesPersonLoginResource, not {type(sales_person_login_data)}")
+
     verified_email = repository.login_by_email(sales_person_login_data)
     if verified_email is None:
         raise IncorrectEmailError(sales_person_login_data.email)
@@ -35,6 +50,11 @@ def login(repository: SalesPersonRepository, sales_person_login_data: SalesPerso
     return create_access_token(sales_person_resource)
 
 def create(repository: SalesPersonRepository, sales_person_create_data: SalesPersonCreateResource) -> SalesPersonReturnResource:
+    if not isinstance(repository, SalesPersonRepository):
+        raise TypeError(f"repository must be of type SalesPersonRepository, not {type(repository)}")
+    if not isinstance(sales_person_create_data, SalesPersonCreateResource):
+        raise TypeError(f"sales_person_create_data must be of type SalesPersonCreateResource, not {type(sales_person_create_data)}")
+
     hashed_password: str = get_password_hash(sales_person_create_data.password)
     if repository.is_email_taken(sales_person_create_data.email):
         raise AlreadyTakenFieldValueError(

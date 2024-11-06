@@ -20,11 +20,6 @@ def create_sales_person_with_cars_resource(
     sale_person_cars: List[CarPurchaseSalePersonReturnResource]
 ) -> SalesPersonWithCarsReturnResource:
 
-    if not isinstance(sales_person_resource, SalesPersonReturnResource):
-        raise TypeError(f"sales_person_resource should be a SalesPersonReturnResource, not {type(sales_person_resource)}.")
-    if not all(isinstance(car, CarPurchaseSalePersonReturnResource) for car in sale_person_cars):
-        raise TypeError("Each item in sale_person_cars should be a CarPurchaseViewSalePersonReturnResource")
-
     return SalesPersonWithCarsReturnResource(
         id=sales_person_resource.id,
         email=sales_person_resource.email,
@@ -37,11 +32,6 @@ def create_customer_with_cars_resource(
         customer_resource: CustomerReturnResource,
         customer_cars: List[CarPurchaseCustomerReturnResource]
 ) -> CustomerWithCarsReturnResource:
-
-    if not isinstance(customer_resource, CustomerReturnResource):
-        raise TypeError(f"customer_resource should be a CustomerReturnResource, not {type(customer_resource)}.")
-    if not all(isinstance(car, CarPurchaseCustomerReturnResource) for car in customer_cars):
-        raise TypeError("Each item in customer_cars should be a CarPurchaseViewCustomerReturnResource")
 
     return CustomerWithCarsReturnResource(
         id=customer_resource.id,
