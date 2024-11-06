@@ -6,7 +6,7 @@ from main import app
 from db import get_db
 from app.models.color import ColorMySQLEntity
 
-os.environ["TESTING"] = "true"
+# TODO: We need a better way to structure how we test and how and what database we are giving to these tests.
 
 @pytest.fixture(scope="module")
 def client():
