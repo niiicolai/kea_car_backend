@@ -8,7 +8,12 @@ from sqlalchemy.exc import SQLAlchemyError
 
 # Internal library imports
 from app.models.purchase import PurchaseMySQLEntity
-from app.models.car import CarReturnResource, CarMySQLEntity, cars_has_accessories, cars_has_insurances
+from app.models.car import (
+    CarReturnResource,
+    CarMySQLEntity,
+    cars_has_accessories,
+    cars_has_insurances
+)
 from app.resources.car_resource import (
     CarCreateResource,
     CustomerReturnResource,

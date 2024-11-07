@@ -14,7 +14,7 @@ class ModelRepository(ABC):
         pass
 
     @abstractmethod
-    def get_by_id(self, insurance_id: str) -> Optional[ModelReturnResource]:
+    def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:
         pass
 
 class MySQLModelRepository(ModelRepository):

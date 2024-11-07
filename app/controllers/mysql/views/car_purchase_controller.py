@@ -29,13 +29,28 @@ def get_db():
 @router.get(
     path="/car_purchase/sales_person/{sales_person_id}",
     response_model=SalesPersonWithCarsReturnResource,
-    response_description="Successfully retrieved a sales person with cars, returns: SalesPersonWithCarsReturnResource",
+    response_description=
+    """
+    Successfully retrieved a sales person with cars.
+    Returns: SalesPersonWithCarsReturnResource.
+    """,
     summary="Retrieve sales person with cars.",
-    description="Fetches a Sales Person with cars from the MySQL database by giving a UUID in the path for the sales person and returns it as a 'SalesPersonWithCarsReturnResource'."
+    description=
+    """
+    Retrieves a Sales Person with cars from the MySQL database by giving a UUID in the 
+    path for the sales person and returns it as a 'SalesPersonWithCarsReturnResource'.
+    """
 )
 async def get_sales_person_with_car_purchases(
-        sales_person_id: UUID = Path(..., description="The UUID of the sales person to retrieve with cars."),
-        session: Session = Depends(get_db)):
+        sales_person_id: UUID = Path(
+            default=...,
+            description=
+            """
+            The UUID of the sales person to retrieve with cars.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get sales person with car purchases from the MySQL database"
 
     try:
@@ -68,13 +83,28 @@ async def get_sales_person_with_car_purchases(
 @router.get(
     path="/car_purchase/customer/{customer_id}",
     response_model=CustomerWithCarsReturnResource,
-    response_description="Successfully retrieved a customer with cars, returns: CustomerWithCarsReturnResource",
+    response_description=
+    """
+    Successfully retrieved a customer with cars.
+    Returns: CustomerWithCarsReturnResource.
+    """,
     summary="Retrieve customer with cars.",
-    description="Fetches a Customer with cars from the MySQL database by giving a UUID in the path for the customer and returns it as a 'CustomerWithCarsReturnResource'."
+    description=
+    """
+    Retrieves a Customer with cars from the MySQL database by giving a UUID in the 
+    path for the customer and returns it as a 'CustomerWithCarsReturnResource'.
+    """
 )
 async def get_customer_with_car_purchases(
-        customer_id: UUID = Path(..., description="The UUID of the customer to retrieve with cars."),
-        session: Session = Depends(get_db)):
+        customer_id: UUID = Path(
+            default=...,
+            description=
+            """
+            The UUID of the customer to retrieve with cars.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get customer with car purchases from the MySQL database"
     try:
         return service.get_customer_with_cars(
