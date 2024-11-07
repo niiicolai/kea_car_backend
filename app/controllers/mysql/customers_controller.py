@@ -25,12 +25,28 @@ def get_db():
 @router.get(
     path="/customers",
     response_model=List[CustomerReturnResource],
-    response_description="Successfully retrieved list of customers, returns: List[CustomerReturnResource]",
-    summary="Retrieve all Customers.",
-    description="Fetches all Customers from the MySQL database and returns a list of 'CustomerReturnResource'."
+    response_description=
+    """
+    Successfully retrieved a list of customers. 
+    Returns: List[CustomerReturnResource].
+    """,
+    summary="Retrieve Customers.",
+    description=
+    """
+    Retrieves all or a limited amount of Customers from the 
+    MySQL database and returns a list of 'CustomerReturnResource'.
+    """
 )
-async def get_customers(limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of customers that is returned."),
-                        session: Session = Depends(get_db)):
+async def get_customers(
+        limit: Optional[int] = Query(
+            default=None, ge=1,
+            description=
+            """
+            Set a limit for the amount of customers that is returned.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get customers from the MySQL database"
     try:
         return service.get_all(
@@ -56,12 +72,28 @@ async def get_customers(limit: Optional[int] = Query(default=None, ge=1, descrip
 @router.get(
     path="/customer/{customer_id}",
     response_model=CustomerReturnResource,
-    response_description="Successfully retrieved a customer, returns: CustomerReturnResource",
+    response_description=
+    """
+    Successfully retrieved a customer.
+    Returns: CustomerReturnResource.
+    """,
     summary="Retrieve a Customer by ID.",
-    description="Fetches a Customer by ID from the MySQL database and returns it as a 'CustomerReturnResource'."
+    description=
+    """
+    Retrieves a Customer by ID from the MySQL database 
+    and returns it as a 'CustomerReturnResource'.
+    """
 )
-async def get_customer(customer_id: UUID = Path(..., description="The UUID of the customer to retrieve."),
-                       session: Session = Depends(get_db)):
+async def get_customer(
+        customer_id: UUID = Path(
+            default=...,
+            description=
+            """
+            The UUID of the customer to retrieve.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get customer from the MySQL database"
     try:
         return service.get_by_id(
@@ -93,11 +125,23 @@ async def get_customer(customer_id: UUID = Path(..., description="The UUID of th
 @router.post(
     path="/customer",
     response_model=CustomerReturnResource,
-    response_description="Successfully created a customer, returns: CustomerReturnResource.",
+    response_description=
+    """
+    Successfully created a customer.
+    Returns: CustomerReturnResource.
+    """,
     summary="Create a Customer.",
-    description="Creates a Customer within the MySQL database by giving a request body 'CustomerCreateResource' and returns it as a 'CustomerReturnResource'."
+    description=
+    """
+    Creates a Customer within the MySQL database 
+    by giving a request body 'CustomerCreateResource' 
+    and returns it as a 'CustomerReturnResource'.
+    """
 )
-async def create_customer(customer_create_data: CustomerCreateResource, session: Session = Depends(get_db)):
+async def create_customer(
+        customer_create_data: CustomerCreateResource,
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to create customer within the MySQL database"
     try:
         return service.create(
@@ -129,13 +173,34 @@ async def create_customer(customer_create_data: CustomerCreateResource, session:
 @router.put(
     path="/customer/{customer_id}",
     response_model=CustomerReturnResource,
-    response_description="Successfully updated a customer, returns: CustomerReturnResource.",
+    response_description=
+    """
+    Successfully updated a customer.
+    Returns: CustomerReturnResource.
+    """,
     summary="Update a Customer.",
-    description="Updates a Customer within the MySQL database by giving a UUID in the path for the customer and by giving a request body 'CustomerUpdateResource' and returns it as a 'CustomerReturnResource'."
+    description=
+    """
+    Updates a Customer within the MySQL database 
+    by giving a UUID in the path for the customer 
+    and by giving a request body 'CustomerUpdateResource' 
+    and returns it as a 'CustomerReturnResource'.
+    """
 )
-async def update_customer(customer_id: UUID = Path(..., description="The UUID of the customer to update."),
-                          customer_update_data: CustomerUpdateResource = Body(..., title="CustomerUpdateResource"),
-                          session: Session = Depends(get_db)):
+async def update_customer(
+        customer_id: UUID = Path(
+            default=...,
+            description=
+            """
+            The UUID of the customer to update.
+            """
+        ),
+        customer_update_data: CustomerUpdateResource = Body(
+            default=...,
+            title="CustomerUpdateResource"
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to update customer within the MySQL database"
     try:
         return service.update(
@@ -173,12 +238,29 @@ async def update_customer(customer_id: UUID = Path(..., description="The UUID of
 @router.delete(
     path="/customer/{customer_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    response_description="Successfully deleted a customer.",
+    response_description=
+    """
+    Successfully deleted a customer.
+    Returns: 204 No Content.
+    """,
     summary="Delete a Customer.",
-    description="Deletes a Customer within the MySQL database by giving a UUID in the path for the customer and returns a 204 status code."
+    description=
+    """
+    Deletes a Customer within the MySQL database 
+    by giving a UUID in the path for the customer 
+    and returns a 204 status code.
+    """
 )
-async def delete_customer(customer_id: UUID = Path(..., description="The UUID of the customer to delete."),
-                          session: Session = Depends(get_db)):
+async def delete_customer(
+        customer_id: UUID = Path(
+            default=...,
+            description=
+            """
+            The UUID of the customer to delete.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to delete customer within the MySQL database"
     try:
         service.delete(

@@ -21,13 +21,36 @@ def get_db():
 @router.get(
     path="/models",
     response_model=List[ModelReturnResource],
-    response_description="Successfully retrieved list of models, returns: List[ModelReturnResource]",
-    summary="Retrieve all Models.",
-    description="Fetches all Models or all Models belonging to a brand from the MySQL database and returns a list of 'ModelReturnResource'."
+    response_description=
+    """
+    Successfully retrieved a list of models.
+    Returns: List[ModelReturnResource].
+    """,
+    summary="Retrieve Models.",
+    description=
+    """
+    Retrieves all or a limited amount of Models from the MySQL database 
+    potentially filtered by models belonging to a brand 
+    and returns a list of 'ModelReturnResource'.
+    """
 )
-async def get_models(brand_id: Optional[UUID] = Query(default=None, description="The UUID of the brand, to retrieve models belonging to that brand."),
-                     limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of models that is returned."),
-                     session: Session = Depends(get_db)):
+async def get_models(
+        brand_id: Optional[UUID] = Query(
+            default=None,
+            description=
+            """
+            The UUID of the brand, to retrieve models belonging to that brand.
+            """
+        ),
+        limit: Optional[int] = Query(
+            default=None, ge=1,
+            description=
+            """
+            Set a limit for the amount of models that is returned.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get models from the MySQL database"
     try:
         if brand_id is not None:
@@ -62,12 +85,29 @@ async def get_models(brand_id: Optional[UUID] = Query(default=None, description=
 @router.get(
     path="/model/{model_id}",
     response_model=ModelReturnResource,
-    response_description="Successfully retrieved a model, returns: ModelReturnResource",
+    response_description=
+    """
+    Successfully retrieved a model.
+    Returns: ModelReturnResource.
+    """,
     summary="Retrieve a Model by ID.",
-    description="Fetches a Model by ID from the MySQL database by giving a UUID in the path for the model and returns it as a 'ModelReturnResource'."
+    description=
+    """
+    Retrieves a Model by ID from the MySQL database 
+    by giving a UUID in the path for the model 
+    and returns it as a 'ModelReturnResource'.
+    """
 )
-async def get_model(model_id: UUID = Path(..., description="The UUID of the model to retrieve."),
-                    session: Session = Depends(get_db)):
+async def get_model(
+        model_id: UUID = Path(
+            default=...,
+            description=
+            """
+            The UUID of the model to retrieve.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get model from the MySQL database"
     try:
         return service.get_by_id(

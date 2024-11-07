@@ -21,13 +21,28 @@ def get_db():
 @router.get(
     path="/brands",
     response_model=List[BrandReturnResource],
-    response_description="Successfully retrieved list of brands, returns: List[BrandReturnResource]",
-    summary="Retrieve all Brands.",
-    description="Fetches all Brands from the MySQL database and returns a list of 'BrandReturnResource'."
+    response_description=
+    """
+    Successfully retrieved a list of brands.
+    Returns: List[BrandReturnResource].
+    """,
+    summary="Retrieve Brands.",
+    description=
+    """
+    Retrieves all or a limited amount of Brands from the MySQL 
+    database and returns a list of 'BrandReturnResource'.
+    """
 )
 async def get_brands(
-        limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of brands that is returned."),
-        session: Session = Depends(get_db)):
+        limit: Optional[int] = Query(
+            default=None, ge=1,
+            description=
+            """
+            Set a limit for the amount of brands that is returned.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get brands from the MySQL database"
     try:
         return service.get_all(
@@ -53,12 +68,28 @@ async def get_brands(
 @router.get(
     path="/brand/{brand_id}",
     response_model=BrandReturnResource,
-    response_description="Successfully retrieved a brand, returns: BrandReturnResource",
+    response_description=
+    """
+    Successfully retrieved a brand. 
+    Returns: BrandReturnResource.
+    """,
     summary="Retrieve a Brand by ID.",
-    description="Fetches a Brand by ID from the MySQL database by giving a UUID in the path for the brand and returns it as a 'BrandReturnResource'."
+    description=
+    """
+    Retrieves a Brand by ID from the MySQL database by giving a UUID 
+    in the path for the brand and returns it as a 'BrandReturnResource'.
+    """
 )
-async def get_brand(brand_id: UUID = Path(..., description="The UUID of the brand to retrieve."),
-                    session: Session = Depends(get_db)):
+async def get_brand(
+        brand_id: UUID = Path(
+            default=...,
+            description=
+            """
+            The UUID of the brand to retrieve.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get brand from the MySQL database"
     try:
         return service.get_by_id(

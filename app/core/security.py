@@ -1,48 +1,24 @@
 # External Library imports
-import jwt
 import logging
-from typing import Optional, Union
-from pydantic import BaseModel, Field
-from datetime import datetime, timedelta
+from datetime import datetime
 from fastapi import Depends, HTTPException, status
-from jwt import ExpiredSignatureError, InvalidTokenError
+from jwt import ExpiredSignatureError, InvalidTokenError, encode, decode
 
 # Internal library imports
-from app.resources.sales_person_resource import SalesPersonReturnResource
-from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context, oauth2_mysql
+from app.core.tokens import (
+    SalesPersonReturnResource,
+    TokenPayload,
+    TokenData,
+    Token
+)
+from app.core.config import (
+    oauth2_mysql,
+    pwd_context,
+    SECRET_KEY,
+    ALGORITHM
+)
 
 logger = logging.getLogger(__name__)
-
-
-class TokenPayload(BaseModel):
-    email: str = Field(...,
-                       description="The email of the sales person that the token belongs to.",
-                       examples=["hans@gmail.com"]
-                       )
-    expires_at: datetime = Field(...,
-                                 description="The date and time as UTC for when the token expires.",
-                                 examples=[(datetime.utcnow() + timedelta(minutes=15)).strftime("%Y-%m-%dT%H:%M:%S")]
-                                 )
-
-
-class Token(BaseModel):
-    access_token: str = Field(...,
-                              description="The access token needed for accessing endpoints that requires authorization.",
-                              examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXNhbiIsImV4cCI6MTcyOTE2NTEyOX0.U1wCg1dyIX2U1dSjLHSpi3EGc99lXK1458G8j39TCiw"]
-                              )
-    token_type: str = Field(...,
-                            description="The type of token that is needed for authorization.",
-                            examples=["bearer"]
-                            )
-    sales_person: SalesPersonReturnResource = Field(..., description="The sales person that the token belongs to.")
-
-
-class TokenData(BaseModel):
-    sub: str = Field(...)
-    exp: datetime = Field(default_factory=lambda: (
-        (datetime.utcnow() + timedelta(
-            minutes=(ACCESS_TOKEN_EXPIRE_MINUTES if ACCESS_TOKEN_EXPIRE_MINUTES is not None else 15)))
-    ))
 
 
 def verify_sales_person_email(
@@ -68,40 +44,49 @@ def get_password_hash(password: str) -> str:
 def create_access_token(sales_person: SalesPersonReturnResource) -> Token:
     email = sales_person.email
     data: TokenData = TokenData(sub=email)
-    encoded_jwt = jwt.encode(data.model_dump(), SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = encode(data.model_dump(), SECRET_KEY, algorithm=ALGORITHM)
     return Token(access_token=encoded_jwt, token_type="bearer", sales_person=sales_person)
 
 
 def decode_access_token(token: str) -> TokenPayload:
+    if not isinstance(token, str):
+        raise TypeError(f"token must be of type str, not {type(token).__name__}.")
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        sub: Optional[str] = payload.get("sub")
-        if sub is None:
+        payload = decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        sub = payload.get("sub")
+        exp = payload.get("exp")
+
+        if not sub:
             raise InvalidTokenError("Missing subject in decoded token.")
-        exp: Union[int, float, None] = payload.get("exp")
+
         if exp is None:
             raise InvalidTokenError("Missing expiration in decoded token.")
-        if isinstance(exp, int) or isinstance(exp, float):
-            expires_at: datetime = datetime.utcfromtimestamp(exp)
-            token_payload = TokenPayload(email=sub, expires_at=expires_at)
-            return token_payload
-        else:
-            raise ValueError("Expiration in decoded token is not an integer or a float.")
+
+        if not isinstance(exp, (int, float)):
+            raise (InvalidTokenError(
+                f"""
+                Expiration in decoded token is not an int or float, 
+                but an invalid type of: {type(exp).__name__}."""))
+
+        expires_at = datetime.utcfromtimestamp(exp)
+        token_payload = TokenPayload(email=sub, expires_at=expires_at)
+        return token_payload
+
     except ExpiredSignatureError as e:
         logger.error(
-            f"Could not validate credentials: Token has expired. {e}",
-            exc_info=True,
-            stack_info=True
-        )
-        raise e
-    except InvalidTokenError as e:
-        logger.error(
-            f"Could not validate credentials: Invalid token. {e}",
+            msg=f"Could not validate credentials: Token has expired. {e}",
             exc_info=True,
             stack_info=True
         )
         raise e
 
+    except InvalidTokenError as e:
+        logger.error(
+            msg=f"Could not validate credentials: Invalid token. {e}",
+            exc_info=True,
+            stack_info=True
+        )
+        raise e
 
 def get_current_sales_person_token(token: str) -> TokenPayload:
     credentials_exception = HTTPException(
@@ -111,7 +96,7 @@ def get_current_sales_person_token(token: str) -> TokenPayload:
     )
     internal_server_error = HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        detail="Internal server error",
+        detail="Internal server error.",
     )
     try:
         token_payload = decode_access_token(token)
@@ -123,7 +108,11 @@ def get_current_sales_person_token(token: str) -> TokenPayload:
         credentials_exception.detail += ": Invalid token."
         raise credentials_exception
     except Exception as e:
-        internal_server_error.detail += f": {e}."
+        logger.error(
+            msg=f"Caught Exception in function get_current_sales_person_token in security.py: {e}",
+            exc_info=True,
+            stack_info=True
+        )
         raise internal_server_error
 
 

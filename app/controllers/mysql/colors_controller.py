@@ -21,12 +21,28 @@ def get_db():
 @router.get(
     path="/colors",
     response_model=List[ColorReturnResource],
-    response_description="Successfully retrieved list of colors, returns: List[ColorReturnResource]",
-    summary="Retrieve all Colors.",
-    description="Fetches all Colors from the MySQL database by giving a UUID in the path for the color and returns a list of 'ColorReturnResource'."
+    response_description=
+    """
+    Successfully retrieved a list of colors.
+    Returns: List[ColorReturnResource].
+    """,
+    summary="Retrieve Colors.",
+    description=
+    """
+    Retrieves all or a limited amount of Colors from the MySQL 
+    database and returns a list of 'ColorReturnResource'.
+    """
 )
-async def get_colors(limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of colors that is returned."),
-                     session: Session = Depends(get_db)):
+async def get_colors(
+        limit: Optional[int] = Query(
+            default=None, ge=1,
+            description=
+            """
+            Set a limit for the amount of colors that is returned.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get colors from the MySQL database"
     try:
         return service.get_all(
@@ -51,12 +67,28 @@ async def get_colors(limit: Optional[int] = Query(default=None, ge=1, descriptio
 @router.get(
     path="/color/{color_id}",
     response_model=ColorReturnResource,
-    response_description="Successfully retrieved a color, returns: ColorReturnResource",
+    response_description=
+    """
+    Successfully retrieved a color.
+    Returns: ColorReturnResource.
+    """,
     summary="Retrieve a Color by ID.",
-    description="Fetches a Color by ID from the MySQL database and returns it as a 'ColorReturnResource'."
+    description=
+    """
+    Retrieves a Color by ID from the MySQL 
+    database and returns it as a 'ColorReturnResource'.
+    """
 )
-async def get_color(color_id: UUID = Path(..., description="The UUID of the color to retrieve."),
-                    session: Session = Depends(get_db)):
+async def get_color(
+        color_id: UUID = Path(
+            default=...,
+            description=
+            """
+            The UUID of the color to retrieve.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get color from the MySQL database"
     try:
         return service.get_by_id(

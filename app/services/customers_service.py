@@ -13,17 +13,17 @@ from app.repositories.customer_repositories import (
 
 def get_all(repository: CustomerRepository, customers_limit: Optional[int] = None) -> List[CustomerReturnResource]:
     if not isinstance(repository, CustomerRepository):
-        raise TypeError(f"repository must be of type CustomerRepository, not {type(repository)}")
+        raise TypeError(f"repository must be of type CustomerRepository, not {type(repository).__name__}.")
     if not (isinstance(customers_limit, int) or customers_limit is None):
-        raise TypeError(f"customers_limit must be of type int or None, not {type(customers_limit)}")
+        raise TypeError(f"customers_limit must be of type int or None, not {type(customers_limit).__name__}.")
     return repository.get_all(limit=customers_limit)
 
 
 def get_by_id(repository: CustomerRepository, customer_id: str) -> CustomerReturnResource:
     if not isinstance(repository, CustomerRepository):
-        raise TypeError(f"repository must be of type CustomerRepository, not {type(repository)}")
+        raise TypeError(f"repository must be of type CustomerRepository, not {type(repository).__name__}.")
     if not isinstance(customer_id, str):
-        raise TypeError(f"customer_id must be of type str, not {type(customer_id)}")
+        raise TypeError(f"customer_id must be of type str, not {type(customer_id).__name__}.")
 
     customer = repository.get_by_id(customer_id)
     if customer is None:
@@ -33,9 +33,9 @@ def get_by_id(repository: CustomerRepository, customer_id: str) -> CustomerRetur
 
 def create(repository: CustomerRepository, customer_create_data: CustomerCreateResource) -> CustomerReturnResource:
     if not isinstance(repository, CustomerRepository):
-        raise TypeError(f"repository must be of type CustomerRepository, not {type(repository)}")
+        raise TypeError(f"repository must be of type CustomerRepository, not {type(repository).__name__}.")
     if not isinstance(customer_create_data, CustomerCreateResource):
-        raise TypeError(f"customer_create_data must be of type CustomerCreateResource, not {type(customer_create_data)}")
+        raise TypeError(f"customer_create_data must be of type CustomerCreateResource, not {type(customer_create_data).__name__}.")
 
     if repository.is_email_taken(customer_create_data.email):
         raise AlreadyTakenFieldValueError(entity_name="Customer", field="email", value=customer_create_data.email)
@@ -43,11 +43,11 @@ def create(repository: CustomerRepository, customer_create_data: CustomerCreateR
 
 def update(repository: CustomerRepository, customer_id: str, customer_update_data: CustomerUpdateResource) -> CustomerReturnResource:
     if not isinstance(repository, CustomerRepository):
-        raise TypeError(f"repository must be of type CustomerRepository, not {type(repository)}")
+        raise TypeError(f"repository must be of type CustomerRepository, not {type(repository).__name__}.")
     if not isinstance(customer_id, str):
-        raise TypeError(f"customer_id must be of type str, not {type(customer_id)}")
+        raise TypeError(f"customer_id must be of type str, not {type(customer_id).__name__}.")
     if not isinstance(customer_update_data, CustomerUpdateResource):
-        raise TypeError(f"customer_update_data must be of type CustomerUpdateResource, not {type(customer_update_data)}")
+        raise TypeError(f"customer_update_data must be of type CustomerUpdateResource, not {type(customer_update_data).__name__}.")
 
     if customer_update_data.email is not None and repository.is_email_taken(customer_update_data.email):
         raise AlreadyTakenFieldValueError(entity_name="Customer", field="email", value=customer_update_data.email)
@@ -60,9 +60,9 @@ def update(repository: CustomerRepository, customer_id: str, customer_update_dat
 
 def delete(repository: CustomerRepository, customer_id: str):
     if not isinstance(repository, CustomerRepository):
-        raise TypeError(f"repository must be of type CustomerRepository, not {type(repository)}")
+        raise TypeError(f"repository must be of type CustomerRepository, not {type(repository).__name__}.")
     if not isinstance(customer_id, str):
-        raise TypeError(f"customer_id must be of type str, not {type(customer_id)}")
+        raise TypeError(f"customer_id must be of type str, not {type(customer_id).__name__}.")
 
     customer_resource = repository.get_by_id(customer_id)
     if customer_resource is None:

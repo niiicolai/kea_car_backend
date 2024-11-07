@@ -27,23 +27,23 @@ def get_all(
         cars_limit: Optional[int] = None) -> List[CarReturnResource]:
 
     if not isinstance(car_repository, CarRepository):
-        raise TypeError(f"car_repository must be of type CarRepository, not {type(car_repository)}")
+        raise TypeError(f"car_repository must be of type CarRepository, not {type(car_repository).__name__}.")
     if not isinstance(customer_repository, CustomerRepository):
-        raise TypeError(f"customer_repository must be of type CustomerRepository, not {type(customer_repository)}")
+        raise TypeError(f"customer_repository must be of type CustomerRepository, not {type(customer_repository).__name__}.")
     if not isinstance(sales_person_repository, SalesPersonRepository):
-        raise TypeError(f"sales_person_repository must be of type SalesPersonRepository, not {type(sales_person_repository)}")
+        raise TypeError(f"sales_person_repository must be of type SalesPersonRepository, not {type(sales_person_repository).__name__}.")
 
     if not (isinstance(customer_id, str) or customer_id is None):
-        raise TypeError(f"customer_id must be of type str or None, not {type(customer_id)}")
+        raise TypeError(f"customer_id must be of type str or None, not {type(customer_id).__name__}.")
     if not (isinstance(sales_person_id, str) or sales_person_id is None):
-        raise TypeError(f"sales_person_id must be of type str or None, not {type(sales_person_id)}")
+        raise TypeError(f"sales_person_id must be of type str or None, not {type(sales_person_id).__name__}.")
 
     if not (isinstance(is_purchased, bool) or is_purchased is None):
-        raise TypeError(f"is_purchased must be of type bool or None, not {type(is_purchased)}")
+        raise TypeError(f"is_purchased must be of type bool or None, not {type(is_purchased).__name__}.")
     if not (isinstance(is_past_purchase_deadline, bool) or is_past_purchase_deadline is None):
-        raise TypeError(f"is_past_purchase_deadline must be of type bool or None, not {type(is_past_purchase_deadline)}")
+        raise TypeError(f"is_past_purchase_deadline must be of type bool or None, not {type(is_past_purchase_deadline).__name__}.")
     if not (isinstance(cars_limit, int) or cars_limit is None):
-        raise TypeError(f"cars_limit must be of type int or None, not {type(cars_limit)}")
+        raise TypeError(f"cars_limit must be of type int or None, not {type(cars_limit).__name__}.")
 
     customer_resource: Optional[CustomerReturnResource] = None
     if customer_id is not None:
@@ -66,9 +66,9 @@ def get_all(
 
 def get_by_id(repository: CarRepository, car_id: str) -> Optional[CarReturnResource]:
     if not isinstance(repository, CarRepository):
-        raise TypeError(f"repository must be of type CarRepository, not {type(repository)}")
+        raise TypeError(f"repository must be of type CarRepository, not {type(repository).__name__}.")
     if not isinstance(car_id, str):
-        raise TypeError(f"car_id must be of type str, not {type(car_id)}")
+        raise TypeError(f"car_id must be of type str, not {type(car_id).__name__}.")
 
     car_resource: Optional[CarReturnResource] = repository.get_by_id(car_id)
     if car_resource is None:
@@ -87,21 +87,21 @@ def create(
         car_create_data: CarCreateResource) -> CarReturnResource:
 
     if not isinstance(car_repository, CarRepository):
-        raise TypeError(f"car_repository must be of type CarRepository, not {type(car_repository)}")
+        raise TypeError(f"car_repository must be of type CarRepository, not {type(car_repository).__name__}.")
     if not isinstance(customer_repository, CustomerRepository):
-        raise TypeError(f"customer_repository must be of type CustomerRepository, not {type(customer_repository)}")
+        raise TypeError(f"customer_repository must be of type CustomerRepository, not {type(customer_repository).__name__}.")
     if not isinstance(sales_person_repository, SalesPersonRepository):
-        raise TypeError(f"sales_person_repository must be of type SalesPersonRepository, not {type(sales_person_repository)}")
+        raise TypeError(f"sales_person_repository must be of type SalesPersonRepository, not {type(sales_person_repository).__name__}.")
     if not isinstance(model_repository, ModelRepository):
-        raise TypeError(f"model_repository must be of type ModelRepository, not {type(model_repository)}")
+        raise TypeError(f"model_repository must be of type ModelRepository, not {type(model_repository).__name__}.")
     if not isinstance(color_repository, ColorRepository):
-        raise TypeError(f"color_repository must be of type ColorRepository, not {type(color_repository)}")
+        raise TypeError(f"color_repository must be of type ColorRepository, not {type(color_repository).__name__}.")
     if not isinstance(accessory_repository, AccessoryRepository):
-        raise TypeError(f"accessory_repository must be of type AccessoryRepository, not {type(accessory_repository)}")
+        raise TypeError(f"accessory_repository must be of type AccessoryRepository, not {type(accessory_repository).__name__}.")
     if not isinstance(insurance_repository, InsuranceRepository):
-        raise TypeError(f"insurance_repository must be of type InsuranceRepository, not {type(insurance_repository)}")
+        raise TypeError(f"insurance_repository must be of type InsuranceRepository, not {type(insurance_repository).__name__}.")
     if not isinstance(car_create_data, CarCreateResource):
-        raise TypeError(f"car_create_data must be of type CarCreateResource, not {type(car_create_data)}")
+        raise TypeError(f"car_create_data must be of type CarCreateResource, not {type(car_create_data).__name__}.")
 
     customer_id = str(car_create_data.customers_id)
     customer_resource: Optional[CustomerReturnResource] = customer_repository.get_by_id(customer_id)
@@ -153,13 +153,13 @@ def create(
 
 def delete(car_repository: CarRepository, purchase_repository: PurchaseRepository, car_id: str, delete_purchase_too: bool):
     if not isinstance(car_repository, CarRepository):
-        raise TypeError(f"car_repository must be of type CarRepository, not {type(car_repository)}")
+        raise TypeError(f"car_repository must be of type CarRepository, not {type(car_repository).__name__}.")
     if not isinstance(purchase_repository, PurchaseRepository):
-        raise TypeError(f"purchase_repository must be of type PurchaseRepository, not {type(purchase_repository)}")
+        raise TypeError(f"purchase_repository must be of type PurchaseRepository, not {type(purchase_repository).__name__}.")
     if not isinstance(car_id, str):
-        raise TypeError(f"car_id must be of type str, not {type(car_id)}")
+        raise TypeError(f"car_id must be of type str, not {type(car_id).__name__}.")
     if not isinstance(delete_purchase_too, bool):
-        raise TypeError(f"delete_purchase_too must be of type bool, not {type(delete_purchase_too)}")
+        raise TypeError(f"delete_purchase_too must be of type bool, not {type(delete_purchase_too).__name__}.")
     car_resource = car_repository.get_by_id(car_id)
     if car_resource is None:
         raise UnableToFindIdError("Car", car_id)

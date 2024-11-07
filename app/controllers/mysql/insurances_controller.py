@@ -22,12 +22,28 @@ def get_db():
 @router.get(
     path="/insurances",
     response_model=List[InsuranceReturnResource],
-    response_description="Successfully retrieved list of insurances, returns: List[InsuranceReturnResource]",
-    summary="Retrieve all Insurances.",
-    description="Fetches all Insurances from the MySQL database and returns a list of 'InsuranceReturnResource'."
+    response_description=
+    """
+    Successfully retrieved a list of insurances.
+    Returns: List[InsuranceReturnResource].
+    """,
+    summary="Retrieve Insurances.",
+    description=
+    """
+    Retrieves all or a limited amount of Insurances from the 
+    MySQL database and returns a list of 'InsuranceReturnResource'.
+    """
 )
-async def get_insurances(limit: Optional[int] = Query(default=None, ge=1, description="Set a limit of the amount of insurances that is returned."),
-                         session: Session = Depends(get_db)):
+async def get_insurances(
+        limit: Optional[int] = Query(
+            default=None, ge=1,
+            description=
+            """
+            Set a limit for the amount of insurances that is returned.
+            """
+        ),
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get insurances from the MySQL database"
     try:
         return service.get_all(
@@ -53,11 +69,23 @@ async def get_insurances(limit: Optional[int] = Query(default=None, ge=1, descri
 @router.get(
     path="/insurance/{insurance_id}",
     response_model=InsuranceReturnResource,
-    response_description="Successfully retrieved an insurance, returns: InsuranceReturnResource",
-    summary="Retrieve a Insurance by ID.",
-    description="Fetches an Insurance by ID from the MySQL database by giving a UUID in the path for the insurance and returns it as an 'InsuranceReturnResource'."
+    response_description=
+    """
+    Successfully retrieved an insurance.
+    Returns: InsuranceReturnResource.
+    """,
+    summary="Retrieve an Insurance by ID.",
+    description=
+    """
+    Retrieves an Insurance by ID from the MySQL database 
+    by giving a UUID in the path for the insurance 
+    and returns it as an 'InsuranceReturnResource'.
+    """
 )
-async def get_insurance(insurance_id: UUID, session: Session = Depends(get_db)):
+async def get_insurance(
+        insurance_id: UUID,
+        session: Session = Depends(get_db)
+):
     error_message = "Failed to get insurance from the MySQL database"
     try:
         return service.get_by_id(
