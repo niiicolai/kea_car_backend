@@ -1,13 +1,12 @@
 # External Library imports
 from uuid import UUID
 from typing import List, Optional
-from pydantic import ValidationError
-from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, Path, Query, status
 
 # Internal library imports
 from app.services import cars_service as service
 from db import Session, get_db as get_db_session
+from app.controllers.error_handler import error_handler
 from app.repositories.model_repositories import MySQLModelRepository
 from app.repositories.color_repositories import MySQLColorRepository
 from app.repositories.purchase_repositories import MySQLPurchaseRepository
@@ -20,11 +19,6 @@ from app.repositories.car_repositories import (
     MySQLCarRepository,
     CarReturnResource,
     CarCreateResource
-)
-from app.exceptions.database_errors import (
-    UnableToFindIdError,
-    TheColorIsNotAvailableInModelToGiveToCarError,
-    UnableToDeleteCarWithoutDeletingPurchaseTooError
 )
 
 
@@ -91,51 +85,25 @@ async def get_cars(
         ),
         limit: Optional[int] = Query(
             default=None, ge=1,
-            description=
-            """
-            Set a limit for the amount of cars that is returned.
-            """
+            description="""Set a limit for the amount of cars that is returned."""
         ),
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to get cars from the MySQL database"
-    try:
-        if customer_id is not None:
-            customer_id = str(customer_id)
-        if sales_person_id is not None:
-            sales_person_id = str(sales_person_id)
-        return service.get_all(
+    return error_handler(
+        error_message="Failed to get cars from the MySQL database",
+        callback=lambda: service.get_all(
             car_repository=MySQLCarRepository(session),
             customer_repository=MySQLCustomerRepository(session),
             sales_person_repository=MySQLSalesPersonRepository(session),
-            customer_id=customer_id,
-            sales_person_id=sales_person_id,
+            customer_id=None if not customer_id else str(customer_id),
+            sales_person_id=None if not sales_person_id else str(sales_person_id),
             is_purchased=is_purchased,
             is_past_purchase_deadline=is_past_purchase_deadline,
             cars_limit=limit
         )
+    )
 
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
 
 @router.get(
     path="/car/{car_id}",
@@ -155,40 +123,18 @@ async def get_cars(
 async def get_car(
         car_id: UUID = Path(
             default=...,
-            description=
-            """
-            The UUID of the car to retrieve.
-            """
+            description="""The UUID of the car to retrieve."""
         ),
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to get car from the MySQL database"
-    try:
-        return service.get_by_id(
+    return error_handler(
+        error_message="Failed to get car from the MySQL database",
+        callback=lambda: service.get_by_id(
             repository=MySQLCarRepository(session),
             car_id=str(car_id)
         )
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
 
 
 @router.post(
@@ -208,13 +154,13 @@ async def get_car(
     """
 )
 async def create_car(
-        car_create_data: CarCreateResource,
+        car_data: CarCreateResource,
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to create car within the MySQL database"
-    try:
-        return service.create(
+    return error_handler(
+        error_message="Failed to create car within the MySQL database",
+        callback=lambda: service.create(
             car_repository=MySQLCarRepository(session),
             customer_repository=MySQLCustomerRepository(session),
             sales_person_repository=MySQLSalesPersonRepository(session),
@@ -222,32 +168,9 @@ async def create_car(
             color_repository=MySQLColorRepository(session),
             accessory_repository=MySQLAccessoryRepository(session),
             insurance_repository=MySQLInsuranceRepository(session),
-            car_create_data=car_create_data)
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
+            car_create_data=car_data
         )
-    except TheColorIsNotAvailableInModelToGiveToCarError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(f"Unable To Give Entity With Value From Other Entity Error caught. {error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
 
 
 @router.delete(
@@ -269,10 +192,7 @@ async def create_car(
 async def delete_car(
         car_id: UUID = Path(
             default=...,
-            description=
-            """
-            The UUID of the car to delete.
-            """
+            description="""The UUID of the car to delete."""
         ),
         delete_purchase_too: bool = Query(
             default=False,
@@ -286,36 +206,12 @@ async def delete_car(
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to delete car within the MySQL database"
-    try:
-        service.delete(
+    return error_handler(
+        error_message="Failed to delete car within the MySQL database",
+        callback=lambda: service.delete(
             car_repository=MySQLCarRepository(session),
             purchase_repository=MySQLPurchaseRepository(session),
             car_id=str(car_id),
             delete_purchase_too=delete_purchase_too
         )
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
-        )
-    except UnableToDeleteCarWithoutDeletingPurchaseTooError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(f"Unable To Delete Car Without Deleting Purchase Too Error caught. {error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )

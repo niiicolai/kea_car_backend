@@ -63,10 +63,11 @@ def decode_access_token(token: str) -> TokenPayload:
             raise InvalidTokenError("Missing expiration in decoded token.")
 
         if not isinstance(exp, (int, float)):
-            raise (InvalidTokenError(
+            raise TypeError(
                 f"""
                 Expiration in decoded token is not an int or float, 
-                but an invalid type of: {type(exp).__name__}."""))
+                but an invalid type of: {type(exp).__name__}."""
+            )
 
         expires_at = datetime.utcfromtimestamp(exp)
         token_payload = TokenPayload(email=sub, expires_at=expires_at)

@@ -1,63 +1,92 @@
-
-from typing import Callable
+# External Library imports
 from fastapi import HTTPException, status
+from typing import Callable
 import logging
+
+# Internal library imports
+from app.exceptions.invalid_credentials_errors import IncorrectCredentialError
+from app.exceptions.database_errors import (
+    UnableToFindIdError,
+    UnableToFindEntityError,
+    AlreadyTakenFieldValueError,
+    PurchaseDeadlineHasPastError,
+    TheColorIsNotAvailableInModelToGiveToCarError,
+    UnableToDeleteCarWithoutDeletingPurchaseTooError,
+)
+
 
 """
 # Description:
-The error handler will catch exceptions and return a HTTPException 
+The error handler will catch exceptions and raise an HTTPException 
 with the appropriate status code and message.
 
 
-# Usage with default configuration:
+# Usage example:
 ```
-return error_handler(lambda: service.get_all(repository=MySQLColorRepository(session), colors_limit=limit))
-```
-
-
-# Usage with custom exceptions:
-```
-return error_handler(lambda: service.get_by_id(repository=MySQLColorRepository(session), color_id=color_id), {
-    UnableToFindIdError: { "status_code": status.HTTP_404_NOT_FOUND }
-})
-```
-
-
-# Usage with custom exceptions and override default exceptions:
-```
-return error_handler(lambda: service.get_by_id(repository=MySQLColorRepository(session), color_id=color_id), {
-    UnableToFindIdError: { "status_code": status.HTTP_404_NOT_FOUND }
-}, {
-    SQLAlchemyError: { "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR }
-})
-
+return error_handler(error_message: str, lambda: service.get_all(repository=MySQLColorRepository(session), colors_limit=limit))
 ```
 """
-def error_handler(callback: Callable, custom_exceptions: dict = {}, default_exceptions: dict = {}):
+def error_handler(error_message: str, callback: Callable):
     try:
         return callback()
+
+    except UnableToFindIdError as e:
+        log_error(error_message, e)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(f"{error_message}: {e}")
+        )
+
+    except UnableToFindEntityError as e:
+        log_error(error_message, e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}: {e}")
+        )
+
+    except AlreadyTakenFieldValueError as e:
+        log_error(error_message, e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}: {e}")
+        )
+
+    except IncorrectCredentialError as e:
+        log_error(error_message, e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}: {e}")
+        )
+
+    except TheColorIsNotAvailableInModelToGiveToCarError as e:
+        log_error(error_message, e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}: {e}")
+        )
+
+    except UnableToDeleteCarWithoutDeletingPurchaseTooError as e:
+        log_error(error_message, e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}: {e}")
+        )
+
+    except PurchaseDeadlineHasPastError as e:
+        log_error(error_message, e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}: {e}")
+        )
+
     except Exception as e:
-        # Check if the caught exception is in the custom exceptions dictionary
-        for exception in custom_exceptions:
-            if isinstance(e, exception):
-                raise HTTPException(
-                    status_code=custom_exceptions[exception]["status_code"],
-                    detail=str(e)
-                )
-                
-        # Check if the caught exception is in the default exceptions dictionary
-        for exception in default_exceptions:
-            if isinstance(e, exception):
-                raise HTTPException(
-                    status_code=default_exceptions[exception]["status_code"],
-                    detail=str(e)
-                )
-              
-        # Log internal server errors for debugging
-        logging.error(f"Internal Server Error Caught: {e}")
-        
+        log_error(error_message, e)
         # Raise a generic internal server error for the client
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught.")
+            detail=str(f"Internal Server Error Caught: {error_message}.")
         )
+
+def log_error(error_message: str, error: Exception):
+    # Log internal server errors for debugging
+    logging.error(f"{error.__class__.__name__} Was Caught.\n{error_message}:\n{error}", exc_info=True)

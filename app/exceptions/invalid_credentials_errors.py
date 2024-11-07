@@ -7,7 +7,7 @@ class IncorrectEmailError(IncorrectCredentialError):
     """Exception raised for incorrect email"""
 
     def __init__(self, email: str):
-        self.message = f'The email "{email}" in incorrect."'
+        self.message = f'The email "{email}" is incorrect."'
         super().__init__(self.message)  # Call the base class constructor
 
     def __str__(self):

@@ -1,16 +1,13 @@
 # External Library imports
 from uuid import UUID
 from typing import List, Optional
-from pydantic import ValidationError
-from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query, status
+from fastapi import APIRouter, Depends, Form, Path, Query
 
 # Internal library imports
 from db import Session, get_db as get_db_session
+from app.controllers.error_handler import error_handler
 from app.services import sales_people_service as service
-from app.exceptions.invalid_credentials_errors import IncorrectCredentialError
 from app.core.security import TokenPayload, get_current_mysql_sales_person_token
-from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
 from app.repositories.sales_person_repositories import (
     MySQLSalesPersonRepository,
     SalesPersonReturnResource,
@@ -49,46 +46,24 @@ def get_db():
 async def login_for_access_token(
         username: str = Form(
             default=...,
-            description=
-            """
-            The email of the sales person.
-            """
+            description="""The email of the sales person."""
         ),
         password: str = Form(
             default=...,
-            description=
-            """
-            The password of the sales person.
-            """
+            description="""The password of the sales person."""
         ),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to create an access token from a Sales Person in the MySQL database"
-    try:
-        return service.login(
+    return error_handler(
+        error_message="Failed to create an access token for a Sales Person in the MySQL database",
+        callback=lambda: service.login(
             repository=MySQLSalesPersonRepository(session),
-            sales_person_login_data=SalesPersonLoginResource(email=username, password=password)
+            sales_person_login_data=SalesPersonLoginResource(
+                email=username,
+                password=password
+            )
         )
-    except IncorrectCredentialError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(f"{error_message}: {e}"),
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
 
 @router.post(
     path="/login",
@@ -114,32 +89,13 @@ async def login(
         sales_person_login_data: SalesPersonLoginResource,
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to login from a Sales Person in the MySQL database"
-    try:
-        return service.login(
+    return error_handler(
+        error_message="Failed to login for a Sales Person in the MySQL database",
+        callback=lambda: service.login(
             repository=MySQLSalesPersonRepository(session),
             sales_person_login_data=sales_person_login_data
         )
-    except IncorrectCredentialError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(f"{error_message}: {e}"),
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
 
 
 @router.get(
@@ -160,35 +116,19 @@ async def login(
 async def get_sales_people(
         limit: Optional[int] = Query(
             default=None, ge=1,
-            description=
-            """
-            Set a limit for the amount of sales people that is returned.
-            """
+            description="""Set a limit for the amount of sales people that is returned."""
         ),
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to get sales people from the MySQL database"
-    try:
-        return service.get_all(
+    return error_handler(
+        error_message="Failed to get sales people from the MySQL database",
+        callback=lambda: service.get_all(
             repository=MySQLSalesPersonRepository(session),
             sales_people_limit=limit
         )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
+
 
 @router.get(
     path="/sales_person/{sales_person_id}",
@@ -209,40 +149,18 @@ async def get_sales_people(
 async def get_sales_person(
         sales_person_id: UUID = Path(
             default=...,
-            description=
-            """
-            The UUID of the sales person to retrieve.
-            """
+            description="""The UUID of the sales person to retrieve."""
         ),
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to get sales person from the MySQL database"
-    try:
-        return service.get_by_id(
+    return error_handler(
+        error_message="Failed to get sales person from the MySQL database",
+        callback=lambda: service.get_by_id(
             repository=MySQLSalesPersonRepository(session),
             sales_person_id=str(sales_person_id)
         )
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
 
 
 @router.post(
@@ -266,29 +184,10 @@ async def create_sales_person(
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to create sales person within the MySQL database"
-    try:
-        return service.create(
+    return error_handler(
+        error_message="Failed to create sales person within the MySQL database",
+        callback=lambda: service.create(
             repository=MySQLSalesPersonRepository(session),
             sales_person_create_data=sales_person_create_data
         )
-    except AlreadyTakenFieldValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(f"{error_message}: {e}"),
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )

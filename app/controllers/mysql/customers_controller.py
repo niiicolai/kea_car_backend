@@ -1,15 +1,14 @@
 # External Library imports
 from uuid import UUID
 from typing import List, Optional
-from pydantic import ValidationError
-from sqlalchemy.exc import SQLAlchemyError
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, Body, status
+from fastapi import APIRouter, Depends, Path, Query, Body, status
 
 # Internal library imports
 from db import Session, get_db as get_db_session
 from app.services import customers_service as service
+from app.controllers.error_handler import error_handler
 from app.core.security import TokenPayload, get_current_mysql_sales_person_token
-from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
+
 from app.repositories.customer_repositories import (
     MySQLCustomerRepository,
     CustomerReturnResource,
@@ -41,35 +40,19 @@ def get_db():
 async def get_customers(
         limit: Optional[int] = Query(
             default=None, ge=1,
-            description=
-            """
-            Set a limit for the amount of customers that is returned.
-            """
+            description="""Set a limit for the amount of customers that is returned."""
         ),
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to get customers from the MySQL database"
-    try:
-        return service.get_all(
+    return error_handler(
+        error_message="Failed to get customers from the MySQL database",
+        callback=lambda: service.get_all(
             repository=MySQLCustomerRepository(session),
             customers_limit=limit
         )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
+
 
 @router.get(
     path="/customer/{customer_id}",
@@ -89,40 +72,18 @@ async def get_customers(
 async def get_customer(
         customer_id: UUID = Path(
             default=...,
-            description=
-            """
-            The UUID of the customer to retrieve.
-            """
+            description="""The UUID of the customer to retrieve."""
         ),
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to get customer from the MySQL database"
-    try:
-        return service.get_by_id(
+    return error_handler(
+        error_message="Failed to get customer from the MySQL database",
+        callback=lambda: service.get_by_id(
             repository=MySQLCustomerRepository(session),
             customer_id=str(customer_id)
         )
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
 
 
 @router.post(
@@ -146,32 +107,13 @@ async def create_customer(
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to create customer within the MySQL database"
-    try:
-        return service.create(
+    return error_handler(
+        error_message="Failed to create customer within the MySQL database",
+        callback=lambda: service.create(
             repository=MySQLCustomerRepository(session),
             customer_create_data=customer_create_data
         )
-    except AlreadyTakenFieldValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(f"{error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
 
 
 @router.put(
@@ -194,10 +136,7 @@ async def create_customer(
 async def update_customer(
         customer_id: UUID = Path(
             default=...,
-            description=
-            """
-            The UUID of the customer to update.
-            """
+            description="""The UUID of the customer to update."""
         ),
         customer_update_data: CustomerUpdateResource = Body(
             default=...,
@@ -206,38 +145,14 @@ async def update_customer(
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to update customer within the MySQL database"
-    try:
-        return service.update(
+    return error_handler(
+        error_message="Failed to update customer within the MySQL database",
+        callback=lambda: service.update(
             repository=MySQLCustomerRepository(session),
             customer_id=str(customer_id),
             customer_update_data=customer_update_data
         )
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
-        )
-    except AlreadyTakenFieldValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(f"{error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
 
 
 @router.delete(
@@ -259,37 +174,15 @@ async def update_customer(
 async def delete_customer(
         customer_id: UUID = Path(
             default=...,
-            description=
-            """
-            The UUID of the customer to delete.
-            """
+            description="""The UUID of the customer to delete."""
         ),
         current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
-    error_message = "Failed to delete customer within the MySQL database"
-    try:
-        service.delete(
+    return error_handler(
+        error_message="Failed to delete customer within the MySQL database",
+        callback=lambda: service.delete(
             repository=MySQLCustomerRepository(session),
             customer_id=str(customer_id)
         )
-    except UnableToFindIdError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(f"Unable To Find Id Error caught. {error_message}: {e}")
-        )
-    except SQLAlchemyError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"SQL Error caught. {error_message}: {e}")
-        )
-    except ValidationError as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=str(f"Validation Error caught. {error_message}: {e}")
-        )
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught. {error_message}: {e}")
-        )
+    )
