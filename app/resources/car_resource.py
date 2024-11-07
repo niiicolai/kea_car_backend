@@ -52,6 +52,7 @@ class CarCreateResource(CarBaseResource):
 
 class CarBaseReturnResource(CarBaseResource):
     id: str = Field(..., description="The UUID for the car.", examples=["e7bd48c2-f1c4-4e1a-b0fc-dc09f2d8f28a"])
+    total_price: float = Field(..., description="The total price of the car, calculated when it was created.", examples=[10530.95])
     model: ModelBaseReturnResource = Field(..., description="The car's Model as a ModelBaseReturnResource.")
     color: ColorReturnResource = Field(..., description="The car's Color as a ColorReturnResource.")
     accessories: List[AccessoryReturnResource] = Field(..., description="The car's Accessories as a list of AccessoryReturnResource.")

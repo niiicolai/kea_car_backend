@@ -33,23 +33,23 @@ return error_handler(lambda: service.get_by_id(repository=MySQLColorRepository(s
 
 ```
 """
-def error_handler(callback: Callable, customExceptions: dict = {}, defaultExceptions: dict = {}):
+def error_handler(callback: Callable, custom_exceptions: dict = {}, default_exceptions: dict = {}):
     try:
         return callback()
     except Exception as e:
         # Check if the caught exception is in the custom exceptions dictionary
-        for exception in customExceptions:
+        for exception in custom_exceptions:
             if isinstance(e, exception):
                 raise HTTPException(
-                    status_code=customExceptions[exception]["status_code"],
+                    status_code=custom_exceptions[exception]["status_code"],
                     detail=str(e)
                 )
                 
         # Check if the caught exception is in the default exceptions dictionary
-        for exception in defaultExceptions:
+        for exception in default_exceptions:
             if isinstance(e, exception):
                 raise HTTPException(
-                    status_code=defaultExceptions[exception]["status_code"],
+                    status_code=default_exceptions[exception]["status_code"],
                     detail=str(e)
                 )
               
