@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query, Body, status
 # Internal library imports
 from db import Session, get_db as get_db_session
 from app.services import customers_service as service
+from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
 from app.repositories.customer_repositories import (
     MySQLCustomerRepository,
@@ -30,7 +31,7 @@ def get_db():
     Successfully retrieved a list of customers. 
     Returns: List[CustomerReturnResource].
     """,
-    summary="Retrieve Customers.",
+    summary="Retrieve Customers - Requires authorization token in header.",
     description=
     """
     Retrieves all or a limited amount of Customers from the 
@@ -45,6 +46,7 @@ async def get_customers(
             Set a limit for the amount of customers that is returned.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get customers from the MySQL database"
@@ -77,7 +79,7 @@ async def get_customers(
     Successfully retrieved a customer.
     Returns: CustomerReturnResource.
     """,
-    summary="Retrieve a Customer by ID.",
+    summary="Retrieve a Customer by ID - Requires authorization token in header.",
     description=
     """
     Retrieves a Customer by ID from the MySQL database 
@@ -92,6 +94,7 @@ async def get_customer(
             The UUID of the customer to retrieve.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get customer from the MySQL database"
@@ -130,7 +133,7 @@ async def get_customer(
     Successfully created a customer.
     Returns: CustomerReturnResource.
     """,
-    summary="Create a Customer.",
+    summary="Create a Customer - Requires authorization token in header.",
     description=
     """
     Creates a Customer within the MySQL database 
@@ -140,6 +143,7 @@ async def get_customer(
 )
 async def create_customer(
         customer_create_data: CustomerCreateResource,
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to create customer within the MySQL database"
@@ -178,7 +182,7 @@ async def create_customer(
     Successfully updated a customer.
     Returns: CustomerReturnResource.
     """,
-    summary="Update a Customer.",
+    summary="Update a Customer - Requires authorization token in header.",
     description=
     """
     Updates a Customer within the MySQL database 
@@ -199,6 +203,7 @@ async def update_customer(
             default=...,
             title="CustomerUpdateResource"
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to update customer within the MySQL database"
@@ -243,7 +248,7 @@ async def update_customer(
     Successfully deleted a customer.
     Returns: 204 No Content.
     """,
-    summary="Delete a Customer.",
+    summary="Delete a Customer - Requires authorization token in header.",
     description=
     """
     Deletes a Customer within the MySQL database 
@@ -259,6 +264,7 @@ async def delete_customer(
             The UUID of the customer to delete.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to delete customer within the MySQL database"

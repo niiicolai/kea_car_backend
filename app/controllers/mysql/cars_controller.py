@@ -14,6 +14,7 @@ from app.repositories.purchase_repositories import MySQLPurchaseRepository
 from app.repositories.insurance_repository import MySQLInsuranceRepository
 from app.repositories.customer_repositories import MySQLCustomerRepository
 from app.repositories.accessory_repositories import MySQLAccessoryRepository
+from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
 from app.repositories.car_repositories import (
     MySQLCarRepository,
@@ -42,7 +43,7 @@ def get_db():
     Successfully retrieved list a of cars. 
     Returns: List[CarReturnResource].
     """,
-    summary="Retrieve Cars.",
+    summary="Retrieve Cars - Requires authorization token in header.",
     description=
     """
     Retrieves all or a limited amount of Cars from the MySQL database,
@@ -95,6 +96,7 @@ async def get_cars(
             Set a limit for the amount of cars that is returned.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get cars from the MySQL database"
@@ -143,7 +145,7 @@ async def get_cars(
     Successfully retrieved a car. 
     Returns: CarReturnResource
     """,
-    summary="Retrieve a Car by ID.",
+    summary="Retrieve a Car by ID - Requires authorization token in header.",
     description=
     """
     Retrieves a Car by ID from the MySQL database by giving a UUID 
@@ -158,6 +160,7 @@ async def get_car(
             The UUID of the car to retrieve.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get car from the MySQL database"
@@ -196,7 +199,7 @@ async def get_car(
     Successfully created a car. 
     Returns: CarReturnResource.
     """,
-    summary="Create a Car.",
+    summary="Create a Car - Requires authorization token in header.",
     description=
     """
     Creates a Car within the MySQL database 
@@ -206,6 +209,7 @@ async def get_car(
 )
 async def create_car(
         car_create_data: CarCreateResource,
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to create car within the MySQL database"
@@ -254,7 +258,7 @@ async def create_car(
     Successfully deleted a car.
     Returns: 204 No Content.
     """,
-    summary="Delete a Car.",
+    summary="Delete a Car - Requires authorization token in header.",
     description=
     """
     Deletes a Car within the MySQL database 
@@ -279,6 +283,7 @@ async def delete_car(
             the car with its purchase if it has one.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to delete car within the MySQL database"

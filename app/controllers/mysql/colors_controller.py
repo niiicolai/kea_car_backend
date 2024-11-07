@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from db import Session, get_db as get_db_session
 from app.services import colors_service as service
 from app.exceptions.database_errors import UnableToFindIdError
+from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 from app.repositories.color_repositories import MySQLColorRepository, ColorReturnResource
 
 
@@ -26,7 +27,7 @@ def get_db():
     Successfully retrieved a list of colors.
     Returns: List[ColorReturnResource].
     """,
-    summary="Retrieve Colors.",
+    summary="Retrieve Colors - Requires authorization token in header.",
     description=
     """
     Retrieves all or a limited amount of Colors from the MySQL 
@@ -41,6 +42,7 @@ async def get_colors(
             Set a limit for the amount of colors that is returned.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get colors from the MySQL database"
@@ -72,7 +74,7 @@ async def get_colors(
     Successfully retrieved a color.
     Returns: ColorReturnResource.
     """,
-    summary="Retrieve a Color by ID.",
+    summary="Retrieve a Color by ID - Requires authorization token in header.",
     description=
     """
     Retrieves a Color by ID from the MySQL 
@@ -87,6 +89,7 @@ async def get_color(
             The UUID of the color to retrieve.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get color from the MySQL database"

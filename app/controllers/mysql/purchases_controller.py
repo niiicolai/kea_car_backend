@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 from db import Session, get_db as get_db_session
 from app.services import purchases_service as service
 from app.repositories.car_repositories import MySQLCarRepository
+from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 from app.repositories.purchase_repositories import (
     MySQLPurchaseRepository,
     PurchaseReturnResource,
@@ -35,7 +36,7 @@ def get_db():
     Successfully retrieved a list of purchases.
     Returns: List[PurchaseReturnResource].
     """,
-    summary="Retrieve Purchases.",
+    summary="Retrieve Purchases - Requires authorization token in header.",
     description=
     """
     Retrieves all or a limited amount of Purchases from the MySQL 
@@ -50,6 +51,7 @@ async def get_purchases(
             Set a limit for the amount of purchases that is returned.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get purchases from the MySQL database"
@@ -82,7 +84,7 @@ async def get_purchases(
     Successfully retrieved a purchase.
     Returns: PurchaseReturnResource.
     """,
-    summary="Retrieve a Purchase by ID.",
+    summary="Retrieve a Purchase by ID - Requires authorization token in header.",
     description=
     """
     Retrieves a Purchase by ID from the MySQL database 
@@ -98,6 +100,7 @@ async def get_purchase(
             The UUID of the purchase to retrieve.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get purchase from the MySQL database"
@@ -135,7 +138,7 @@ async def get_purchase(
     Successfully retrieved a purchase.
     Returns: PurchaseReturnResource.
     """,
-    summary="Retrieve a Purchase by Car ID.",
+    summary="Retrieve a Purchase by Car ID - Requires authorization token in header.",
     description=
     """
     Retrieves a Purchase by Car ID from the MySQL database 
@@ -149,7 +152,9 @@ async def get_purchase_by_car_id(
             description=
             """
             The UUID of the purchase's car to retrieve.
-            """),
+            """
+        ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get purchase by car id from the MySQL database"
@@ -194,7 +199,7 @@ async def get_purchase_by_car_id(
     Successfully created a purchase.
     Returns: PurchaseReturnResource.
     """,
-    summary="Create a Purchase.",
+    summary="Create a Purchase - Requires authorization token in header.",
     description=
     """
     Creates a Purchase within the MySQL database 
@@ -204,6 +209,7 @@ async def get_purchase_by_car_id(
 )
 async def create_purchase(
         purchase_create_data: PurchaseCreateResource,
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to create purchase within the MySQL database"

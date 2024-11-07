@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from db import Session, get_db as get_db_session
 from app.services import insurances_service as service
 from app.exceptions.database_errors import UnableToFindIdError
+from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 from app.repositories.insurance_repository import MySQLInsuranceRepository, InsuranceReturnResource
 
 
@@ -27,7 +28,7 @@ def get_db():
     Successfully retrieved a list of insurances.
     Returns: List[InsuranceReturnResource].
     """,
-    summary="Retrieve Insurances.",
+    summary="Retrieve Insurances - Requires authorization token in header.",
     description=
     """
     Retrieves all or a limited amount of Insurances from the 
@@ -42,6 +43,7 @@ async def get_insurances(
             Set a limit for the amount of insurances that is returned.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get insurances from the MySQL database"
@@ -74,7 +76,7 @@ async def get_insurances(
     Successfully retrieved an insurance.
     Returns: InsuranceReturnResource.
     """,
-    summary="Retrieve an Insurance by ID.",
+    summary="Retrieve an Insurance by ID - Requires authorization token in header.",
     description=
     """
     Retrieves an Insurance by ID from the MySQL database 
@@ -84,6 +86,7 @@ async def get_insurances(
 )
 async def get_insurance(
         insurance_id: UUID,
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get insurance from the MySQL database"

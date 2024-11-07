@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Path, Query, status
 from db import Session, get_db as get_db_session
 from app.services import sales_people_service as service
 from app.exceptions.invalid_credentials_errors import IncorrectCredentialError
+from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 from app.exceptions.database_errors import UnableToFindIdError, AlreadyTakenFieldValueError
 from app.repositories.sales_person_repositories import (
     MySQLSalesPersonRepository,
@@ -149,7 +150,7 @@ async def login(
     Successfully retrieved a list of sales people.
     Returns: List[SalesPersonReturnResource].
     """,
-    summary="Retrieve Sales People.",
+    summary="Retrieve Sales People - Requires authorization token in header.",
     description=
     """
     Retrieves all or a limited amount of Sales People from the MySQL 
@@ -164,6 +165,7 @@ async def get_sales_people(
             Set a limit for the amount of sales people that is returned.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get sales people from the MySQL database"
@@ -196,7 +198,7 @@ async def get_sales_people(
     Successfully retrieved a sales person.
     Returns: SalesPersonReturnResource.
     """,
-    summary="Retrieve a Sales Person by ID.",
+    summary="Retrieve a Sales Person by ID - Requires authorization token in header.",
     description=
     """
     Retrieves a Sales Person by ID from the MySQL database 
@@ -212,6 +214,7 @@ async def get_sales_person(
             The UUID of the sales person to retrieve.
             """
         ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to get sales person from the MySQL database"
@@ -250,7 +253,7 @@ async def get_sales_person(
     Successfully created a sales person.
     Returns: SalesPersonReturnResource.
     """,
-    summary="Create a Sales Person.",
+    summary="Create a Sales Person - Requires authorization token in header.",
     description=
     """
     Creates a Sales Person within the MySQL database 
@@ -260,6 +263,7 @@ async def get_sales_person(
 )
 async def create_sales_person(
         sales_person_create_data: SalesPersonCreateResource,
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     error_message = "Failed to create sales person within the MySQL database"
