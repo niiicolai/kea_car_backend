@@ -54,7 +54,7 @@ jobs:
 
       - name: Run pytests
         run: |
-          pytests
+          pytest
 
       - name: Start API Server
         run: |
