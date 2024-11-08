@@ -67,7 +67,7 @@ jobs:
       - name: Install Newman
         run: npm install -g newman
 
-      # Uncommented until the collection supports the 401 error
+      # Uncommented until the collection supports authentication
       #- name: Run Postman collection with Mysql environment (API tests)
       #  run: newman run ./api-tests/KEA\ Car\ API\ Test.postman_collection.json --environment ./api-tests/KEA\ Car\ Mysql.postman_environment.json
         
@@ -95,10 +95,11 @@ jobs:
           cd frontend
           npm install cypress
 
-      - name: Run Cypress tests (E2E)
-        run: |
-          cd frontend
-          npx cypress run
+      # Uncommented until any Cypress tests are added to the frontend
+      #- name: Run Cypress tests (E2E)
+      #  run: |
+      #    cd frontend
+      #    npx cypress run
 
   deploy-staging:
     runs-on: ubuntu-latest
