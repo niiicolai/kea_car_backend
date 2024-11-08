@@ -13,7 +13,7 @@ services:
       - mysql-data:/var/lib/mysql
 
   backend:
-    image: kea_car_backend
+    image: kea_car_backend:v1.0
     container_name: backend
     ports:
       - "8000:8000"

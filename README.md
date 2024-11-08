@@ -106,12 +106,12 @@ Note: The script will overwrite the existing database with the data from the dum
 ## Docker
 To build the Docker image, run the following command:
 ```bash
-docker build -t kea_car_backend .
+docker build -t kea_car_backend:v1.0 .
 ```
 
 To run the Docker container, run the following command:
 ```bash
-docker run -p 8000:8000 kea_car_backend
+docker run -p 8000:8000 kea_car_backend:v1.0
 ```
 
 ## Docker Compose

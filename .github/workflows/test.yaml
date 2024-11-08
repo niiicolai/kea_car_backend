@@ -1,4 +1,4 @@
-name: VM Publish Production and Docker Hub 
+name: CD Test
 
 on:
   push:
