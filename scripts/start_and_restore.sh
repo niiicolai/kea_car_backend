@@ -1,6 +1,5 @@
 #!/bin/bash
-ls -la
-ls -la scripts
+
 echo "Waiting for MySQL to be available..."
 bash ./scripts/wait-for-it.sh mysql:3306 --timeout=30 --strict -- echo "MySQL is up"
 

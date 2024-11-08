@@ -1,0 +1,94 @@
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=cars
+    networks:
+      - appnet
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  backend:
+    image: kea_car_backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=mysql
+      - DB_NAME=cars
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_PORT=3306
+    depends_on:
+      - mysql
+      - sonarqube
+    networks:
+      - appnet
+    volumes:
+      - .:/app
+    command: ["/app/scripts/start_and_restore.sh"]
+
+  sonarqube:
+    image: sonarqube:latest
+    container_name: sonarqube
+    environment:
+      - SONARQUBE_JDBC_URL=jdbc:postgresql://postgres:5432/sonar
+      # set default token for sonar-scanner
+      - SONAR_TOKEN=test-token
+    ports:
+      - "9000:9000"
+    networks:
+      - appnet
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_conf:/opt/sonarqube/conf
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+      - POSTGRES_DB=sonar
+    networks:
+      - appnet
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  sonarscanner:
+    image: sonarsource/sonar-scanner-cli:latest
+    container_name: sonarscanner
+    entrypoint: /bin/bash -c "/usr/src/wait_for_sonarqube.sh && sonar-scanner"
+    environment:
+      - SONAR_HOST_URL=http://sonarqube:9000
+      - SONAR_PROJECT_KEY=kea_car_project
+      - SONAR_PROJECT_NAME=KEA Car Project
+      - SONAR_TOKEN=test-token
+    volumes:
+      - ./backend:/usr/src
+      - ./backend/scripts:/usr/src
+    networks:
+      - appnet
+    depends_on:
+      - sonarqube
+    command: ["-Dsonar.projectKey=${SONAR_PROJECT_KEY}", "-Dsonar.projectName=${SONAR_PROJECT_NAME}", "-Dsonar.host.url=http://sonarqube:9000", "-Dsonar.token=${SONAR_TOKEN}"]
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_conf:
+  postgres_data:
