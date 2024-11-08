@@ -1,3 +1,4 @@
+# Use 3.9 because later versions fail to install wheel
 FROM python:3.9
 
 ENV PYTHONUNBUFFERED=1
