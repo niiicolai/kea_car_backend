@@ -19,6 +19,9 @@
 -- Table structure for table `accessories`
 --
 
+CREATE DATABASE IF NOT EXISTS `kea_cars_dev`;
+USE `kea_cars_dev`;
+
 DROP TABLE IF EXISTS `accessories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
