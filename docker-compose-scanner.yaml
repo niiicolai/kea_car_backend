@@ -37,7 +37,6 @@ services:
     container_name: sonarqube
     environment:
       - SONARQUBE_JDBC_URL=jdbc:postgresql://postgres:5432/sonar
-      # set default token for sonar-scanner
       - SONAR_TOKEN=test-token
     ports:
       - "9000:9000"
