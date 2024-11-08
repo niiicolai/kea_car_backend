@@ -81,3 +81,43 @@ python scripts/dump_mysql.py --directory="./backups/mysql"
 ```
 
 Note: The script will create the output directory if it does not exist.
+
+## MySQL Restore
+To restore the database from a MySQL dump, run the following command:
+```bash
+# Restore the database using the specified file
+python scripts/restore_mysql.py --filepath="path/to/dump" 
+
+# Show the help message
+python scripts/restore_mysql.py --help
+```
+
+**Examples**:
+```bash
+# Restore the database using the mysql dump file in the '/scripts' directory
+python scripts/restore_mysql.py --filepath="./scripts/mysql.sql"
+
+# Restore the database using the mysql dump file in the '/backups' directory. Replace <INSERT_DUMP_NAME> with the name of the dump file.
+python scripts/restore_mysql.py --filepath="./backups/<INSERT_DUMP_NAME>.sql"
+```
+
+Note: The script will overwrite the existing database with the data from the dump file.
+
+## Docker
+To build the Docker image, run the following command:
+```bash
+docker build -t kea_car_backend .
+```
+
+To run the Docker container, run the following command:
+```bash
+docker run -p 8000:8000 kea_car_backend
+```
+
+## Docker Compose
+You must build the Docker image before running the Docker Compose command.
+The docker-compose.yml file is designed to run the backend and the database together.
+When you start the Docker Compose, it will restore the database from the dump file found in the 'scripts' directory.
+```bash
+docker-compose -f docker-compose.yml up
+```

@@ -18,7 +18,12 @@ def get_db_connection_string() -> str:
     db_password = os.getenv('DB_PASSWORD')
     db_port = os.getenv('DB_PORT')
 
-    connection_string = f'mysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
+    # When using docker, we don't need to specify the port.
+    # Instead, we only specify the host as the service name.
+    port = f':{db_port}' if db_port else '' 
+    
+    connection_string = f'mysql://{db_user}:{db_password}@{db_host}{port}/{db_name}'
+    
     return connection_string
 
 def get_engine() -> Engine:

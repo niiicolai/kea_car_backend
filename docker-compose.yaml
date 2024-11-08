@@ -1,0 +1,39 @@
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=cars
+    networks:
+      - appnet
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  backend:
+    image: kea_car_backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=mysql
+      - DB_NAME=cars
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_PORT=
+    depends_on:
+      - mysql
+    networks:
+      - appnet
+    volumes:
+      - .:/app
+    command: ["/app/scripts/start_and_restore.sh"]
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  mysql-data:
