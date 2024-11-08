@@ -145,3 +145,28 @@ jobs:
           docker-compose -f docker-compose.yaml down
           docker-compose -f docker-compose.yaml up -d
           docker image prune -f
+
+  load-test:
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-staging
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create reports directory
+        run: mkdir reports
+
+      - name: JMeter Test
+        uses: QAInsights/PerfAction@v5.6.2
+        with:
+          test-plan-path: ./load-tests/test-plan.jmx
+          args: "-e -o ./reports/html/"
+
+      - name: SCP reports to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: "${{ secrets.SERVER_HOST }}"
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./reports"
+          target: "${{ secrets.SERVER_LOCATION }}/github/workspace/reports"
