@@ -61,6 +61,9 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd ${{ secrets.SERVER_LOCATION }}/github/workspace
+          chmod +x ./scripts/wait-for-it.sh
+          chmod +x ./scripts/start_and_restore.sh
+          chmod +x ./scripts/wait_for_sonarqube.sh          
           docker build -t ${{ secrets.IMAGE_NAME }}:${{ secrets.IMAGE_TAG }} .
           docker-compose -f docker-compose.yaml down
           docker-compose -f docker-compose.yaml up -d
