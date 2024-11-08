@@ -41,9 +41,3 @@ def get_db() -> Session:
         yield session
     finally:
         session.close()
-
-def get_current_db_name(session: Session) -> str:
-    # Use text() to create a text-based SQL expression
-        result = session.execute(text("SELECT DATABASE();"))
-        # Fetch the result
-        return str(result.scalar())

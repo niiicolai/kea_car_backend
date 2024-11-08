@@ -11,7 +11,7 @@ class AlreadyTakenFieldValueError(DatabaseError):
         super().__init__(self.message)  # Call the base class constructor
 
     def __str__(self):
-        return f"AlreadyTakenFieldValueException: {self.message}"
+        return f"{self.message}"
 
 class UnableToFindIdError(DatabaseError):
     def __init__(self, entity_name: str, entity_id: str):
@@ -19,7 +19,7 @@ class UnableToFindIdError(DatabaseError):
         super().__init__(self.message)  # Initialize the base Exception with the message
 
     def __str__(self):
-        return f"UnableToFindIdException: {self.message}"
+        return f"{self.message}"
 
 class PurchaseDeadlineHasPastError(DatabaseError):
     def __init__(self, car_resource: CarReturnResource, date_of_purchase: date):
@@ -27,7 +27,7 @@ class PurchaseDeadlineHasPastError(DatabaseError):
         super().__init__(self.message)  # Initialize the base Exception with the message
 
     def __str__(self):
-        return f"PurchaseDeadlineHasPastException: {self.message}"
+        return f"{self.message}"
 
 class UnableToFindEntityError(DatabaseError):
     def __init__(self, entity_name: str, field: str, value: str):
@@ -35,7 +35,7 @@ class UnableToFindEntityError(DatabaseError):
         super().__init__(self.message)  # Call the base class constructor
 
     def __str__(self):
-        return f"UnableToFindEntityException: {self.message}"
+        return f"{self.message}"
 
 class TheColorIsNotAvailableInModelToGiveToCarError(DatabaseError):
     def __init__(self, model_resource: ModelReturnResource, color_resource: ColorReturnResource):
@@ -43,7 +43,7 @@ class TheColorIsNotAvailableInModelToGiveToCarError(DatabaseError):
         super().__init__(self.message)  # Call the base class constructor
 
     def __str__(self):
-        return f"TheColorIsNotAvailableInModelToGiveToCarException: {self.message}"
+        return f"{self.message}"
 
 class UnableToDeleteCarWithoutDeletingPurchaseTooError(DatabaseError):
     def __init__(self, car_resource: CarReturnResource):
@@ -51,4 +51,4 @@ class UnableToDeleteCarWithoutDeletingPurchaseTooError(DatabaseError):
         super().__init__(self.message)  # Call the base class constructor
 
     def __str__(self):
-        return f"UnableToDeleteCarWithoutDeletingPurchaseTooException: {self.message}"
+        return f"{self.message}"

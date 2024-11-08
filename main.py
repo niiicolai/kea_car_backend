@@ -1,12 +1,7 @@
 # External Library imports
-from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI
 
-# Internal library imports
-from db import Session
-from db import get_db as get_db_session
-from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 
 from app.controllers.mysql import (
     accessories_controller as mysql_accessories_controller,
@@ -42,30 +37,3 @@ app.include_router(mysql_models_controller.router, prefix="/mysql", tags=["MySQL
 app.include_router(mysql_purchases_controller.router, prefix="/mysql", tags=["MySQL - Purchases"])
 app.include_router(mysql_sales_people_controller.router, prefix="/mysql", tags=["MySQL - Sales People"])
 app.include_router(mysql_car_purchase_controller.router, prefix="/mysql", tags=["MySQL View - Cars Purchases"])
-
-
-
-def get_db():
-    with get_db_session() as session:
-        yield session
-
-@app.get("/mysql/", response_model=TokenPayload,
-         description="Test endpoint to check if the API is running and to test how to access an endpoint that needs authorization.")
-async def root(current_token: TokenPayload = Depends(get_current_mysql_sales_person_token)):
-    return current_token
-
-
-@app.get("/test-db")
-async def get_db_connection(db: Session = Depends(get_db)):
-    """
-    Endpoint to test the database connection by returning the current database name.
-    """
-    try:
-        # Use text() to create a text-based SQL expression
-        result = db.execute(text("SELECT DATABASE();"))
-        # Fetch the result
-        database_name = result.scalar()
-
-        return {"message": "Connected to database", "database_name": database_name}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to connect to database: {e}")

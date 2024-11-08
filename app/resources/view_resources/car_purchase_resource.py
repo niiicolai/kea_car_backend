@@ -13,21 +13,39 @@ from app.resources.car_resource import (
 
 
 class CarPurchaseReturnResource(CarBaseReturnResource):
-    purchase: Optional[PurchaseBaseReturnResource] = Field(..., description="The car's Purchase as either a Null or a PurchaseReturnResource.")
-    is_past_deadline: bool = Field(..., description="A boolean that if true then the car is past its purchase deadline and has not been purchased yet.")
+    purchase: Optional[PurchaseBaseReturnResource] = Field(
+        default=...,
+        description="The car's Purchase as either a Null or a PurchaseReturnResource."
+    )
+    is_past_deadline: bool = Field(
+        default=...,
+        description="A boolean that if true then the car is past its purchase deadline and has not been purchased yet."
+    )
 
 
 class CarPurchaseSalePersonReturnResource(CarPurchaseReturnResource):
-    customer: CustomerReturnResource = Field(..., description="The car's Customer as a CustomerReturnResource.")
+    customer: CustomerReturnResource = Field(
+        default=...,
+        description="The car's Customer as a CustomerReturnResource."
+    )
 
 
 class SalesPersonWithCarsReturnResource(SalesPersonReturnResource):
-    cars: List[CarPurchaseSalePersonReturnResource] = Field(..., description="The sales person's cars as a list of CarPurchaseSalePersonReturnResource.")
+    cars: List[CarPurchaseSalePersonReturnResource] = Field(
+        default=...,
+        description="The sales person's cars as a list of CarPurchaseSalePersonReturnResource."
+    )
 
 
 class CarPurchaseCustomerReturnResource(CarPurchaseReturnResource):
-    sales_person: SalesPersonReturnResource = Field(..., description="The car's Sales Person as a SalesPersonReturnResource.")
+    sales_person: SalesPersonReturnResource = Field(
+        default=...,
+        description="The car's Sales Person as a SalesPersonReturnResource."
+    )
 
 
 class CustomerWithCarsReturnResource(CustomerReturnResource):
-    cars: List[CarPurchaseCustomerReturnResource] = Field(..., description="The customer's cars as a list of CarPurchaseCustomerReturnResource.")
+    cars: List[CarPurchaseCustomerReturnResource] = Field(
+        default=...,
+        description="The customer's cars as a list of CarPurchaseCustomerReturnResource."
+    )

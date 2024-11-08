@@ -56,30 +56,40 @@ class MySQLCarPurchaseRepository(CarPurchaseRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_sales_person_with_cars(self, sales_person_resource: SalesPersonReturnResource) -> SalesPersonWithCarsReturnResource:
+    def get_sales_person_with_cars(
+            self,
+            sales_person_resource: SalesPersonReturnResource
+    ) -> SalesPersonWithCarsReturnResource:
+
         if not isinstance(sales_person_resource, SalesPersonReturnResource):
-            raise TypeError(f"sales_person_resource should be a SalesPersonReturnResource, not {type(sales_person_resource)}.")
+            raise TypeError(f"sales_person_resource should be a SalesPersonReturnResource, "
+                            f"not {type(sales_person_resource)}.")
 
-        car_purchase_sales_person_query = self.session.query(CarPurchaseView).filter_by(sales_person_id=sales_person_resource.id)
+        car_purchase_sales_person_query = self.session.query(CarPurchaseView).filter_by(
+            sales_person_id=sales_person_resource.id
+        )
 
-        sales_person_cars: List[CarPurchaseView] = cast(List[CarPurchaseView], car_purchase_sales_person_query.all())
+        sales_person_cars = cast(List[CarPurchaseView], car_purchase_sales_person_query.all())
 
         return create_sales_person_with_cars_resource(
             sales_person_resource,
-            sale_person_cars=[sales_person_car.as_sales_person_resource() for sales_person_car in sales_person_cars]
+            sale_person_cars=
+            [
+                sales_person_car.as_sales_person_resource() for sales_person_car in sales_person_cars
+            ]
         )
 
     def get_customer_with_cars(self, customer_resource: CustomerReturnResource) -> CustomerWithCarsReturnResource:
         if not isinstance(customer_resource, CustomerReturnResource):
             raise TypeError(f"customer_resource should be a CustomerReturnResource, not {type(customer_resource)}.")
 
-        car_purchase_customer_query = self.session.query(CarPurchaseView).filter_by(customer_id=customer_resource.id)
+        car_purchase_customer_query = self.session.query(CarPurchaseView).filter_by(
+            customer_id=customer_resource.id
+        )
 
-        customer_cars: List[CarPurchaseView] = cast(List[CarPurchaseView], car_purchase_customer_query.all())
+        customer_cars = cast(List[CarPurchaseView], car_purchase_customer_query.all())
 
         return create_customer_with_cars_resource(
             customer_resource,
             customer_cars=[customer_car.as_customer_resource() for customer_car in customer_cars]
         )
-
-
