@@ -159,9 +159,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             rm -rf /logs/*
-            nohup sar 2 60 > /logs/cpu_mem_usage.log >/dev/null 2>&1 &
-            nohup iostat -x 2 60 > /logs/disk_usage.log >/dev/null 2>&1 &
-            nohup vmstat 2 60 > /logs/vmstat_usage.log >/dev/null 2>&1 &
+            nohup sar 2 60 > /logs/cpu_mem_usage.log 2>&1 &
+            nohup iostat -x 2 60 > /logs/disk_usage.log 2>&1 &
+            nohup vmstat 2 60 > /logs/vmstat_usage.log 2>&1 &
 
       - uses: actions/checkout@v3
       
