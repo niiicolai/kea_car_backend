@@ -151,20 +151,17 @@ jobs:
     needs:
       - deploy-staging
     steps:
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
+      - name: Start Server Monitoring
+        uses: appleboy/ssh-action@master
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Clean Up Monitoring Logs
-        run: |
-          ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "rm -rf /logs/*"
-
-      - name: Start Server Monitoring 
-        run: |
-          ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "nohup sar 1 60 > /logs/cpu_mem_usage.log &"
-          ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "nohup iostat -x 1 60 > /logs/disk_usage.log &"
-          ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "nohup vmstat 1 60 > /logs/vmstat_usage.log &"
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            rm -rf /logs/*
+            nohup sar 1 60 > /logs/cpu_mem_usage.log &
+            nohup iostat -x 1 60 > /logs/disk_usage.log &
+            nohup vmstat 1 60 > /logs/vmstat_usage.log &
 
       - uses: actions/checkout@v3
       
@@ -178,8 +175,13 @@ jobs:
           args: "-e -o ./reports/html/"
 
       - name: Stop Server Monitoring
-        run: |
-          ssh ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "killall sar iostat vmstat"
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            killall sar iostat vmstat
 
       - name: SCP Load test reports to server
         uses: appleboy/scp-action@v0.1.7
