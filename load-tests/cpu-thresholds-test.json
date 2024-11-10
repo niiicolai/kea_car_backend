@@ -1,6 +1,6 @@
 {
-    "User max must be less than 60": { 
-        "%User": { "max": { "<": 60 } }
+    "User max must be less than 20": { 
+        "%User": { "max": { "<": 20 } }
     },
     "Nice max must be less than 20": { 
         "%Nice": { "max": { "<": 20 } }
@@ -14,7 +14,7 @@
     "steal max must be less than 20": { 
         "%Steal": { "max": { "<": 20 } }
     },
-    "idle max must be less than or equal 100": {
-        "%Idle": { "max": { "<=": 100 } }
+    "idle max must be greater than 50": {
+        "%Idle": { "max": { ">": 50 } }
     }
 }
