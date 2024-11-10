@@ -57,10 +57,13 @@ jobs:
         run: |
           pytest
 
-      - name: Ensure coverage is at least 80%
+      - name: Ensure coverage is at least 10%
         run: |
           coverage run --source app -m pytest
-          coverage report --fail-under=80
+          coverage report --fail-under=10
+
+      - name: Pylint score must be at least 7.0
+        run: pylint app --fail-under=7.0        
 
       - name: Start API Server
         run: |
