@@ -191,7 +191,7 @@ jobs:
           target: "./logs"
 
       - name: Run SAR CPU Data Analyzer
-        uses: niiicolai/sar-cpu-data-analyzer@v1
+        uses: niiicolai/sar-cpu-data-analyzer@v1.0.0
         with:
           log-file: "./cpu.log"
           test-file: "./load-tests/cpu-thresholds-test.json"
