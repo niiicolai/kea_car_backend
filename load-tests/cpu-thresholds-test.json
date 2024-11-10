@@ -1,20 +1,20 @@
 {
-    "User mean must be less than 3": { 
-        "%User": { "mean": { "<": 3 } }
+    "User max must be less than 20": { 
+        "%User": { "max": { "<": 20 } }
     },
-    "Nice median must equal or be greather than zero": { 
-        "%Nice": { "median": { ">=": 0 } }
+    "Nice max must be less than 20": { 
+        "%Nice": { "max": { "<": 20 } }
     },
-    "System max must be greater than 1": {
-        "%System": { "max": { ">": 1 } }
+    "System max must be less than 20": {
+        "%System": { "max": { "<": 20 } }
     },
-    "iowait mean must equal or be greather than zero": { 
-        "%IOWait": { "mean": { ">=": 0 } }
+    "iowait max must be less than 20": { 
+        "%IOWait": { "max": { "<": 20 } }
     },
-    "steal min must be less than or equal to 0": { 
-        "%Steal": { "min": { "<=": 0 } }
+    "steal max must be less than 20": { 
+        "%Steal": { "max": { "<": 20 } }
     },
-    "idle sum must not equal 1": {
-        "%Idle": { "sum": { "!=": 1 } }
+    "idle max must be less than or equal 100": {
+        "%Idle": { "max": { "<=": 100 } }
     }
 }
