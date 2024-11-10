@@ -1,9 +1,9 @@
-name: Staging
+name: CI/CD
 
 on:
   push:
     branches:
-      - main
+      - main2
 
 jobs:
 
@@ -63,7 +63,7 @@ jobs:
           coverage report --fail-under=10
 
       - name: Pylint score must be at least 7.0
-        run: pylint app --fail-under=7.0        
+        run: pylint app/* --fail-under=7.0       
 
       - name: Start API Server
         run: |
@@ -197,7 +197,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "/logs"
           target: "./"
-          direction: download
 
       - name: Run SAR CPU Data Analyzer
         uses: niiicolai/sar-cpu-data-analyzer@v1.0.0

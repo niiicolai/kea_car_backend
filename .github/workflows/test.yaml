@@ -1,0 +1,21 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Download SAR logs
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: "${{ secrets.SERVER_HOST }}"
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "/logs"
+          target: "./"
