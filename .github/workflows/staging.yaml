@@ -67,9 +67,8 @@ jobs:
       - name: Install Newman
         run: npm install -g newman
 
-      # Uncommented until the collection supports authentication
-      #- name: Run Postman collection with Mysql environment (API tests)
-      #  run: newman run ./api-tests/KEA\ Car\ API\ Test.postman_collection.json --environment ./api-tests/KEA\ Car\ Mysql.postman_environment.json
+      - name: Run Postman collection with Mysql environment (API tests)
+        run: newman run ./api-tests/KEA\ Car\ API\ Test.postman_collection.json --environment ./api-tests/KEA\ Car\ Mysql.postman_environment.json
         
       - name: Clone frontend repository
         uses: actions/checkout@v2

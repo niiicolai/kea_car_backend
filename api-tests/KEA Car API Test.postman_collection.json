@@ -7,6 +7,2585 @@
 	},
 	"item": [
 		{
+			"name": "Sales People",
+			"item": [
+				{
+					"name": "Login 400",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 400\", function() {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const email = pm.environment.get('TestSalesPersonEmail');\r",
+									"const password = 'wrongPassword';\r",
+									"\r",
+									"pm.environment.set('LoginSalesPersonBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    password,\r",
+									"}));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{LoginSalesPersonBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/login",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidSalesPerson = (salesPerson) => {\r",
+									"    pm.test(\"salesPerson must be an object\", function () {\r",
+									"        pm.expect(salesPerson).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
+									"            pm.expect(salesPerson).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", type: \"string\" },\r",
+									"        { prop: \"first_name\", type: \"string\" },\r",
+									"        { prop: \"last_name\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(salesPerson[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response.sales_person must be valid a sales person`, function () {\r",
+									"    isValidSalesPerson(responseJSON.sales_person);\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    \"access_token\",\r",
+									"    \"token_type\",\r",
+									"    \"sales_person\",\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response must include ${expected} property`, function () {\r",
+									"        pm.expect(responseJSON).to.have.property(expected);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    { prop: \"access_token\", type: \"string\" },\r",
+									"    { prop: \"token_type\", type: \"string\" },\r",
+									"    { prop: \"sales_person\", type: \"object\" },\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"        pm.expect(responseJSON[expected.prop])\r",
+									"            .to.be.a(expected.type);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"const token = responseJSON.access_token;\r",
+									"const sales_person = responseJSON.sales_person;\r",
+									"pm.environment.set(\"Authorization\", \"Bearer \" + token);\r",
+									"pm.environment.set(\"SalesPersonUuid\", sales_person.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const email = pm.environment.get('TestSalesPersonEmail');\r",
+									"const password = pm.environment.get('TestSalesPersonPassword');\r",
+									"\r",
+									"pm.environment.set('LoginSalesPersonBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    password,\r",
+									"}));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{LoginSalesPersonBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/login",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Sales Person 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidSalesPerson = (salesPerson) => {\r",
+									"    pm.test(\"salesPerson must be an object\", function () {\r",
+									"        pm.expect(salesPerson).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
+									"            pm.expect(salesPerson).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", type: \"string\" },\r",
+									"        { prop: \"first_name\", type: \"string\" },\r",
+									"        { prop: \"last_name\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(salesPerson[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a sales person`, function () {\r",
+									"    isValidSalesPerson(responseJSON);\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('SalesPersonUuid', responseJSON.id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date().getTime() / 1000;\r",
+									"\r",
+									"const email = `${now}@test.com`;\r",
+									"const first_name = `${now}`;\r",
+									"const last_name = `${now}`;\r",
+									"const password = `${now}`;\r",
+									"\r",
+									"pm.environment.set('CreateSalesPersonBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    first_name,\r",
+									"    last_name,\r",
+									"    password,\r",
+									"}));\r",
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{CreateSalesPersonBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/sales_person",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"sales_person"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Token 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidSalesPerson = (salesPerson) => {\r",
+									"    pm.test(\"salesPerson must be an object\", function () {\r",
+									"        pm.expect(salesPerson).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
+									"            pm.expect(salesPerson).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", type: \"string\" },\r",
+									"        { prop: \"first_name\", type: \"string\" },\r",
+									"        { prop: \"last_name\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(salesPerson[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response.sales_person must be valid a sales person`, function () {\r",
+									"    isValidSalesPerson(responseJSON.sales_person);\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    \"access_token\",\r",
+									"    \"token_type\",\r",
+									"    \"sales_person\",\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response must include ${expected} property`, function () {\r",
+									"        pm.expect(responseJSON).to.have.property(expected);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"[\r",
+									"    { prop: \"access_token\", type: \"string\" },\r",
+									"    { prop: \"token_type\", type: \"string\" },\r",
+									"    { prop: \"sales_person\", type: \"object\" },\r",
+									"].forEach(expected => {\r",
+									"    pm.test(`response property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"        pm.expect(responseJSON[expected.prop])\r",
+									"            .to.be.a(expected.type);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date().getTime() / 1000;\r",
+									"\r",
+									"const email = `${now}@test.com`;\r",
+									"const first_name = `${now}`;\r",
+									"const last_name = `${now}`;\r",
+									"const password = `${now}`;\r",
+									"\r",
+									"pm.environment.set('CreateSalesPersonBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    first_name,\r",
+									"    last_name,\r",
+									"    password,\r",
+									"}));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "{{TestSalesPersonEmail}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{TestSalesPersonPassword}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/token",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidSalesPerson = (salesPerson) => {\r",
+									"    pm.test(\"salesPerson must be an object\", function () {\r",
+									"        pm.expect(salesPerson).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
+									"            pm.expect(salesPerson).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", type: \"string\" },\r",
+									"        { prop: \"first_name\", type: \"string\" },\r",
+									"        { prop: \"last_name\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(salesPerson[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid sales people`, function () {\r",
+									"    responseJSON.forEach(salesPerson => isValidSalesPerson(salesPerson));\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/sales_people?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"sales_people"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 401",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/sales_people?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"sales_people"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidSalesPerson = (salesPerson) => {\r",
+									"    pm.test(\"salesPerson must be an object\", function () {\r",
+									"        pm.expect(salesPerson).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
+									"            pm.expect(salesPerson).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", type: \"string\" },\r",
+									"        { prop: \"first_name\", type: \"string\" },\r",
+									"        { prop: \"last_name\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(salesPerson[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a sales person`, function () {\r",
+									"    isValidSalesPerson(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/sales_person/{{SalesPersonUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"sales_person",
+								"{{SalesPersonUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/sales_person/{{SalesPersonUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"sales_person",
+								"{{SalesPersonUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/sales_person/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"sales_person",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Brand",
+			"item": [
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidBrand = (brand) => {\r",
+									"    pm.test(\"brand must be an object\", function () {\r",
+									"        pm.expect(brand).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"logo_url\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`brand must include ${expected} property`, function () {\r",
+									"            pm.expect(brand).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"logo_url\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`brand property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(brand[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid brands`, function () {\r",
+									"    responseJSON.forEach(brand => isValidBrand(brand));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('BrandUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/brands?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"brands"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/brands?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"brands"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidBrand = (brand) => {\r",
+									"    pm.test(\"brand must be an object\", function () {\r",
+									"        pm.expect(brand).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"logo_url\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`brand must include ${expected} property`, function () {\r",
+									"            pm.expect(brand).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"logo_url\", type: \"string\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`brand property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(brand[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a brand`, function () {\r",
+									"    isValidBrand(responseJSON);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/brand/{{BrandUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"brand",
+								"{{BrandUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/brand/{{BrandUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"brand",
+								"{{BrandUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/brand/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"brand",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accessory",
+			"item": [
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidAccessory = (accessory) => {\r",
+									"    pm.test(\"accessory must be an object\", function () {\r",
+									"        pm.expect(accessory).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`accessory must include ${expected} property`, function () {\r",
+									"            pm.expect(accessory).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`accessory property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(accessory[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid accessories`, function () {\r",
+									"    responseJSON.forEach(accessory => isValidAccessory(accessory));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('AccessoryUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/accessories?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"accessories"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 401",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/accessories?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"accessories"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidAccessory = (accessory) => {\r",
+									"    pm.test(\"accessory must be an object\", function () {\r",
+									"        pm.expect(accessory).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`accessory must include ${expected} property`, function () {\r",
+									"            pm.expect(accessory).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`accessory property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(accessory[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid accessory`, function () {\r",
+									"    isValidAccessory(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/accessory/{{AccessoryUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"accessory",
+								"{{AccessoryUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/accessory/{{AccessoryUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"accessory",
+								"{{AccessoryUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/accessory/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"accessory",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Color",
+			"item": [
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidColor = (color) => {\r",
+									"    pm.test(\"color must be an object\", function () {\r",
+									"        pm.expect(color).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"red_value\",\r",
+									"        \"green_value\",\r",
+									"        \"blue_value\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`color must include ${expected} property`, function () {\r",
+									"            pm.expect(color).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"red_value\", type: \"number\" },\r",
+									"        { prop: \"green_value\", type: \"number\" },\r",
+									"        { prop: \"blue_value\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(color[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid colors`, function () {\r",
+									"    responseJSON.forEach(color => isValidColor(color));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('ColorUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/colors?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"colors"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidColor = (color) => {\r",
+									"    pm.test(\"color must be an object\", function () {\r",
+									"        pm.expect(color).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"red_value\",\r",
+									"        \"green_value\",\r",
+									"        \"blue_value\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`color must include ${expected} property`, function () {\r",
+									"            pm.expect(color).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"red_value\", type: \"number\" },\r",
+									"        { prop: \"green_value\", type: \"number\" },\r",
+									"        { prop: \"blue_value\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(color[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid colors`, function () {\r",
+									"    isValidColor(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/color/{{ColorUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"color",
+								"{{ColorUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/color/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"color",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer",
+			"item": [
+				{
+					"name": "Create 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date().getTime() / 1000;\r",
+									"\r",
+									"const randomPhoneNumber = (length = 8) => {\r",
+									"    const numbers = '0123456789';\r",
+									"    let result = '+45';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += numbers.charAt(Math.floor(Math.random() * numbers.length));\r",
+									"    }\r",
+									"    return result;\r",
+									"};\r",
+									"\r",
+									"const email = `${now}@test.com`;\r",
+									"const phone_number = randomPhoneNumber(8);\r",
+									"const first_name = `${now}`;\r",
+									"const last_name = `${now}`;\r",
+									"const address = `${now}`;\r",
+									"\r",
+									"pm.environment.set('CreateCustomerBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    phone_number,\r",
+									"    first_name,\r",
+									"    last_name,\r",
+									"    address,\r",
+									"}));\r",
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidCustomer = (customer) => {\r",
+									"    pm.test(\"customer must be an object\", function () {\r",
+									"        pm.expect(customer).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"phone_number\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"address\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer must include ${expected} property`, function () {\r",
+									"            pm.expect(customer).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", types: [\"string\"] },\r",
+									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"first_name\", types: [\"string\"] },\r",
+									"        { prop: \"last_name\", types: [\"string\"] },\r",
+									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"id\", types: [\"string\"] },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
+									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
+									"                .to.equal(true);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a customer`, function () {\r",
+									"    isValidCustomer(responseJSON);\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('CustomerUuid', responseJSON.id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{CreateCustomerBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/customer",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create 401",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date().getTime() / 1000;\r",
+									"\r",
+									"const randomPhoneNumber = (length = 8) => {\r",
+									"    const numbers = '0123456789';\r",
+									"    let result = '+45';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += numbers.charAt(Math.floor(Math.random() * numbers.length));\r",
+									"    }\r",
+									"    return result;\r",
+									"};\r",
+									"\r",
+									"const email = `${now}@test.com`;\r",
+									"const phone_number = randomPhoneNumber(8);\r",
+									"const first_name = `${now}`;\r",
+									"const last_name = `${now}`;\r",
+									"const address = `${now}`;\r",
+									"\r",
+									"pm.environment.set('CreateCustomerBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    phone_number,\r",
+									"    first_name,\r",
+									"    last_name,\r",
+									"    address,\r",
+									"}));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{CreateCustomerBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/customer",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidCustomer = (customer) => {\r",
+									"    pm.test(\"customer must be an object\", function () {\r",
+									"        pm.expect(customer).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"phone_number\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"address\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer must include ${expected} property`, function () {\r",
+									"            pm.expect(customer).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", types: [\"string\"] },\r",
+									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"first_name\", types: [\"string\"] },\r",
+									"        { prop: \"last_name\", types: [\"string\"] },\r",
+									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"id\", types: [\"string\"] },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
+									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
+									"                .to.equal(true);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a customer`, function () {\r",
+									"    isValidCustomer(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date().getTime() / 1000;\r",
+									"\r",
+									"const randomPhoneNumber = (length = 8) => {\r",
+									"    const numbers = '0123456789';\r",
+									"    let result = '+45';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += numbers.charAt(Math.floor(Math.random() * numbers.length));\r",
+									"    }\r",
+									"    return result;\r",
+									"};\r",
+									"\r",
+									"const email = `${now}@test.com`;\r",
+									"const phone_number = randomPhoneNumber(8);\r",
+									"const first_name = `${now}`;\r",
+									"const last_name = `${now}`;\r",
+									"const address = `${now}`;\r",
+									"\r",
+									"pm.environment.set('UpdateCustomerBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    phone_number,\r",
+									"    first_name,\r",
+									"    last_name,\r",
+									"    address,\r",
+									"}));\r",
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{UpdateCustomerBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/customer/{{CustomerUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer",
+								"{{CustomerUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date().getTime() / 1000;\r",
+									"\r",
+									"const randomPhoneNumber = (length = 8) => {\r",
+									"    const numbers = '0123456789';\r",
+									"    let result = '+45';\r",
+									"    for (let i = 0; i < length; i++) {\r",
+									"        result += numbers.charAt(Math.floor(Math.random() * numbers.length));\r",
+									"    }\r",
+									"    return result;\r",
+									"};\r",
+									"\r",
+									"const email = `${now}@test.com`;\r",
+									"const phone_number = randomPhoneNumber(8);\r",
+									"const first_name = `${now}`;\r",
+									"const last_name = `${now}`;\r",
+									"const address = `${now}`;\r",
+									"\r",
+									"pm.environment.set('UpdateCustomerBody', JSON.stringify({ \r",
+									"    email,\r",
+									"    phone_number,\r",
+									"    first_name,\r",
+									"    last_name,\r",
+									"    address,\r",
+									"}));\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{UpdateCustomerBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/customer/{{CustomerUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer",
+								"{{CustomerUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidCustomer = (customer) => {\r",
+									"    pm.test(\"customer must be an object\", function () {\r",
+									"        pm.expect(customer).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"phone_number\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"address\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer must include ${expected} property`, function () {\r",
+									"            pm.expect(customer).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", types: [\"string\"] },\r",
+									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"first_name\", types: [\"string\"] },\r",
+									"        { prop: \"last_name\", types: [\"string\"] },\r",
+									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"id\", types: [\"string\"] },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
+									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
+									"                .to.equal(true);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid customers`, function () {\r",
+									"    responseJSON.forEach(customer => isValidCustomer(customer));\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/customers?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customers"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 401",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/customers?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customers"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidCustomer = (customer) => {\r",
+									"    pm.test(\"customer must be an object\", function () {\r",
+									"        pm.expect(customer).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"email\",\r",
+									"        \"phone_number\",\r",
+									"        \"first_name\",\r",
+									"        \"last_name\",\r",
+									"        \"address\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer must include ${expected} property`, function () {\r",
+									"            pm.expect(customer).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"email\", types: [\"string\"] },\r",
+									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"first_name\", types: [\"string\"] },\r",
+									"        { prop: \"last_name\", types: [\"string\"] },\r",
+									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
+									"        { prop: \"id\", types: [\"string\"] },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
+									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
+									"                .to.equal(true);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid a customer`, function () {\r",
+									"    isValidCustomer(responseJSON);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/customer/{{CustomerUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer",
+								"{{CustomerUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/customer/{{CustomerUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer",
+								"{{CustomerUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/customer/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"customer",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Insurance",
+			"item": [
+				{
+					"name": "Find All 200",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidInsurance = (insurance) => {\r",
+									"    pm.test(\"insurance must be an object\", function () {\r",
+									"        pm.expect(insurance).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`insurance must include ${expected} property`, function () {\r",
+									"            pm.expect(insurance).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`insurance property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(insurance[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid insurances`, function () {\r",
+									"    responseJSON.forEach(insurance => isValidInsurance(insurance));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('InsuranceUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/insurances?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"insurances"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 401",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/insurances?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"insurances"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 200",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const responseJSON = pm.response.json();\r",
+									"\r",
+									"const isValidInsurance = (insurance) => {\r",
+									"    pm.test(\"insurance must be an object\", function () {\r",
+									"        pm.expect(insurance).to.be.an('object');\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        \"name\",\r",
+									"        \"price\",\r",
+									"        \"id\",\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`insurance must include ${expected} property`, function () {\r",
+									"            pm.expect(insurance).to.have.property(expected);\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    [\r",
+									"        { prop: \"name\", type: \"string\" },\r",
+									"        { prop: \"price\", type: \"number\" },\r",
+									"        { prop: \"id\", type: \"string\" },\r",
+									"    ].forEach(expected => {\r",
+									"        pm.test(`insurance property ${expected.prop} must be of type ${expected.type}`, function () {\r",
+									"            pm.expect(insurance[expected.prop])\r",
+									"                .to.be.a(expected.type);\r",
+									"        });\r",
+									"    });\r",
+									"}\r",
+									"\r",
+									"pm.test(`response must be valid insurance`, function () {\r",
+									"    isValidInsurance(responseJSON);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/insurance/{{InsuranceUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"insurance",
+								"{{InsuranceUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/insurance/{{InsuranceUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"insurance",
+								"{{InsuranceUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 404",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 404\", function() {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/insurance/692d37de-65db-4846-b8b2-3483ba05d59d",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"insurance",
+								"692d37de-65db-4846-b8b2-3483ba05d59d"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Car",
 			"item": [
 				{
@@ -16,18 +2595,15 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"const now = new Date();\r",
 									"\r",
-									"const purchase_deadline = `${now.getFullYear()}-${(now.getMonth()+1)%12}-${now.getDay().toString().length == 1 ? '0' + now.getDay() : now.getDay()}`;\r",
 									"const customers_id = pm.environment.get('TestCustomerId');\r",
-									"const sales_people_id = pm.environment.get('TestSalesPeopleId');\r",
+									"const sales_people_id = pm.environment.get('SalesPersonUuid');\r",
 									"const models_id = pm.environment.get('TestModelsId');\r",
 									"const colors_id = pm.environment.get('TestColorId');\r",
 									"const accessory_ids = [pm.environment.get('TestAccessoryId')];\r",
 									"const insurance_ids = [pm.environment.get('TestInsuranceId')];\r",
 									"\r",
 									"pm.environment.set('CreateCarBody', JSON.stringify({ \r",
-									"    purchase_deadline,\r",
 									"    customers_id,\r",
 									"    sales_people_id,\r",
 									"    models_id,\r",
@@ -35,6 +2611,11 @@
 									"    insurance_ids,\r",
 									"    colors_id\r",
 									"}));\r",
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
 									"\r",
 									""
 								],
@@ -275,6 +2856,60 @@
 									"\r",
 									"pm.test(`response.insurances must be valid`, function () {\r",
 									"    responseJSON.insurances.forEach(insurance => isValidInsurance(insurance));\r",
+									"});\r",
+									"\r",
+									"pm.environment.set('NewCarUuid', responseJSON.id);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{CreateCarBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/car",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"car"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create 401",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
 									"});\r",
 									""
 								],
@@ -556,6 +3191,10 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript",
@@ -567,7 +3206,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BaseUrl}}/cars?customer_id={{TestCustomerId}}&limit=2",
+							"raw": "{{BaseUrl}}/cars?limit=2",
 							"host": [
 								"{{BaseUrl}}"
 							],
@@ -576,9 +3215,53 @@
 							],
 							"query": [
 								{
-									"key": "customer_id",
-									"value": "{{TestCustomerId}}"
-								},
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/cars?limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"cars"
+							],
+							"query": [
 								{
 									"key": "limit",
 									"value": "2"
@@ -827,6 +3510,63 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/car/{{TestCarUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"car",
+								"{{TestCarUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
 					],
 					"request": {
@@ -860,6 +3600,20 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
 					],
 					"request": {
@@ -881,1160 +3635,6 @@
 			]
 		},
 		{
-			"name": "Brand",
-			"item": [
-				{
-					"name": "Find All 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidBrand = (brand) => {\r",
-									"    pm.test(\"brand must be an object\", function () {\r",
-									"        pm.expect(brand).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"name\",\r",
-									"        \"logo_url\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`brand must include ${expected} property`, function () {\r",
-									"            pm.expect(brand).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"name\", type: \"string\" },\r",
-									"        { prop: \"logo_url\", type: \"string\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`brand property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(brand[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid brands`, function () {\r",
-									"    responseJSON.forEach(brand => isValidBrand(brand));\r",
-									"});\r",
-									"\r",
-									"pm.environment.set('BrandUuid', responseJSON[0].id);\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/brands?&limit=2",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"brands"
-							],
-							"query": [
-								{
-									"key": null,
-									"value": null
-								},
-								{
-									"key": "limit",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidBrand = (brand) => {\r",
-									"    pm.test(\"brand must be an object\", function () {\r",
-									"        pm.expect(brand).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"name\",\r",
-									"        \"logo_url\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`brand must include ${expected} property`, function () {\r",
-									"            pm.expect(brand).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"name\", type: \"string\" },\r",
-									"        { prop: \"logo_url\", type: \"string\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`brand property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(brand[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid a brand`, function () {\r",
-									"    isValidBrand(responseJSON);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/brand/{{BrandUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"brand",
-								"{{BrandUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 404",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 404\", function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/brand/692d37de-65db-4846-b8b2-3483ba05d59d",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"brand",
-								"692d37de-65db-4846-b8b2-3483ba05d59d"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Accessory",
-			"item": [
-				{
-					"name": "Find All 200",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidAccessory = (accessory) => {\r",
-									"    pm.test(\"accessory must be an object\", function () {\r",
-									"        pm.expect(accessory).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"name\",\r",
-									"        \"price\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`accessory must include ${expected} property`, function () {\r",
-									"            pm.expect(accessory).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"name\", type: \"string\" },\r",
-									"        { prop: \"price\", type: \"number\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`accessory property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(accessory[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid accessories`, function () {\r",
-									"    responseJSON.forEach(accessory => isValidAccessory(accessory));\r",
-									"});\r",
-									"\r",
-									"pm.environment.set('AccessoryUuid', responseJSON[0].id);\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/accessories?&limit=2",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"accessories"
-							],
-							"query": [
-								{
-									"key": null,
-									"value": null
-								},
-								{
-									"key": "limit",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidAccessory = (accessory) => {\r",
-									"    pm.test(\"accessory must be an object\", function () {\r",
-									"        pm.expect(accessory).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"name\",\r",
-									"        \"price\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`accessory must include ${expected} property`, function () {\r",
-									"            pm.expect(accessory).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"name\", type: \"string\" },\r",
-									"        { prop: \"price\", type: \"number\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`accessory property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(accessory[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid accessory`, function () {\r",
-									"    isValidAccessory(responseJSON);\r",
-									"});\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/accessory/{{AccessoryUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"accessory",
-								"{{AccessoryUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 404",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 404\", function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/accessory/692d37de-65db-4846-b8b2-3483ba05d59d",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"accessory",
-								"692d37de-65db-4846-b8b2-3483ba05d59d"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Color",
-			"item": [
-				{
-					"name": "Find All 200",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidColor = (color) => {\r",
-									"    pm.test(\"color must be an object\", function () {\r",
-									"        pm.expect(color).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"name\",\r",
-									"        \"price\",\r",
-									"        \"red_value\",\r",
-									"        \"green_value\",\r",
-									"        \"blue_value\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`color must include ${expected} property`, function () {\r",
-									"            pm.expect(color).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"name\", type: \"string\" },\r",
-									"        { prop: \"price\", type: \"number\" },\r",
-									"        { prop: \"red_value\", type: \"number\" },\r",
-									"        { prop: \"green_value\", type: \"number\" },\r",
-									"        { prop: \"blue_value\", type: \"number\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(color[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid colors`, function () {\r",
-									"    responseJSON.forEach(color => isValidColor(color));\r",
-									"});\r",
-									"\r",
-									"pm.environment.set('ColorUuid', responseJSON[0].id);\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/colors?&limit=2",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"colors"
-							],
-							"query": [
-								{
-									"key": null,
-									"value": null
-								},
-								{
-									"key": "limit",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidColor = (color) => {\r",
-									"    pm.test(\"color must be an object\", function () {\r",
-									"        pm.expect(color).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"name\",\r",
-									"        \"price\",\r",
-									"        \"red_value\",\r",
-									"        \"green_value\",\r",
-									"        \"blue_value\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`color must include ${expected} property`, function () {\r",
-									"            pm.expect(color).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"name\", type: \"string\" },\r",
-									"        { prop: \"price\", type: \"number\" },\r",
-									"        { prop: \"red_value\", type: \"number\" },\r",
-									"        { prop: \"green_value\", type: \"number\" },\r",
-									"        { prop: \"blue_value\", type: \"number\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`color property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(color[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid colors`, function () {\r",
-									"    isValidColor(responseJSON);\r",
-									"});\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/color/{{ColorUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"color",
-								"{{ColorUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 404",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 404\", function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/color/692d37de-65db-4846-b8b2-3483ba05d59d",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"color",
-								"692d37de-65db-4846-b8b2-3483ba05d59d"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Customer",
-			"item": [
-				{
-					"name": "Create 200",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const now = new Date().getTime() / 1000;\r",
-									"\r",
-									"const randomPhoneNumber = (length = 8) => {\r",
-									"    const numbers = '0123456789';\r",
-									"    let result = '+45';\r",
-									"    for (let i = 0; i < length; i++) {\r",
-									"        result += numbers.charAt(Math.floor(Math.random() * numbers.length));\r",
-									"    }\r",
-									"    return result;\r",
-									"};\r",
-									"\r",
-									"const email = `${now}@test.com`;\r",
-									"const phone_number = randomPhoneNumber(8);\r",
-									"const first_name = `${now}`;\r",
-									"const last_name = `${now}`;\r",
-									"const address = `${now}`;\r",
-									"\r",
-									"pm.environment.set('CreateCustomerBody', JSON.stringify({ \r",
-									"    email,\r",
-									"    phone_number,\r",
-									"    first_name,\r",
-									"    last_name,\r",
-									"    address,\r",
-									"}));\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidCustomer = (customer) => {\r",
-									"    pm.test(\"customer must be an object\", function () {\r",
-									"        pm.expect(customer).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"email\",\r",
-									"        \"phone_number\",\r",
-									"        \"first_name\",\r",
-									"        \"last_name\",\r",
-									"        \"address\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`customer must include ${expected} property`, function () {\r",
-									"            pm.expect(customer).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"email\", types: [\"string\"] },\r",
-									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
-									"        { prop: \"first_name\", types: [\"string\"] },\r",
-									"        { prop: \"last_name\", types: [\"string\"] },\r",
-									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
-									"        { prop: \"id\", types: [\"string\"] },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
-									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
-									"                .to.equal(true);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid a customer`, function () {\r",
-									"    isValidCustomer(responseJSON);\r",
-									"});\r",
-									"\r",
-									"pm.environment.set('CustomerUuid', responseJSON.id);\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{{CreateCustomerBody}}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BaseUrl}}/customer",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"customer"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidCustomer = (customer) => {\r",
-									"    pm.test(\"customer must be an object\", function () {\r",
-									"        pm.expect(customer).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"email\",\r",
-									"        \"phone_number\",\r",
-									"        \"first_name\",\r",
-									"        \"last_name\",\r",
-									"        \"address\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`customer must include ${expected} property`, function () {\r",
-									"            pm.expect(customer).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"email\", types: [\"string\"] },\r",
-									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
-									"        { prop: \"first_name\", types: [\"string\"] },\r",
-									"        { prop: \"last_name\", types: [\"string\"] },\r",
-									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
-									"        { prop: \"id\", types: [\"string\"] },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
-									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
-									"                .to.equal(true);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid a customer`, function () {\r",
-									"    isValidCustomer(responseJSON);\r",
-									"});\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const now = new Date().getTime() / 1000;\r",
-									"\r",
-									"const randomPhoneNumber = (length = 8) => {\r",
-									"    const numbers = '0123456789';\r",
-									"    let result = '+45';\r",
-									"    for (let i = 0; i < length; i++) {\r",
-									"        result += numbers.charAt(Math.floor(Math.random() * numbers.length));\r",
-									"    }\r",
-									"    return result;\r",
-									"};\r",
-									"\r",
-									"const email = `${now}@test.com`;\r",
-									"const phone_number = randomPhoneNumber(8);\r",
-									"const first_name = `${now}`;\r",
-									"const last_name = `${now}`;\r",
-									"const address = `${now}`;\r",
-									"\r",
-									"pm.environment.set('UpdateCustomerBody', JSON.stringify({ \r",
-									"    email,\r",
-									"    phone_number,\r",
-									"    first_name,\r",
-									"    last_name,\r",
-									"    address,\r",
-									"}));\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{{UpdateCustomerBody}}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BaseUrl}}/customer/{{CustomerUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"customer",
-								"{{CustomerUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find All 200",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidCustomer = (customer) => {\r",
-									"    pm.test(\"customer must be an object\", function () {\r",
-									"        pm.expect(customer).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"email\",\r",
-									"        \"phone_number\",\r",
-									"        \"first_name\",\r",
-									"        \"last_name\",\r",
-									"        \"address\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`customer must include ${expected} property`, function () {\r",
-									"            pm.expect(customer).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"email\", types: [\"string\"] },\r",
-									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
-									"        { prop: \"first_name\", types: [\"string\"] },\r",
-									"        { prop: \"last_name\", types: [\"string\"] },\r",
-									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
-									"        { prop: \"id\", types: [\"string\"] },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
-									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
-									"                .to.equal(true);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid customers`, function () {\r",
-									"    responseJSON.forEach(customer => isValidCustomer(customer));\r",
-									"});\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/customers?&limit=2",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"customers"
-							],
-							"query": [
-								{
-									"key": null,
-									"value": null
-								},
-								{
-									"key": "limit",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidCustomer = (customer) => {\r",
-									"    pm.test(\"customer must be an object\", function () {\r",
-									"        pm.expect(customer).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"email\",\r",
-									"        \"phone_number\",\r",
-									"        \"first_name\",\r",
-									"        \"last_name\",\r",
-									"        \"address\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`customer must include ${expected} property`, function () {\r",
-									"            pm.expect(customer).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"email\", types: [\"string\"] },\r",
-									"        { prop: \"phone_number\", types: [\"string\", \"object\"] },\r",
-									"        { prop: \"first_name\", types: [\"string\"] },\r",
-									"        { prop: \"last_name\", types: [\"string\"] },\r",
-									"        { prop: \"address\", types: [\"string\", \"object\"] },\r",
-									"        { prop: \"id\", types: [\"string\"] },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`customer property ${expected.prop} must be of type ${expected.types}`, function () {\r",
-									"            pm.expect(expected.types.includes(typeof customer[expected.prop]))\r",
-									"                .to.equal(true);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid a customer`, function () {\r",
-									"    isValidCustomer(responseJSON);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/customer/{{CustomerUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"customer",
-								"{{CustomerUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 404",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 404\", function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/customer/692d37de-65db-4846-b8b2-3483ba05d59d",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"customer",
-								"692d37de-65db-4846-b8b2-3483ba05d59d"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Insurance",
-			"item": [
-				{
-					"name": "Find All 200",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidInsurance = (insurance) => {\r",
-									"    pm.test(\"insurance must be an object\", function () {\r",
-									"        pm.expect(insurance).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"name\",\r",
-									"        \"price\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`insurance must include ${expected} property`, function () {\r",
-									"            pm.expect(insurance).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"name\", type: \"string\" },\r",
-									"        { prop: \"price\", type: \"number\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`insurance property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(insurance[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid insurances`, function () {\r",
-									"    responseJSON.forEach(insurance => isValidInsurance(insurance));\r",
-									"});\r",
-									"\r",
-									"pm.environment.set('InsuranceUuid', responseJSON[0].id);\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/insurances?&limit=2",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"insurances"
-							],
-							"query": [
-								{
-									"key": null,
-									"value": null
-								},
-								{
-									"key": "limit",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidInsurance = (insurance) => {\r",
-									"    pm.test(\"insurance must be an object\", function () {\r",
-									"        pm.expect(insurance).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"name\",\r",
-									"        \"price\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`insurance must include ${expected} property`, function () {\r",
-									"            pm.expect(insurance).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"name\", type: \"string\" },\r",
-									"        { prop: \"price\", type: \"number\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`insurance property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(insurance[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid insurance`, function () {\r",
-									"    isValidInsurance(responseJSON);\r",
-									"});\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/insurance/{{InsuranceUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"insurance",
-								"{{InsuranceUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 404",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 404\", function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/insurance/692d37de-65db-4846-b8b2-3483ba05d59d",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"insurance",
-								"692d37de-65db-4846-b8b2-3483ba05d59d"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Purchase",
 			"item": [
 				{
@@ -2046,13 +3646,20 @@
 								"exec": [
 									"const now = new Date();\r",
 									"\r",
-									"const date_of_purchase = `${now.getFullYear()}-${(now.getMonth()+1)%12}-${now.getDay().toString().length == 1 ? '0' + now.getDay() : now.getDay()}`;\r",
-									"const cars_id = pm.environment.get('TestCarUuid');\r",
+									"const date_of_purchase = `${now.getFullYear()}-${(now.getMonth()+1)%12}-10`;\r",
+									"const cars_id = pm.environment.get('NewCarUuid');\r",
 									"\r",
 									"pm.environment.set('CreatePurchaseBody', JSON.stringify({ \r",
 									"    date_of_purchase,\r",
 									"    cars_id,\r",
 									"}));\r",
+									"\r",
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									"\r",
 									""
 								],
 								"type": "text/javascript",
@@ -2361,12 +3968,77 @@
 					"response": []
 				},
 				{
+					"name": "Create 401",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const now = new Date();\r",
+									"\r",
+									"const date_of_purchase = `${now.getFullYear()}-${(now.getMonth()+1)%12}-${now.getDay().toString().length == 1 ? '0' + now.getDay() : now.getDay()}`;\r",
+									"const cars_id = pm.environment.get('TestCarUuid');\r",
+									"\r",
+									"pm.environment.set('CreatePurchaseBody', JSON.stringify({ \r",
+									"    date_of_purchase,\r",
+									"    cars_id,\r",
+									"}));\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{CreatePurchaseBody}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/purchase",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"purchase"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Find All 200",
 					"event": [
 						{
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript",
@@ -2642,6 +4314,59 @@
 									"    responseJSON.forEach(purchase => isValidPurchase(purchase));\r",
 									"});\r",
 									"\r",
+									"pm.environment.set('PurchaseUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/purchases?&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"purchases"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": null
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 401",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript",
@@ -2951,6 +4676,64 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/purchase/{{PurchaseUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"purchase",
+								"{{PurchaseUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
 					],
 					"request": {
@@ -2978,6 +4761,21 @@
 								"exec": [
 									"pm.test(\"Response must return 404\", function() {\r",
 									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
 									"});\r",
 									""
 								],
@@ -3014,6 +4812,11 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
+									"\r",
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript",
@@ -3132,6 +4935,58 @@
 									"});\r",
 									"\r",
 									"pm.environment.set('ModelUuid', responseJSON[0].id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/models?brand_id={{BrandUuid}}&limit=2",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"models"
+							],
+							"query": [
+								{
+									"key": "brand_id",
+									"value": "{{BrandUuid}}"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find All 401",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
 									""
 								],
 								"type": "text/javascript",
@@ -3283,6 +5138,60 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/model/{{ModelUuid}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"model",
+								"{{ModelUuid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find One 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response must return 401\", function() {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -3316,6 +5225,20 @@
 								"type": "text/javascript",
 								"packages": {}
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.add({\r",
+									"    key: \"Authorization\", \r",
+									"    value: pm.environment.get(\"Authorization\") \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
 					],
 					"request": {
@@ -3335,528 +5258,56 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		},
 		{
-			"name": "Sales People",
-			"item": [
-				{
-					"name": "Create Sales Person 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidSalesPerson = (salesPerson) => {\r",
-									"    pm.test(\"salesPerson must be an object\", function () {\r",
-									"        pm.expect(salesPerson).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"email\",\r",
-									"        \"first_name\",\r",
-									"        \"last_name\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
-									"            pm.expect(salesPerson).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"email\", type: \"string\" },\r",
-									"        { prop: \"first_name\", type: \"string\" },\r",
-									"        { prop: \"last_name\", type: \"string\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(salesPerson[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid a sales person`, function () {\r",
-									"    isValidSalesPerson(responseJSON);\r",
-									"});\r",
-									"\r",
-									"pm.environment.set('SalesPersonUuid', responseJSON.id);\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const now = new Date().getTime() / 1000;\r",
-									"\r",
-									"const email = `${now}@test.com`;\r",
-									"const first_name = `${now}`;\r",
-									"const last_name = `${now}`;\r",
-									"const password = `${now}`;\r",
-									"\r",
-									"pm.environment.set('CreateSalesPersonBody', JSON.stringify({ \r",
-									"    email,\r",
-									"    first_name,\r",
-									"    last_name,\r",
-									"    password,\r",
-									"}));\r",
-									"\r",
-									"pm.environment.set('TestSalesPersonEmail', email);\r",
-									"pm.environment.set('TestSalesPersonPassword', password);\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{{CreateSalesPersonBody}}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BaseUrl}}/sales_person",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"sales_person"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Token 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidSalesPerson = (salesPerson) => {\r",
-									"    pm.test(\"salesPerson must be an object\", function () {\r",
-									"        pm.expect(salesPerson).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"email\",\r",
-									"        \"first_name\",\r",
-									"        \"last_name\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
-									"            pm.expect(salesPerson).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"email\", type: \"string\" },\r",
-									"        { prop: \"first_name\", type: \"string\" },\r",
-									"        { prop: \"last_name\", type: \"string\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(salesPerson[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response.sales_person must be valid a sales person`, function () {\r",
-									"    isValidSalesPerson(responseJSON.sales_person);\r",
-									"});\r",
-									"\r",
-									"[\r",
-									"    \"access_token\",\r",
-									"    \"token_type\",\r",
-									"    \"sales_person\",\r",
-									"].forEach(expected => {\r",
-									"    pm.test(`response must include ${expected} property`, function () {\r",
-									"        pm.expect(responseJSON).to.have.property(expected);\r",
-									"    });\r",
-									"});\r",
-									"\r",
-									"[\r",
-									"    { prop: \"access_token\", type: \"string\" },\r",
-									"    { prop: \"token_type\", type: \"string\" },\r",
-									"    { prop: \"sales_person\", type: \"object\" },\r",
-									"].forEach(expected => {\r",
-									"    pm.test(`response property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"        pm.expect(responseJSON[expected.prop])\r",
-									"            .to.be.a(expected.type);\r",
-									"    });\r",
-									"});\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const now = new Date().getTime() / 1000;\r",
-									"\r",
-									"const email = `${now}@test.com`;\r",
-									"const first_name = `${now}`;\r",
-									"const last_name = `${now}`;\r",
-									"const password = `${now}`;\r",
-									"\r",
-									"pm.environment.set('CreateSalesPersonBody', JSON.stringify({ \r",
-									"    email,\r",
-									"    first_name,\r",
-									"    last_name,\r",
-									"    password,\r",
-									"}));\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "username",
-									"value": "{{TestSalesPersonEmail}}",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "{{TestSalesPersonPassword}}",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{BaseUrl}}/token",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"token"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Login 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidSalesPerson = (salesPerson) => {\r",
-									"    pm.test(\"salesPerson must be an object\", function () {\r",
-									"        pm.expect(salesPerson).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"email\",\r",
-									"        \"first_name\",\r",
-									"        \"last_name\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
-									"            pm.expect(salesPerson).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"email\", type: \"string\" },\r",
-									"        { prop: \"first_name\", type: \"string\" },\r",
-									"        { prop: \"last_name\", type: \"string\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(salesPerson[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response.sales_person must be valid a sales person`, function () {\r",
-									"    isValidSalesPerson(responseJSON.sales_person);\r",
-									"});\r",
-									"\r",
-									"[\r",
-									"    \"access_token\",\r",
-									"    \"token_type\",\r",
-									"    \"sales_person\",\r",
-									"].forEach(expected => {\r",
-									"    pm.test(`response must include ${expected} property`, function () {\r",
-									"        pm.expect(responseJSON).to.have.property(expected);\r",
-									"    });\r",
-									"});\r",
-									"\r",
-									"[\r",
-									"    { prop: \"access_token\", type: \"string\" },\r",
-									"    { prop: \"token_type\", type: \"string\" },\r",
-									"    { prop: \"sales_person\", type: \"object\" },\r",
-									"].forEach(expected => {\r",
-									"    pm.test(`response property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"        pm.expect(responseJSON[expected.prop])\r",
-									"            .to.be.a(expected.type);\r",
-									"    });\r",
-									"});\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const email = pm.environment.get('TestSalesPersonEmail');\r",
-									"const password = pm.environment.get('TestSalesPersonPassword');\r",
-									"\r",
-									"pm.environment.set('LoginSalesPersonBody', JSON.stringify({ \r",
-									"    email,\r",
-									"    password,\r",
-									"}));\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{{LoginSalesPersonBody}}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{BaseUrl}}/login",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find All 200",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidSalesPerson = (salesPerson) => {\r",
-									"    pm.test(\"salesPerson must be an object\", function () {\r",
-									"        pm.expect(salesPerson).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"email\",\r",
-									"        \"first_name\",\r",
-									"        \"last_name\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
-									"            pm.expect(salesPerson).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"email\", type: \"string\" },\r",
-									"        { prop: \"first_name\", type: \"string\" },\r",
-									"        { prop: \"last_name\", type: \"string\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(salesPerson[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid sales people`, function () {\r",
-									"    responseJSON.forEach(salesPerson => isValidSalesPerson(salesPerson));\r",
-									"});\r",
-									"\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/sales_people?&limit=2",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"sales_people"
-							],
-							"query": [
-								{
-									"key": null,
-									"value": null
-								},
-								{
-									"key": "limit",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 200",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const responseJSON = pm.response.json();\r",
-									"\r",
-									"const isValidSalesPerson = (salesPerson) => {\r",
-									"    pm.test(\"salesPerson must be an object\", function () {\r",
-									"        pm.expect(salesPerson).to.be.an('object');\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        \"email\",\r",
-									"        \"first_name\",\r",
-									"        \"last_name\",\r",
-									"        \"id\",\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`salesPerson must include ${expected} property`, function () {\r",
-									"            pm.expect(salesPerson).to.have.property(expected);\r",
-									"        });\r",
-									"    });\r",
-									"\r",
-									"    [\r",
-									"        { prop: \"email\", type: \"string\" },\r",
-									"        { prop: \"first_name\", type: \"string\" },\r",
-									"        { prop: \"last_name\", type: \"string\" },\r",
-									"        { prop: \"id\", type: \"string\" },\r",
-									"    ].forEach(expected => {\r",
-									"        pm.test(`salesPerson property ${expected.prop} must be of type ${expected.type}`, function () {\r",
-									"            pm.expect(salesPerson[expected.prop])\r",
-									"                .to.be.a(expected.type);\r",
-									"        });\r",
-									"    });\r",
-									"}\r",
-									"\r",
-									"pm.test(`response must be valid a sales person`, function () {\r",
-									"    isValidSalesPerson(responseJSON);\r",
-									"});\r",
-									"\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/sales_person/{{SalesPersonUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"sales_person",
-								"{{SalesPersonUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 404",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 404\", function() {\r",
-									"    pm.response.to.have.status(404);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/sales_person/692d37de-65db-4846-b8b2-3483ba05d59d",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"sales_person",
-								"692d37de-65db-4846-b8b2-3483ba05d59d"
-							]
-						}
-					},
-					"response": []
-				}
-			]
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"const email = pm.environment.get('TestSalesPersonEmail');\r",
+					"const password = pm.environment.get('TestSalesPersonPassword');\r",
+					"\r",
+					"pm.sendRequest({\r",
+					"    url: pm.environment.get(\"BaseUrl\") + \"/login\",\r",
+					"    method: 'POST',\r",
+					"    header: {\r",
+					"        'Content-Type': 'application/json'\r",
+					"    },\r",
+					"    body: {\r",
+					"        mode: 'raw',\r",
+					"        raw: JSON.stringify({ \r",
+					"            email, \r",
+					"            password\r",
+					"        })\r",
+					"    }\r",
+					"}, function (err, res) {\r",
+					"    if (err) {\r",
+					"        console.error(err);\r",
+					"    } else {\r",
+					"        const jsonData = res.json();\r",
+					"        console.log(jsonData)\r",
+					"        const token = jsonData.access_token;\r",
+					"        const sales_person = jsonData.sales_person;\r",
+					"        pm.environment.set(\"Authorization\", \"Bearer \" + token);\r",
+					"        pm.environment.set(\"SalesPersonUuid\", sales_person.id);\r",
+					"    }\r",
+					"});\r",
+					""
+				]
+			}
 		}
 	]
 }
