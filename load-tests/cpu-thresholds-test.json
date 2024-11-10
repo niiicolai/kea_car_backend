@@ -1,5 +1,5 @@
 {
-    "User max must be less than 20": { 
+    "User max must be less than 60": { 
         "%User": { "max": { "<": 60 } }
     },
     "Nice max must be less than 20": { 
