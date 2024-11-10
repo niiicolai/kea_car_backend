@@ -122,3 +122,17 @@ When you start the Docker Compose, it will restore the database from the dump fi
 ```bash
 docker-compose -f docker-compose.yml up
 ```
+
+## CI/CD
+The CI/CD pipeline is configured using GitHub Actions.
+The pipeline consists of the following stages:
+1. pre-test
+2. deploy-staging
+3. load-test
+
+The `pre-test` pipeline consists of following checks that must pass:
+1. All pytest
+2. Coverage must be at least 80%
+3. Pylint score must be at least 7.0
+4. All API tests must pass
+5. All End-to-end tests must pass

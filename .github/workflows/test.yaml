@@ -1,0 +1,26 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  pre-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Download SAR log
+        run: |
+          curl -L "https://staging.c7pixel.com/logs/cpu_mem_usage.log" -o ./cpu_mem_usage.log
+
+      - name: Run SAR CPU Data Analyzer
+        uses: niiicolai/sar-cpu-data-analyzer@v1.0.0
+        with:
+          log-file: "./cpu_mem_usage.log"
+          test-file: "./load-tests/cpu-thresholds-test.json"
+          output-file: "./cpu-test-results.json" 
+          html-report: "./cpu-test-report.html"
