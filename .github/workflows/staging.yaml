@@ -94,11 +94,10 @@ jobs:
           cd frontend
           npm install cypress
 
-      # Uncommented until any Cypress tests are added to the frontend
-      #- name: Run Cypress tests (E2E)
-      #  run: |
-      #    cd frontend
-      #    npx cypress run
+      - name: Run Cypress tests (E2E)
+        run: |
+          cd frontend
+          npx cypress run
 
   deploy-staging:
     runs-on: ubuntu-latest
@@ -182,7 +181,24 @@ jobs:
           script: |
             killall sar iostat vmstat
 
-      - name: SCP Load test reports to server
+      - name: Download SAR logs
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: "${{ secrets.SERVER_HOST }}"
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "/logs"
+          target: "./logs"
+
+      - name: Run SAR CPU Data Analyzer
+        uses: niiicolai/sar-cpu-data-analyzer@v1
+        with:
+          log-file: "./cpu.log"
+          test-file: "./load-tests/cpu-thresholds-test.json"
+          output-file: "./cpu-test-results.json" 
+          html-report: "./cpu-test-report.html"
+
+      - name: SCP Load HTML test reports to server
         uses: appleboy/scp-action@v0.1.7
         with:
           host: "${{ secrets.SERVER_HOST }}"
@@ -190,3 +206,21 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./reports"
           target: "${{ secrets.SERVER_LOCATION }}/github/workspace/reports"
+
+      - name: SCP Load test results to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: "${{ secrets.SERVER_HOST }}"
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./cpu-test-results.json"
+          target: "${{ secrets.SERVER_LOCATION }}/github/workspace"
+
+      - name: SCP Load test report to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: "${{ secrets.SERVER_HOST }}"
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./cpu-test-report.html"
+          target: "${{ secrets.SERVER_LOCATION }}/github/workspace"
