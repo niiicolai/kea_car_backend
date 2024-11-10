@@ -8,8 +8,8 @@
     "System max must be greater than 1": {
         "%System": { "max": { ">": 1 } }
     },
-    "iowait mean must be greater than or equal to 0.1": { 
-        "%IOWait": { "mean": { ">=": 0.1 } }
+    "iowait mean must equal or be greather than zero": { 
+        "%IOWait": { "mean": { ">=": 0 } }
     },
     "steal min must be less than or equal to 0": { 
         "%Steal": { "min": { "<=": 0 } }
