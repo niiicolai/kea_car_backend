@@ -205,7 +205,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./reports"
-          target: "${{ secrets.SERVER_LOCATION }}/github/workspace/reports"
+          target: "/jmeter"
 
       - name: SCP Load test results to server
         uses: appleboy/scp-action@v0.1.7
@@ -214,7 +214,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./cpu-test-results.json"
-          target: "${{ secrets.SERVER_LOCATION }}/github/workspace"
+          target: "/cpu-test-results"
 
       - name: SCP Load test report to server
         uses: appleboy/scp-action@v0.1.7
@@ -223,4 +223,4 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./cpu-test-report.html"
-          target: "${{ secrets.SERVER_LOCATION }}/github/workspace"
+          target: "/cpu-test-results"
