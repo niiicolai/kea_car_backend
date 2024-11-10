@@ -188,12 +188,12 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "/logs"
-          target: "./logs"
+          target: "./"
 
       - name: Run SAR CPU Data Analyzer
         uses: niiicolai/sar-cpu-data-analyzer@v1.0.0
         with:
-          log-file: "./cpu.log"
+          log-file: "./cpu_mem_usage.log"
           test-file: "./load-tests/cpu-thresholds-test.json"
           output-file: "./cpu-test-results.json" 
           html-report: "./cpu-test-report.html"
