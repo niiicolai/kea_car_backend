@@ -11,11 +11,15 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      - name: Download SAR logs
-        uses: appleboy/scp-action@v0.1.7
+      - name: SSH and SCP to download files
+        uses: appleboy/ssh-action@master
         with:
-          host: "${{ secrets.SERVER_HOST }}"
+          host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "/logs"
-          target: "./"
+          script: |
+            # Install SCP if not available
+            sudo apt-get update && sudo apt-get install -y openssh-client
+            
+            # SCP the directory from the remote server to the GitHub Actions runner
+            scp -r ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:/logs/* ./
