@@ -19,10 +19,12 @@ jobs:
         run: |
           curl -L "https://staging.c7pixel.com/logs/cpu_mem_usage.log" -o ./cpu_mem_usage.log
 
-      - name: Run SAR CPU Data Analyzer
-        uses: niiicolai/sar-cpu-data-analyzer@v1.0.0
-        with:
-          log-file: "./cpu_mem_usage.log"
-          test-file: "./load-tests/cpu-thresholds-test.json"
-          output-file: "./cpu-test-results.json" 
-          html-report: "./cpu-test-report.html"
+      - name: Install dockerfile at root
+        run: |
+          curl -L "https://raw.githubusercontent.com/niiicolai/sar-cpu-data-analyzer/main/Dockerfile" -o ./Dockerfile
+
+      - name: Build Docker Image
+        run: docker build -t sar-cpu-data-analyzer .
+
+      - name: Run Docker Container
+        run:  docker run --rm -v ${{ github.workspace }}:/app 1e60ba:3de9eac2ea8c4fb1bddd0a70a8e5842d python main.py -i ./cpu_mem_usage.log -t ./load-tests/cpu-thresholds-test.json -j ./cpu-test-results.json -r ./cpu-test-report.html
