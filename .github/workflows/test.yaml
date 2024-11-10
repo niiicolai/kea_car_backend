@@ -20,12 +20,19 @@ jobs:
           curl -L "https://staging.c7pixel.com/logs/cpu_mem_usage.log" -o ./cpu_mem_usage.log
       - name: clone https://github.com/niiicolai/sar-cpu-data-analyzer/tree/v1.0.0/ 
         run: git clone https://github.com/niiicolai/sar-cpu-data-analyzer.git
+
+      - name: Cd into the directory
+        run: cd sar-cpu-data-analyzer
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install wheel
           pip install -r requirements.txt
       
+      - name: Cd back to the root directory
+        run: cd ..
+
       - name: Run SAR CPU Data Analyzer
         uses: niiicolai/sar-cpu-data-analyzer@v1.0.0
         with:
