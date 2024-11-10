@@ -1,7 +1,7 @@
 # External Library imports
 from abc import ABC, abstractmethod
-from sqlalchemy.orm import Session
 from typing import List, cast
+from sqlalchemy.orm import Session
 
 # Internal library imports
 from app.models.views.car_purchase import CarPurchaseView

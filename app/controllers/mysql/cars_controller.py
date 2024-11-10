@@ -4,8 +4,8 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Path, Query, status
 
 # Internal library imports
-from app.services import cars_service as service
 from db import Session, get_db as get_db_session
+from app.services import cars_service as service
 from app.controllers.error_handler import error_handler
 from app.repositories.model_repositories import MySQLModelRepository
 from app.repositories.color_repositories import MySQLColorRepository

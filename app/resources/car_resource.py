@@ -90,7 +90,8 @@ class CarCreateResource(CarBaseResource):
         current_date = date.today()
 
         if purchase_deadline < current_date:
-            raise ValueError(f"The given purchase deadline '{purchase_deadline.strftime('%dd-%m-%Y')}' must be before the current date '{current_date.strftime('%d-%m-%Y')}'.")
+            raise ValueError(f"The given purchase deadline '{purchase_deadline.strftime('%dd-%m-%Y')}' "
+                             f"must be before the current date '{current_date.strftime('%d-%m-%Y')}'.")
         return purchase_deadline
 
 class CarBaseReturnResource(CarBaseResource):

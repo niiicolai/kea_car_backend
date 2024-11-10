@@ -4,7 +4,7 @@ from typing import List, Optional
 
 
 # Internal library imports
-from app.repositories.car_repositories import CarRepository, CarReturnResource
+from app.repositories.car_repositories import CarRepository
 from app.repositories.purchase_repositories import (
     PurchaseRepository,
     PurchaseReturnResource,

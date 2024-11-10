@@ -1,4 +1,6 @@
 from datetime import date
+from typing import Union
+from uuid import UUID
 from app.resources.car_resource import CarReturnResource, ModelReturnResource, ColorReturnResource
 
 class DatabaseError(Exception):
@@ -14,7 +16,8 @@ class AlreadyTakenFieldValueError(DatabaseError):
         return f"{self.message}"
 
 class UnableToFindIdError(DatabaseError):
-    def __init__(self, entity_name: str, entity_id: str):
+    def __init__(self, entity_name: str, entity_id: Union[str, UUID]):
+        entity_id= str(entity_id) if isinstance(entity_id, UUID) else entity_id
         self.message = f'{entity_name} with ID: {entity_id} does not exist.'
         super().__init__(self.message)  # Initialize the base Exception with the message
 
@@ -23,7 +26,9 @@ class UnableToFindIdError(DatabaseError):
 
 class PurchaseDeadlineHasPastError(DatabaseError):
     def __init__(self, car_resource: CarReturnResource, date_of_purchase: date):
-        self.message = f'Car with ID: {car_resource.id} has a Purchase Deadline: {car_resource.purchase_deadline.strftime("%d-%m-%Y")} that has past the date of purchase: {date_of_purchase.strftime("%d-%m-%Y")}.'
+        self.message = (f'Car with ID: {car_resource.id} has a Purchase Deadline: '
+                        f'{car_resource.purchase_deadline.strftime("%d-%m-%Y")} that has past the date of purchase: '
+                        f'{date_of_purchase.strftime("%d-%m-%Y")}.')
         super().__init__(self.message)  # Initialize the base Exception with the message
 
     def __str__(self):
@@ -39,7 +44,9 @@ class UnableToFindEntityError(DatabaseError):
 
 class TheColorIsNotAvailableInModelToGiveToCarError(DatabaseError):
     def __init__(self, model_resource: ModelReturnResource, color_resource: ColorReturnResource):
-        self.message = f'The model: {model_resource.name} with colors: {[color.name for color in model_resource.colors]} does not have the color: {color_resource.name} to be given to a car.'
+        self.message = (f'The model: {model_resource.name} with colors: '
+                        f'{[color.name for color in model_resource.colors]} does not have the color: '
+                        f'{color_resource.name} to be given to a car.')
         super().__init__(self.message)  # Call the base class constructor
 
     def __str__(self):
