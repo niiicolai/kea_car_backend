@@ -136,3 +136,10 @@ The `pre-test` pipeline consists of following checks that must pass:
 3. Pylint score must be at least 7.0
 4. All API tests must pass
 5. All End-to-end tests must pass
+
+The `deploy-staging` pipeline consists of following checks that must pass:
+1. Deploy the application to the staging server
+
+The `load-test` pipeline consists of following checks that must pass:
+1. Run the load test on the staging server
+2. All CPU Thresholds must pass
