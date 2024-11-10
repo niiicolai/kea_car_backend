@@ -206,7 +206,7 @@ jobs:
 
       - name: Run SAR CPU Data Analyzer
         run: |
-          docker run --rm -v ${{ github.workspace }}:/data niiicolai/sar-cpu-data-analyzer:latest -i /data/cpu_mem_usage.log -t /data/load-tests/cpu-thresholds-test.json -j /data/cpu-test-results.json -r /data/cpu-test-report.html --ignore-end-lines 3
+          docker run --rm -v ${{ github.workspace }}:/data niiicolai/sar-cpu-data-analyzer:latest -i /data/cpu_mem_usage.log -t /data/load-tests/cpu-thresholds-test.json -j /data/cpu-test-results.json -r /data/cpu-test-report.html --ignore-end-lines 5
 
       - name: SCP Load HTML test reports to server
         uses: appleboy/scp-action@v0.1.7
