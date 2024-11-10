@@ -34,7 +34,8 @@ scripts/coverage.sh path      # Generate coverage report for specific directory
 ## Pylint
 For linting the project, run the following command:
 ```bash	
-pylint app                    # Lint the app directory
+pylint app/*                  # Lint the app directory
+pylint app/* --fail-under=7.0 # Lint the app directory and fail if the score is under 7.0
 ```
 Note: The configuration file for pylint is `.pylintrc`.
 

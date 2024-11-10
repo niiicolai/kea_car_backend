@@ -18,5 +18,5 @@ if [ ! -d $SOURCE ]; then
 fi
 
 coverage run --source=$SOURCE -m pytest
-coverage report -m
+coverage report --fail-under=80
 coverage html
