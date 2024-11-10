@@ -132,6 +132,7 @@ docker-compose -f docker-compose.yml up
 
 ## CI/CD
 The CI/CD pipeline is configured using GitHub Actions.
+
 The pipeline consists of the following stages:
 1. pre-test
 2. deploy-staging

@@ -72,8 +72,8 @@ jobs:
           source: "./htmlcov"
           target: "/coverage-report"
 
-      - name: Pylint score must be at least 1.0
-        run: pylint app/* --fail-under=1.0       
+      - name: Pylint score must be at least 7.0
+        run: pylint app/* --fail-under=7.0      
 
       - name: Start API Server
         run: |
@@ -206,7 +206,7 @@ jobs:
 
       - name: Run SAR CPU Data Analyzer
         run: |
-          docker run --rm -v ${{ github.workspace }}:/data niiicolai/sar-cpu-data-analyzer:latest -i /data/cpu_mem_usage.log -t /data/load-tests/cpu-thresholds-test.json -j /data/cpu-test-results.json -r /data/cpu-test-report.html
+          docker run --rm -v ${{ github.workspace }}:/data niiicolai/sar-cpu-data-analyzer:latest -i /data/cpu_mem_usage.log -t /data/load-tests/cpu-thresholds-test.json -j /data/cpu-test-results.json -r /data/cpu-test-report.html --ignore-end-lines 1
 
       - name: SCP Load HTML test reports to server
         uses: appleboy/scp-action@v0.1.7
