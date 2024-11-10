@@ -1,6 +1,7 @@
 # External Library imports
-from pydantic import Field
 from typing import Optional, List
+from pydantic import Field
+
 
 # Internal library imports
 from app.resources.purchase_resource import PurchaseBaseReturnResource

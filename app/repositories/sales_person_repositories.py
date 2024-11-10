@@ -1,7 +1,8 @@
 # External Library imports
-from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
 from typing import Optional, Tuple, List, cast
+from sqlalchemy.orm import Session
+
 
 # Internal library imports
 from app.models.sales_person import SalesPersonReturnResource, SalesPersonMySQLEntity
@@ -35,7 +36,8 @@ class MySQLSalesPersonRepository(SalesPersonRepository):
         self.session = session
 
     def login_by_email(self, sales_person_login_info: SalesPersonLoginResource) -> Optional[Tuple[SalesPersonReturnResource, str]]:
-        sales_person: Optional[SalesPersonMySQLEntity] = self.session.query(SalesPersonMySQLEntity).filter_by(email=sales_person_login_info.email).first()
+        sales_person_query = self.session.query(SalesPersonMySQLEntity).filter_by(email=sales_person_login_info.email)
+        sales_person: Optional[SalesPersonMySQLEntity] = sales_person_query.first()
 
         if sales_person is None:
             return None

@@ -1,6 +1,7 @@
 # External Library imports
-from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
+from pydantic import BaseModel, Field
+
 
 # Internal library imports
 from app.core.config import ACCESS_TOKEN_EXPIRE_MINUTES

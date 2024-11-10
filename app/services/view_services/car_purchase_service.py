@@ -1,4 +1,3 @@
-# Internal library imports
 from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.customer_repositories import CustomerRepository
 from app.repositories.sales_person_repositories import SalesPersonRepository

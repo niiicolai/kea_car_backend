@@ -1,9 +1,9 @@
 # External Library imports
 from datetime import date
-from sqlalchemy import text, exists
-from sqlalchemy.orm import Session
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
+from sqlalchemy import text, exists
+from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
 # Internal library imports
@@ -176,25 +176,19 @@ class MySQLCarRepository(CarRepository):
                accessory_resources: List[AccessoryReturnResource],
                insurance_resources: List[InsuranceReturnResource]) -> CarReturnResource:
 
-        customer_id: str = customer_resource.id
-        sales_person_id: str = sales_person_resource.id
-        model_id: str = model_resource.id
-        color_id: str = color_resource.id
-
-        total_price: float = calculate_total_price_for_car(
-            model_resource,
-            color_resource,
-            accessory_resources,
-            insurance_resources)
-
         try:
 
             new_car = CarMySQLEntity(
-                models_id=model_id,
-                colors_id=color_id,
-                customers_id=customer_id,
-                sales_people_id=sales_person_id,
-                total_price=total_price,
+                models_id=model_resource.id,
+                colors_id=color_resource.id,
+                customers_id=customer_resource.id,
+                sales_people_id=sales_person_resource.id,
+                total_price=calculate_total_price_for_car(
+                    model_resource,
+                    color_resource,
+                    accessory_resources,
+                    insurance_resources
+                ),
                 purchase_deadline=car_create_data.purchase_deadline
             )
 
@@ -216,7 +210,7 @@ class MySQLCarRepository(CarRepository):
             return new_car.as_resource()
         except Exception as e:
             self.session.rollback()
-            raise SQLAlchemyError(f"{e}")
+            raise e
 
     def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool):
         try:
@@ -227,7 +221,7 @@ class MySQLCarRepository(CarRepository):
             self.session.commit()
         except Exception as e:
             self.session.rollback()
-            raise SQLAlchemyError(f"{e}")
+            raise e
 
 # Placeholder for future repositories
 # class OtherDBCarRepository(CarRepository):

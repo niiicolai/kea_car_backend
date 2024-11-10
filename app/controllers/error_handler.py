@@ -1,7 +1,7 @@
 # External Library imports
-from fastapi import HTTPException, status
 from typing import Callable
 import logging
+from fastapi import HTTPException, status
 
 # Internal library imports
 from app.exceptions.invalid_credentials_errors import IncorrectCredentialError

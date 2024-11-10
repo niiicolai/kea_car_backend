@@ -30,8 +30,12 @@ class CarMySQLEntity(Base):
     color: Mapped[ColorMySQLEntity] = relationship("ColorMySQLEntity", back_populates="cars", lazy=False)
     customer: Mapped[CustomerMySQLEntity] = relationship("CustomerMySQLEntity", back_populates="cars", lazy=False)
     sales_person: Mapped[SalesPersonMySQLEntity] = relationship("SalesPersonMySQLEntity", back_populates="cars", lazy=False)
-    accessories: Mapped[List[AccessoryMySQLEntity]] = relationship("AccessoryMySQLEntity", secondary=cars_has_accessories, back_populates="cars", lazy=False)
-    insurances: Mapped[List[InsuranceMySQLEntity]] = relationship("InsuranceMySQLEntity", secondary=cars_has_insurances, back_populates="cars", lazy=False)
+    accessories: Mapped[List[AccessoryMySQLEntity]] = relationship(
+        "AccessoryMySQLEntity", secondary=cars_has_accessories, back_populates="cars", lazy=False
+    )
+    insurances: Mapped[List[InsuranceMySQLEntity]] = relationship(
+        "InsuranceMySQLEntity", secondary=cars_has_insurances, back_populates="cars", lazy=False
+    )
 
     car_purchase_view = relationship("CarPurchaseView", back_populates="car", viewonly=True)
 

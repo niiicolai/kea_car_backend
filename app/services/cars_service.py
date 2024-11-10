@@ -134,48 +134,43 @@ def create(
         raise TypeError(f"car_create_data must be of type CarCreateResource, "
                         f"not {type(car_create_data).__name__}.")
 
-    customer_id = str(car_create_data.customers_id)
-    customer_resource = customer_repository.get_by_id(customer_id)
+    customer_resource = customer_repository.get_by_id(str(car_create_data.customers_id))
     if customer_resource is None:
-        raise UnableToFindIdError("Customer", customer_id)
+        raise UnableToFindIdError("Customer", car_create_data.customers_id)
 
-    sales_person_id = str(car_create_data.sales_people_id)
-    sales_person_resource: Optional[SalesPersonReturnResource] = sales_person_repository.get_by_id(sales_person_id)
+    sales_person_resource: Optional[SalesPersonReturnResource] = sales_person_repository.get_by_id(str(car_create_data.sales_people_id))
     if sales_person_resource is None:
-        raise UnableToFindIdError("Sales Person", sales_person_id)
+        raise UnableToFindIdError("Sales Person", car_create_data.sales_people_id)
 
-    model_id = str(car_create_data.models_id)
-    model_resource: Optional[ModelReturnResource] = model_repository.get_by_id(model_id)
+    model_resource: Optional[ModelReturnResource] = model_repository.get_by_id(str(car_create_data.models_id))
     if model_resource is None:
-        raise UnableToFindIdError("Model", model_id)
+        raise UnableToFindIdError("Model", car_create_data.models_id)
 
-    color_id = str(car_create_data.colors_id)
-    color_resource: Optional[ColorReturnResource] = color_repository.get_by_id(color_id)
+    color_resource: Optional[ColorReturnResource] = color_repository.get_by_id(str(car_create_data.colors_id))
     if color_resource is None:
-        raise UnableToFindIdError("Color", color_id)
-    color_ids_within_model = [color.id for color in model_resource.colors]
-    if color_id not in color_ids_within_model:
+        raise UnableToFindIdError("Color", car_create_data.colors_id)
+
+    if str(car_create_data.colors_id) not in [color.id for color in model_resource.colors]:
         raise TheColorIsNotAvailableInModelToGiveToCarError(model_resource, color_resource)
 
     accessory_resources: List[AccessoryReturnResource] = []
     for accessory_uuid in car_create_data.accessory_ids:
-        accessory_id = str(accessory_uuid)
-        accessory: Optional[AccessoryReturnResource] = accessory_repository.get_by_id(accessory_id)
+        accessory: Optional[AccessoryReturnResource] = (accessory_repository
+                                                        .get_by_id(str(accessory_uuid)))
         if accessory is None:
             raise UnableToFindIdError(
                 entity_name="Accessory",
-                entity_id=accessory_id
+                entity_id=accessory_uuid
             )
         accessory_resources.append(accessory)
 
     insurance_resources: List[InsuranceReturnResource] = []
     for insurance_uuid in car_create_data.insurance_ids:
-        insurance_id = str(insurance_uuid)
-        insurance: Optional[InsuranceReturnResource] = insurance_repository.get_by_id(insurance_id)
+        insurance: Optional[InsuranceReturnResource] = insurance_repository.get_by_id(str(insurance_uuid))
         if insurance is None:
             raise UnableToFindIdError(
                 entity_name="Insurance",
-                entity_id=insurance_id
+                entity_id=insurance_uuid
             )
         insurance_resources.append(insurance)
 
