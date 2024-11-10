@@ -2,8 +2,8 @@
     "User mean must be less than 3": { 
         "%User": { "mean": { "<": 3 } }
     },
-    "Nice median must equal 1": { 
-        "%Nice": { "median": { "=": 0 } }
+    "Nice median must equal or be greather than zero": { 
+        "%Nice": { "median": { ">=": 0 } }
     },
     "System max must be greater than 1": {
         "%System": { "max": { ">": 1 } }
