@@ -195,8 +195,9 @@ jobs:
           host: "${{ secrets.SERVER_HOST }}"
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./cpu_mem_usage.log"
-          target: "/logs"
+          source: "/logs"
+          target: "./"
+          direction: download
 
       - name: Run SAR CPU Data Analyzer
         uses: niiicolai/sar-cpu-data-analyzer@v1.0.0
