@@ -10,18 +10,13 @@ jobs:
   pre-test:
     runs-on: ubuntu-latest
     steps:
-      - name: install python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
+      - name: checkout
+        uses: actions/checkout@v3
 
       - name: Download SAR log
         run: |
           curl -L "https://staging.c7pixel.com/logs/cpu_mem_usage.log" -o ./cpu_mem_usage.log
 
-      - name: Pull Docker Image
-        run: docker pull niiicolai/sar-cpu-data-analyzer:latest
-
       - name: Run Docker Container
         run: |
-          docker run --rm niiicolai/sar-cpu-data-analyzer:latest -i ./cpu_mem_usage.log -t ./load-tests/cpu-thresholds-test.json -j ./cpu-test-results.json -r ./cpu-test-report.html
+          docker run --rm -v ${{ github.workspace }}:/data niiicolai/sar-cpu-data-analyzer:latest -i ./data/cpu_mem_usage.log -t ./data/load-tests/cpu-thresholds-test.json -j ./data/cpu-test-results.json -r ./data/cpu-test-report.html
