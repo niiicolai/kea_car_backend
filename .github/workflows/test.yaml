@@ -24,4 +24,4 @@ jobs:
 
       - name: Run Docker Container
         run: |
-          docker run --rm -v ${{ github.workspace }}:/app niiicolai/sar-cpu-data-analyzer:latest python main.py -i ./cpu_mem_usage.log -t ./load-tests/cpu-thresholds-test.json -j ./cpu-test-results.json -r ./cpu-test-report.html
+          docker run --rm -v ${{ github.workspace }}:/app niiicolai/sar-cpu-data-analyzer:latest -i ./cpu_mem_usage.log -t ./load-tests/cpu-thresholds-test.json -j ./cpu-test-results.json -r ./cpu-test-report.html
