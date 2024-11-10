@@ -165,9 +165,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             rm -rf /logs/*
-            nohup sar 100 60 > /logs/cpu_mem_usage.log 2>&1 &
-            nohup iostat -x 100 60 > /logs/disk_usage.log 2>&1 &
-            nohup vmstat 100 60 > /logs/vmstat_usage.log 2>&1 &
+            nohup sar 1 360 > /logs/cpu_mem_usage.log 2>&1 &
+            nohup iostat -x 1 360 > /logs/disk_usage.log 2>&1 &
+            nohup vmstat 1 360 > /logs/vmstat_usage.log 2>&1 &
 
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -207,12 +207,8 @@ jobs:
           curl -L "https://staging.c7pixel.com/logs/cpu_mem_usage.log" -o ./cpu_mem_usage.log
 
       - name: Run SAR CPU Data Analyzer
-        uses: niiicolai/sar-cpu-data-analyzer@v1.0.0
-        with:
-          log-file: "./cpu_mem_usage.log"
-          test-file: "./load-tests/cpu-thresholds-test.json"
-          output-file: "./cpu-test-results.json" 
-          html-report: "./cpu-test-report.html"
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/data niiicolai/sar-cpu-data-analyzer:latest -i /data/cpu_mem_usage.log -t /data/load-tests/cpu-thresholds-test.json -j /data/cpu-test-results.json -r /data/cpu-test-report.html
 
       - name: SCP Load HTML test reports to server
         uses: appleboy/scp-action@v0.1.7
