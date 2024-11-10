@@ -27,6 +27,13 @@
 ## Coverage
 Generate coverage report:
 ```bash
+coverage run --source=app -m pytest  # Run the tests and generate the coverage report
+coverage report --fail-under=80      # Show the coverage report and fail if the coverage is under 80%
+coverage html                        # Generate the HTML coverage report
+```
+
+Generate coverage using the `coverage.sh` script (combine the above commands):
+```bash
 scripts/coverage.sh           # Generate coverage report for default directory
 scripts/coverage.sh path      # Generate coverage report for specific directory
 ```
