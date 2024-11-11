@@ -243,15 +243,21 @@ UNLOCK TABLES;
 /*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`kea_cars`@`%`*/ /*!50003 TRIGGER `customers_BEFORE_DELETE` BEFORE DELETE ON `customers` FOR EACH ROW BEGIN
-	DELETE FROM `purchases`
-    WHERE `cars_id` IN (
-        SELECT `id` FROM `cars`
-        WHERE `customers_id` = OLD.id
+
+DROP TRIGGER IF EXISTS customers_BEFORE_DELETE;
+DELIMITER //
+CREATE TRIGGER customers_BEFORE_DELETE
+BEFORE DELETE ON customers
+FOR EACH ROW
+BEGIN
+	DELETE FROM purchases
+    WHERE cars_id IN (
+        SELECT id FROM cars
+        WHERE customers_id = OLD.id
     );
-END */;;
+END //
 DELIMITER ;
+
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
@@ -396,33 +402,6 @@ INSERT INTO `sales_people` VALUES ('d096d2e1-f06a-4555-9cd1-afa9f930f10c','james
 /*!40000 ALTER TABLE `sales_people` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Dumping events for database 'kea_cars_dev'
---
-/*!50106 SET @save_time_zone= @@TIME_ZONE */ ;
-/*!50106 DROP EVENT IF EXISTS `delete_old_none_purchased_cars` */;
-DELIMITER ;;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;;
-/*!50003 SET character_set_client  = utf8mb4 */ ;;
-/*!50003 SET character_set_results = utf8mb4 */ ;;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;;
-/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO' */ ;;
-/*!50003 SET @saved_time_zone      = @@time_zone */ ;;
-/*!50003 SET time_zone             = '+00:00' */ ;;
-/*!50106 CREATE*/ /*!50117 DEFINER=`kea_cars`@`%`*/ /*!50106 EVENT `delete_old_none_purchased_cars` ON SCHEDULE EVERY 1 DAY STARTS '2024-11-08 11:22:35' ON COMPLETION NOT PRESERVE ENABLE DO DELETE car
-  FROM kea_cars_dev.cars car
-  INNER JOIN kea_cars_dev.car_purchase_view cpv ON car.id = cpv.car_id
-  WHERE cpv.is_past_deadline = TRUE */ ;;
-/*!50003 SET time_zone             = @saved_time_zone */ ;;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;;
-/*!50003 SET character_set_results = @saved_cs_results */ ;;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;;
-DELIMITER ;
-/*!50106 SET TIME_ZONE= @save_time_zone */ ;
 
 --
 -- Dumping routines for database 'kea_cars_dev'
@@ -562,4 +541,21 @@ BEGIN
         )
     LIMIT p_limit;
 END ;;
+DELIMITER ;
+
+
+--
+-- Dumping events for database 'kea_cars_dev'
+--
+DROP EVENT IF EXISTS delete_old_none_purchased_cars;
+DELIMITER //
+CREATE EVENT delete_old_none_purchased_cars
+ON SCHEDULE EVERY 1 DAY
+DO
+BEGIN
+	DELETE car
+	FROM kea_cars_dev.cars car
+	INNER JOIN kea_cars_dev.car_purchase_view cpv ON car.id = cpv.car_id
+	WHERE cpv.is_past_deadline = TRUE;
+END //
 DELIMITER ;
