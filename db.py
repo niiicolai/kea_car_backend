@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from contextlib import contextmanager
 from sqlalchemy import create_engine, Engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
+from pymongo import MongoClient
+from pymongo.database import Database
 
 load_dotenv()
 
@@ -41,3 +43,19 @@ def get_db() -> Session:
         yield session
     finally:
         session.close()
+
+
+
+
+@contextmanager
+def get_mongodb() -> Database:
+    """
+    Provides a MongoDB database connection using a context manager.
+    """
+    client = MongoClient(host=os.getenv('MONGO_DB_HOST'), port=int(os.getenv('MONGO_DB_PORT')))
+    db_name = os.getenv('MONGO_DB_NAME')
+    db = client[db_name]
+    try:
+        yield db
+    finally:
+        client.close()

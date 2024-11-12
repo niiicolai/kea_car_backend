@@ -12,6 +12,7 @@ from app.core.tokens import (
     Token
 )
 from app.core.config import (
+    oauth2_mongodb,
     oauth2_mysql,
     pwd_context,
     SECRET_KEY,
@@ -118,4 +119,7 @@ def get_current_sales_person_token(token: str) -> TokenPayload:
 
 
 async def get_current_mysql_sales_person_token(token: str = Depends(oauth2_mysql)):
+    return get_current_sales_person_token(token)
+
+async def get_current_mongodb_sales_person_token(token: str = Depends(oauth2_mongodb)):
     return get_current_sales_person_token(token)

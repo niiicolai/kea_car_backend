@@ -2,6 +2,7 @@
 from uuid import uuid4
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy import Table, Column, String, Double, ForeignKey
+from pydantic import BaseModel, ConfigDict, Field
 
 # Internal library imports
 from db import Base
@@ -23,6 +24,20 @@ class AccessoryMySQLEntity(Base):
 
     cars = relationship('CarMySQLEntity', secondary=cars_has_accessories, back_populates='accessories')
 
+
+    def as_resource(self) -> AccessoryReturnResource:
+        return AccessoryReturnResource(
+            id=self.id,
+            name=self.name,
+            price=self.price
+        )
+
+class AccessoryMongoEntity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
+    name: str
+    price: float
+
+    model_config = ConfigDict(from_attributes=True)
 
     def as_resource(self) -> AccessoryReturnResource:
         return AccessoryReturnResource(

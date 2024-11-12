@@ -15,6 +15,7 @@ from app.controllers.mysql import (
     sales_people_controller as mysql_sales_people_controller
 )
 from app.controllers.mysql.views import car_purchase_controller as mysql_car_purchase_controller
+from app.controllers.mongodb import accessories_controller as mongodb_accessories_controller
 
 app = FastAPI()
 
@@ -37,3 +38,4 @@ app.include_router(mysql_models_controller.router, prefix="/mysql", tags=["MySQL
 app.include_router(mysql_purchases_controller.router, prefix="/mysql", tags=["MySQL - Purchases"])
 app.include_router(mysql_sales_people_controller.router, prefix="/mysql", tags=["MySQL - Sales People"])
 app.include_router(mysql_car_purchase_controller.router, prefix="/mysql", tags=["MySQL View - Cars Purchases"])
+app.include_router(mongodb_accessories_controller.router, prefix="/mongodb", tags=["MongoDB - Accessories"])

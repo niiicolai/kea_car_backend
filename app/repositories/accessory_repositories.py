@@ -2,10 +2,11 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy.orm import Session
+from pymongo.database import Database
 
 
 # Internal library imports
-from app.models.accessory import AccessoryReturnResource, AccessoryMySQLEntity
+from app.models.accessory import AccessoryReturnResource, AccessoryMySQLEntity, AccessoryMongoEntity
 
 
 
@@ -33,6 +34,31 @@ class MySQLAccessoryRepository(AccessoryRepository):
         accessory: Optional[AccessoryMySQLEntity] = self.session.query(AccessoryMySQLEntity).get(accessory_id)
         if accessory is not None:
             return accessory.as_resource()
+        return None
+
+
+class MongoDBAccessoryRepository(AccessoryRepository):
+    def __init__(self, database: Database):
+        self.database = database
+
+    def get_all(self, limit: Optional[int]) -> List[AccessoryReturnResource]:
+        accessories = self.database.get_collection("accessories").find(
+        ).limit(0 if not limit else limit)
+        accessories = [
+            AccessoryMongoEntity(
+                **accessory
+            ).as_resource()
+            for accessory in accessories]
+        return accessories
+
+    def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:
+        accessory = self.database.get_collection("accessories").find_one(
+            {"_id": accessory_id})
+        print(f"Accessory: {accessory}")
+        if accessory is not None:
+            return AccessoryMongoEntity(
+                **accessory
+            ).as_resource()
         return None
 
 # Placeholder for future repositories
