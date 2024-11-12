@@ -32,10 +32,7 @@ if __name__ == '__main__':
     client = MongoClient(host=MONGO_DB_HOST, port=int(MONGO_DB_PORT))
     db = client[MONGO_DB_NAME]
 
-    for collection_name in collections:
-        # create collection
-        db.create_collection(collection_name)               
-        # insert data
+    for collection_name in collections:      
         bulk_operations = [
             UpdateOne({'_id': doc['_id']}, {'$set': doc}, upsert=True)
             for doc in data[collection_name]
