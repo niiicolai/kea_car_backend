@@ -8,4 +8,4 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_mysql = OAuth2PasswordBearer(tokenUrl="/mysql/token")
-oauth2_mongodb = OAuth2PasswordBearer(tokenUrl="/mongodb/token")
+oauth2_mongodb = OAuth2PasswordBearer(tokenUrl="/mysql/token")
