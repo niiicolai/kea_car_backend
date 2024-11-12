@@ -40,11 +40,13 @@ class SalesPersonBaseResource(BaseModel):
         first_name = first_name.strip()
         if len(first_name) == 0:
             raise ValueError(f"The given first name {first_name} is an empty string.")
+        """
         # Allow only alphabetic characters, hyphens, and apostrophes
         if not all(c.isalpha() or c in ["-", "'"] for c in first_name):
             raise ValueError("The first name can only contain letters, hyphens, or apostrophes.")
-        
         return str(first_name.capitalize())
+        """
+        return first_name
     
     @field_validator('last_name')
     def validate_last_name(cls, last_name: str) -> str:
@@ -53,10 +55,13 @@ class SalesPersonBaseResource(BaseModel):
         last_name = last_name.strip()
         if len(last_name) == 0:
             raise ValueError(f"The given last name {last_name} is an empty string.")
+        """
         # Allow only alphabetic characters, hyphens, and apostrophes
         if not all(c.isalpha() or c in ["-", "'"] for c in last_name):
             raise ValueError("The last name can only contain letters, hyphens, or apostrophes.")
         return str(last_name.capitalize())
+        """
+        return last_name
     
 
 class SalesPersonCreateResource(SalesPersonBaseResource):
@@ -71,6 +76,7 @@ class SalesPersonCreateResource(SalesPersonBaseResource):
             raise ValueError(f"The given password {password} is an empty string.")
         if ' ' in password:
             raise ValueError(f"The given password {password} contains whitespaces.")
+        """
         if len(password) < 8:
             raise ValueError("The given password {password} must be at least 8 characters long.")
         #The password must have at least one uppercase letter, one lower case letter and at least one digit
@@ -80,6 +86,7 @@ class SalesPersonCreateResource(SalesPersonBaseResource):
             raise ValueError("The password must contain at least one lowercase letter.")
         if not re.search(r'[0-9]', password):
             raise ValueError("The password must contain at least one digit.")
+        """
         return password
 
 
