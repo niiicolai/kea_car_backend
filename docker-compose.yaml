@@ -12,6 +12,17 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongodb-volume:/data/db
+    networks:
+      - appnet
+    command: [ "mongod", "--bind_ip_all" ]
+
   backend:
     image: kea_car_backend:v1.0
     container_name: backend
@@ -23,8 +34,12 @@ services:
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_PORT=
+      - MONGO_DB_HOST=mongodb
+      - MONGO_DB_PORT=27017
+      - MONGO_DB_NAME=cars
     depends_on:
       - mysql
+      - mongodb
     networks:
       - appnet
     volumes:
@@ -37,3 +52,4 @@ networks:
 
 volumes:
   mysql-data:
+  mongodb-volume:

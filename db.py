@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from contextlib import contextmanager
-from sqlalchemy import create_engine, Engine, text
+from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from pymongo import MongoClient
 from pymongo.database import Database
