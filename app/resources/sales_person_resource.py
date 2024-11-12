@@ -44,7 +44,7 @@ class SalesPersonBaseResource(BaseModel):
         if not all(c.isalpha() or c in ["-", "'"] for c in first_name):
             raise ValueError("The first name can only contain letters, hyphens, or apostrophes.")
         
-        return first_name.capitalize()
+        return str(first_name.capitalize())
     
     @field_validator('last_name')
     def validate_last_name(cls, last_name: str) -> str:
@@ -56,7 +56,7 @@ class SalesPersonBaseResource(BaseModel):
         # Allow only alphabetic characters, hyphens, and apostrophes
         if not all(c.isalpha() or c in ["-", "'"] for c in last_name):
             raise ValueError("The last name can only contain letters, hyphens, or apostrophes.")
-        return last_name.capitalize()
+        return str(last_name.capitalize())
     
 
 class SalesPersonCreateResource(SalesPersonBaseResource):
