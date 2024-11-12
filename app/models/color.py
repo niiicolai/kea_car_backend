@@ -2,6 +2,7 @@
 from uuid import uuid4
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy import Table, Column, Integer, String, Double, ForeignKey
+from pydantic import BaseModel, ConfigDict, Field
 
 # Internal library imports
 from db import Base
@@ -36,3 +37,24 @@ class ColorMySQLEntity(Base):
             green_value=self.green_value,
             blue_value=self.blue_value,
         )
+
+class ColorMongoEntity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
+    name: str
+    price: float
+    red_value: int
+    green_value: int
+    blue_value: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+    def as_resource(self) -> ColorReturnResource:
+        return ColorReturnResource(
+            id=self.id,
+            name=self.name,
+            price=self.price,
+            red_value=self.red_value,
+            green_value=self.green_value,
+            blue_value=self.blue_value,
+        )
+

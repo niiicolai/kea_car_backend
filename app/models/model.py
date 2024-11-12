@@ -1,14 +1,15 @@
 # External Library imports
 from uuid import uuid4
-from typing import Optional, List
+from typing import List
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy import Column, String, Double, ForeignKey
+from pydantic import BaseModel, ConfigDict, Field
 
 # Internal library imports
 from db import Base
-from app.models.brand import BrandMySQLEntity
+from app.models.brand import BrandMySQLEntity, BrandMongoEntity
 from app.resources.model_resource import ModelReturnResource, ModelBaseReturnResource
-from app.models.color import ColorMySQLEntity, models_has_colors
+from app.models.color import ColorMySQLEntity, models_has_colors, ColorMongoEntity
 
 
 class ModelMySQLEntity(Base):
@@ -17,7 +18,7 @@ class ModelMySQLEntity(Base):
     brands_id: Mapped[str] = Column(String(36), ForeignKey('brands.id'), nullable=False)
     name: Mapped[str] = Column(String(60), unique=True, index=True, nullable=False)
     price: Mapped[float] = Column(Double, nullable=False)
-    image_url: Mapped[Optional[str]] = Column(String(255), nullable=False)
+    image_url: Mapped[str] = Column(String(255), nullable=False)
 
     brand: Mapped[BrandMySQLEntity] = relationship('BrandMySQLEntity', back_populates='models', lazy=False, uselist=False)
     colors: Mapped[List[ColorMySQLEntity]] = relationship('ColorMySQLEntity', secondary=models_has_colors, back_populates='models', lazy=False)
@@ -31,6 +32,28 @@ class ModelMySQLEntity(Base):
             price=self.price,
             image_url=self.image_url,
         )
+
+    def as_resource(self) -> ModelReturnResource:
+        return ModelReturnResource(
+            id=self.id,
+            brand=self.brand.as_resource(),
+            colors=[color.as_resource() for color in self.colors],
+            name=self.name,
+            price=self.price,
+            image_url=self.image_url,
+        )
+
+
+class ModelMongoEntity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
+    brand: BrandMongoEntity
+    name: str
+    price: float
+    image_url: str
+    colors: List[ColorMongoEntity]
+
+
+    model_config = ConfigDict(from_attributes=True)
 
     def as_resource(self) -> ModelReturnResource:
         return ModelReturnResource(

@@ -54,7 +54,6 @@ class MongoDBAccessoryRepository(AccessoryRepository):
     def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:
         accessory = self.database.get_collection("accessories").find_one(
             {"_id": accessory_id})
-        print(f"Accessory: {accessory}")
         if accessory is not None:
             return AccessoryMongoEntity(
                 **accessory

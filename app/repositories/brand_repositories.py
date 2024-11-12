@@ -2,10 +2,11 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy.orm import Session
+from pymongo.database import Database
 
 
 # Internal library imports
-from app.models.brand import BrandReturnResource, BrandMySQLEntity
+from app.models.brand import BrandReturnResource, BrandMySQLEntity, BrandMongoEntity
 
 
 class BrandRepository(ABC):
@@ -35,6 +36,31 @@ class MySQLBrandRepository(BrandRepository):
         if brand is not None:
             return brand.as_resource()
         return None
+
+
+class MongoDBBrandRepository(BrandRepository):
+    def __init__(self, database: Database):
+        self.database = database
+
+    def get_all(self, limit: Optional[int]) -> List[BrandReturnResource]:
+        brands = self.database.get_collection("brands").find(
+        ).limit(0 if not limit else limit)
+        brands = [
+            BrandMongoEntity(
+                **brand
+            ).as_resource()
+            for brand in brands]
+        return brands
+
+    def get_by_id(self, brand_id: str) -> Optional[BrandReturnResource]:
+        brand = self.database.get_collection("brands").find_one(
+            {"_id": brand_id})
+        if brand is not None:
+            return BrandMongoEntity(
+                **brand
+            ).as_resource()
+        return None
+
 
 # Placeholder for future repositories
 # class OtherDBBrandRepository(BrandRepository):

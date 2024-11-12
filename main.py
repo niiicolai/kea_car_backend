@@ -15,7 +15,12 @@ from app.controllers.mysql import (
     sales_people_controller as mysql_sales_people_controller
 )
 from app.controllers.mysql.views import car_purchase_controller as mysql_car_purchase_controller
-from app.controllers.mongodb import accessories_controller as mongodb_accessories_controller
+from app.controllers.mongodb import (
+    accessories_controller as mongodb_accessories_controller,
+    brands_controller as mongodb_brands_controller,
+    colors_controller as mongodb_colors_controller,
+    models_controller as mongodb_models_controller
+)
 
 app = FastAPI()
 
@@ -28,6 +33,7 @@ CORS_SETTINGS = {
 
 app.add_middleware(CORSMiddleware, **CORS_SETTINGS)
 
+# Including the MySQL Router endpoints
 app.include_router(mysql_accessories_controller.router, prefix="/mysql", tags=["MySQL - Accessories"])
 app.include_router(mysql_brands_controller.router, prefix="/mysql", tags=["MySQL - Brands"])
 app.include_router(mysql_cars_controller.router, prefix="/mysql", tags=["MySQL - Cars"])
@@ -38,4 +44,9 @@ app.include_router(mysql_models_controller.router, prefix="/mysql", tags=["MySQL
 app.include_router(mysql_purchases_controller.router, prefix="/mysql", tags=["MySQL - Purchases"])
 app.include_router(mysql_sales_people_controller.router, prefix="/mysql", tags=["MySQL - Sales People"])
 app.include_router(mysql_car_purchase_controller.router, prefix="/mysql", tags=["MySQL View - Cars Purchases"])
+
+# Including the MongoDB Router endpoints
 app.include_router(mongodb_accessories_controller.router, prefix="/mongodb", tags=["MongoDB - Accessories"])
+app.include_router(mongodb_brands_controller.router, prefix="/mongodb", tags=["MongoDB - Brands"])
+app.include_router(mongodb_colors_controller.router, prefix="/mongodb", tags=["MongoDB - Colors"])
+app.include_router(mongodb_models_controller.router, prefix="/mongodb", tags=["MongoDB - Models"])
