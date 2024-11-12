@@ -33,6 +33,9 @@ if __name__ == '__main__':
     db = client[MONGO_DB_NAME]
 
     for collection_name in collections:
+        # create collection
+        db.create_collection(collection_name)               
+        # insert data
         bulk_operations = [
             UpdateOne({'_id': doc['_id']}, {'$set': doc}, upsert=True)
             for doc in data[collection_name]
