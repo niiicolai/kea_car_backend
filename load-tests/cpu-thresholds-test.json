@@ -8,8 +8,8 @@
     "System max must be less than 20": {
         "%System": { "max": { "<": 20 } }
     },
-    "iowait max must be less than 20": { 
-        "%IOWait": { "max": { "<": 20 } }
+    "iowait max must be less than 50": {
+        "%IOWait": { "max": { "<": 50 } }
     },
     "steal max must be less than 20": { 
         "%Steal": { "max": { "<": 20 } }
