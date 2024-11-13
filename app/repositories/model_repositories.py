@@ -59,14 +59,15 @@ class MongoDBModelRepository(ModelRepository):
         else:
             models = models.find()
         models = models.limit(0 if not limit else limit)
-
+        retrieved_models: List[ModelReturnResource] = []
         for model in models:
             brand = BrandMongoEntity(**model.get("brand"))
             colors = [ColorMongoEntity(**color) for color in model.get("colors")]
             model.update({"brand": brand, "colors": colors})
+            retrieved_model = ModelMongoEntity(**model).as_resource()
+            retrieved_models.append(retrieved_model)
 
-        models = [ModelMongoEntity(**model).as_resource()for model in models]
-        return models
+        return retrieved_models
 
     def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:
         model = self.database.get_collection("models").find_one(
