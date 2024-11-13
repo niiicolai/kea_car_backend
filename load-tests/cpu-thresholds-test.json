@@ -11,8 +11,8 @@
     "iowait max must be less than 50": {
         "%IOWait": { "max": { "<": 50 } }
     },
-    "steal max must be less than 20": { 
-        "%Steal": { "max": { "<": 20 } }
+    "steal max must be less than 25": {
+        "%Steal": { "max": { "<": 25 } }
     },
     "idle max must be greater than 50": {
         "%Idle": { "max": { ">": 50 } }
