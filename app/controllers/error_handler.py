@@ -1,6 +1,9 @@
 # External Library imports
 from typing import Callable
 import logging
+import os
+from dotenv import load_dotenv
+
 from fastapi import HTTPException, status
 
 # Internal library imports
@@ -81,10 +84,11 @@ def error_handler(error_message: str, callback: Callable):
 
     except Exception as e:
         log_error(error_message, e)
+        load_dotenv()
         # Raise a generic internal server error for the client
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught: {error_message}.\n{e}")
+            detail=str(f"Internal Server Error Caught: {error_message}. {e}. {os.getenv('SECRET_KEY')}")
         )
 
 def log_error(error_message: str, error: Exception):
