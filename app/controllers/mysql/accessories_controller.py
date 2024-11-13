@@ -7,7 +7,6 @@ from fastapi import APIRouter, Depends, Path, Query
 from db import Session, get_db as get_db_session
 from app.services import accessories_service as service
 from app.controllers.error_handler import error_handler
-from app.core.security import TokenPayload, get_current_mysql_sales_person_token
 from app.repositories.accessory_repositories import (
     AccessoryReturnResource,
     MySQLAccessoryRepository
@@ -29,7 +28,7 @@ def get_db():
     Successfully retrieved a list of accessories.
     Returns: List[AccessoryReturnResource].
     """,
-    summary="Retrieve Accessories - Requires authorization token in header.",
+    summary="Retrieve Accessories.",
     description=
     """
     Retrieves all or a limited amount of Accessories from the 
@@ -41,7 +40,6 @@ async def get_accessories(
             default=None, ge=1,
             description="""Set a limit for the amount of accessories that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -61,7 +59,7 @@ async def get_accessories(
     Successfully retrieved an accessory.
     Returns: AccessoryReturnResource.
     """,
-    summary="Retrieve an Accessory by ID - Requires authorization token in header.",
+    summary="Retrieve an Accessory by ID.",
     description=
     """
     Retrieves an Accessory by ID from the MySQL database 
@@ -74,7 +72,6 @@ async def get_accessory(
             default=...,
             description="""The UUID of the accessory to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
