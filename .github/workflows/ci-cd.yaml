@@ -238,6 +238,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - deploy-staging
+      - pre-test
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
