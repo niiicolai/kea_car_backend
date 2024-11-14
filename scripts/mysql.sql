@@ -543,6 +543,24 @@ BEGIN
 END ;;
 DELIMITER ;
 
+--
+-- View structure for view `car_purchase_view`
+--
+DROP VIEW IF EXISTS `car_purchase_view`;
+
+CREATE
+    ALGORITHM = UNDEFINED
+    SQL SECURITY DEFINER
+VIEW `car_purchase_view` AS
+    SELECT
+        car.id AS car_id,
+        purchase.id AS purchase_id,
+        car.sales_people_id AS sales_person_id,
+        car.customers_id AS customer_id,
+        IS_PAST_DEADLINE(car.purchase_deadline, purchase.id) AS is_past_deadline
+    FROM
+        `cars` car
+        LEFT JOIN `purchases` purchase ON purchase.cars_id = car.id;
 
 --
 -- Dumping events for database 'kea_cars_dev'
