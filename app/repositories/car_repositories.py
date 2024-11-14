@@ -114,7 +114,12 @@ class MySQLCarRepository(CarRepository):
             car_query = car_query.limit(limit)
 
         cars: List[CarMySQLEntity] = cast(List[CarMySQLEntity], car_query.all())
-        return [car.as_resource() for car in cars]
+        car_resources: List[CarReturnResource] = []
+        for car in cars:
+            is_car_purchased: bool = (self.session.query(PurchaseMySQLEntity)
+                                      .filter_by(cars_id=car.id).first() is not None)
+            car_resources.append(car.as_resource(is_car_purchased))
+        return car_resources
 
     def get_all(self,
                 customer: Optional[CustomerReturnResource],
@@ -148,7 +153,7 @@ class MySQLCarRepository(CarRepository):
             }
         ).fetchall()
 
-        cars: List[CarMySQLEntity] = []
+        cars: List[CarReturnResource] = []
         for car_result in cars_result:
             # Construct the dictionary directly
             car_id: str = car_result[0]
@@ -158,13 +163,17 @@ class MySQLCarRepository(CarRepository):
             if car is None:
                 raise SQLAlchemyError(f"The car with id: '{car_id}' did not exist in the database.")
             car = cast(CarMySQLEntity, car)
-            cars.append(car)
-        return [car.as_resource() for car in cars]
+            is_car_purchased: bool = (self.session.query(PurchaseMySQLEntity)
+                                      .filter_by(cars_id=car.id).first() is not None)
+            cars.append(car.as_resource(is_car_purchased))
+        return cars
 
     def get_by_id(self, car_id: str) -> Optional[CarReturnResource]:
         car: Optional[CarMySQLEntity] = self.session.query(CarMySQLEntity).get(car_id)
         if car is not None:
-            return car.as_resource()
+            is_car_purchased: bool = (self.session.query(PurchaseMySQLEntity)
+                                     .filter_by(cars_id=car.id).first() is not None)
+            return car.as_resource(is_car_purchased)
         return None
 
     def create(self,
@@ -207,7 +216,7 @@ class MySQLCarRepository(CarRepository):
 
             self.session.commit()
             self.session.refresh(new_car)
-            return new_car.as_resource()
+            return new_car.as_resource(is_purchased=False)
         except Exception as e:
             self.session.rollback()
             raise e

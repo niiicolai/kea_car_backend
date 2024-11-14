@@ -40,7 +40,10 @@ class CarMySQLEntity(Base):
     car_purchase_view = relationship("CarPurchaseView", back_populates="car", viewonly=True)
 
 
-    def as_resource(self) -> CarReturnResource:
+    def as_resource(self, is_purchased: bool) -> CarReturnResource:
+        if not isinstance(is_purchased, bool):
+            raise TypeError(f"is_purchased must be of type bool, "
+                            f"not {type(is_purchased).__name__}.")
         return CarReturnResource(
             id=self.id,
             total_price=self.total_price,
@@ -51,4 +54,5 @@ class CarMySQLEntity(Base):
             sales_person=self.sales_person.as_resource(),
             accessories=[accessory.as_resource() for accessory in self.accessories],
             insurances=[insurance.as_resource() for insurance in self.insurances],
+            is_purchased=is_purchased,
         )

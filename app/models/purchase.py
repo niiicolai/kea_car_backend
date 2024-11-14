@@ -30,5 +30,5 @@ class PurchaseMySQLEntity(Base):
         return PurchaseReturnResource(
             id=self.id,
             date_of_purchase=self.date_of_purchase,
-            car=self.car.as_resource(),
+            car=self.car.as_resource(is_purchased=True),
         )
