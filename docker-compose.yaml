@@ -6,7 +6,7 @@ services:
       - "3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=cars
+      - MYSQL_DATABASE=kea_cars_dev
     networks:
       - appnet
     volumes:
@@ -21,7 +21,7 @@ services:
       - mongodb-volume:/data/db
     networks:
       - appnet
-    command: [ "mongod", "--bind_ip_all" ]
+    command: ["mongod", "--bind_ip_all"]
 
   backend:
     image: kea_car_backend:v1.0
@@ -30,7 +30,7 @@ services:
       - "8000:8000"
     environment:
       - DB_HOST=mysql
-      - DB_NAME=cars
+      - DB_NAME=kea_cars_dev
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_PORT=
