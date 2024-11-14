@@ -7,7 +7,6 @@ from fastapi import APIRouter, Depends, Path, Query
 from db import Database, get_mongodb
 from app.services import brands_service as service
 from app.controllers.error_handler import error_handler
-from app.core.security import TokenPayload, get_current_mongodb_sales_person_token
 from app.repositories.brand_repositories import MongoDBBrandRepository, BrandReturnResource
 
 
@@ -25,7 +24,7 @@ def get_db():
     Successfully retrieved a list of brands.
     Returns: List[BrandReturnResource].
     """,
-    summary="Retrieve Brands - Requires authorization token in header.",
+    summary="Retrieve Brands.",
     description=
     """
     Retrieves all or a limited amount of Brands from the MongoDB 
@@ -37,7 +36,6 @@ async def get_brands(
             default=None, ge=1,
             description="""Set a limit for the amount of brands that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_mongodb_sales_person_token),
         database: Database = Depends(get_db)
 ):
     return error_handler(
@@ -57,7 +55,7 @@ async def get_brands(
     Successfully retrieved a brand. 
     Returns: BrandReturnResource.
     """,
-    summary="Retrieve a Brand by ID - Requires authorization token in header.",
+    summary="Retrieve a Brand by ID.",
     description=
     """
     Retrieves a Brand by ID from the MongoDB database by giving a UUID 
@@ -69,7 +67,6 @@ async def get_brand(
             default=...,
             description="""The UUID of the brand to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_mongodb_sales_person_token),
         database: Database = Depends(get_db)
 ):
     return error_handler(
