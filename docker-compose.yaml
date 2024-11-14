@@ -3,7 +3,7 @@ services:
     image: mysql
     container_name: mysql
     ports:
-      - "3307:3306"
+      - "127.0.0.1:3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=kea_cars_dev
@@ -23,23 +23,39 @@ services:
       - appnet
     command: ["mongod", "--bind_ip_all"]
 
+  neo4j:
+    container_name: neo4j
+    image: neo4j
+    ports:
+      - "127.0.0.1:7474:7474"
+      - "127.0.0.1:7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/password
+    volumes:
+      - neo4j-volume:/data
+    networks:
+      - appnet
+
   backend:
     image: kea_car_backend:v1.0
     container_name: backend
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       - DB_HOST=mysql
       - DB_NAME=kea_cars_dev
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_PORT=
+      - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD=root
       - MONGO_DB_HOST=mongodb
-      - MONGO_DB_PORT=27017
+      - MONGO_DB_PORT=127.0.0.1:27017
       - MONGO_DB_NAME=cars
     depends_on:
       - mysql
       - mongodb
+      - neo4j
     networks:
       - appnet
     volumes:
@@ -53,3 +69,4 @@ networks:
 volumes:
   mysql-data:
   mongodb-volume:
+  neo4j-volume:

@@ -1,9 +1,12 @@
+from typing import Optional, List
+
 from app.exceptions.database_errors import UnableToFindIdError
 from app.repositories.customer_repositories import CustomerRepository
 from app.repositories.sales_person_repositories import SalesPersonRepository
 
 from app.repositories.view_repositories.car_purchase_repositories import (
     CarPurchaseRepository,
+    CarPurchaseReturnResource,
     CustomerWithCarsReturnResource,
     SalesPersonWithCarsReturnResource
 )
@@ -57,3 +60,33 @@ def get_customer_with_cars(
         )
 
     return car_purchase_repository.get_customer_with_cars(customer_resource)
+
+def get_cars_with_purchase(
+        repository: CarPurchaseRepository,
+        cars_purchase_limit: Optional[int] = None
+) -> List[CarPurchaseReturnResource]:
+    if not isinstance(repository, CarPurchaseRepository):
+        raise TypeError(f"repository must be of type CarPurchaseRepository, "
+                        f"not {type(repository).__name__}.")
+    if not (isinstance(cars_purchase_limit, int) or cars_purchase_limit is None):
+        raise TypeError(f"cars_purchase_limit must be of type int or None, "
+                        f"not {type(cars_purchase_limit).__name__}.")
+
+    return repository.get_cars_with_purchase(cars_purchase_limit)
+
+def get_car_with_purchase_by_id(
+        repository: CarPurchaseRepository,
+        car_id: str
+) -> CarPurchaseReturnResource:
+    if not isinstance(repository, CarPurchaseRepository):
+        raise TypeError(f"repository must be of type CarPurchaseRepository, "
+                        f"not {type(repository).__name__}.")
+    if not isinstance(car_id, str):
+        raise TypeError(f"car_id must be of type str, "
+                        f"not {type(car_id).__name__}.")
+
+    car_purchase_resource = repository.get_car_with_purchase_by_id(car_id)
+    if car_purchase_resource is None:
+        raise UnableToFindIdError("Car", car_id)
+    return car_purchase_resource
+

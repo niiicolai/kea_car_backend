@@ -1,6 +1,6 @@
 # External Library imports
 from abc import ABC, abstractmethod
-from typing import List, cast
+from typing import List, Optional, cast
 from sqlalchemy.orm import Session
 
 # Internal library imports
@@ -12,7 +12,9 @@ from app.resources.view_resources.car_purchase_resource import (
     SalesPersonWithCarsReturnResource,
     CustomerWithCarsReturnResource,
     SalesPersonReturnResource,
+    CarPurchaseReturnResource,
     CustomerReturnResource
+
 )
 
 def create_sales_person_with_cars_resource(
@@ -50,6 +52,14 @@ class CarPurchaseRepository(ABC):
 
     @abstractmethod
     def get_customer_with_cars(self, customer_resource: CustomerReturnResource) -> CustomerWithCarsReturnResource:
+        pass
+
+    @abstractmethod
+    def get_cars_with_purchase(self, limit: Optional[int]) -> List[CarPurchaseReturnResource]:
+        pass
+
+    @abstractmethod
+    def get_car_with_purchase_by_id(self, car_id: str) -> Optional[CarPurchaseReturnResource]:
         pass
 
 class MySQLCarPurchaseRepository(CarPurchaseRepository):
@@ -93,3 +103,19 @@ class MySQLCarPurchaseRepository(CarPurchaseRepository):
             customer_resource,
             customer_cars=[customer_car.as_customer_resource() for customer_car in customer_cars]
         )
+
+    def get_cars_with_purchase(self, limit: Optional[int]) -> List[CarPurchaseReturnResource]:
+        cars_with_purchase_query = self.session.query(CarPurchaseView)
+
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            cars_with_purchase_query = cars_with_purchase_query.limit(limit)
+
+        cars_with_purchase = cast(List[CarPurchaseView], cars_with_purchase_query.all())
+
+        return [car_with_purchase.as_resource() for car_with_purchase in cars_with_purchase]
+
+    def get_car_with_purchase_by_id(self, car_id: str) -> Optional[CarPurchaseReturnResource]:
+        car_with_purchase: Optional[CarPurchaseView] = self.session.query(CarPurchaseView).get(car_id)
+        if car_with_purchase is not None:
+            return car_with_purchase.as_resource()
+        return None

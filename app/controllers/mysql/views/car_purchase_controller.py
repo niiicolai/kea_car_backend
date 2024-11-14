@@ -1,6 +1,8 @@
 # External Library imports
 from uuid import UUID
-from fastapi import APIRouter, Depends, Path
+from typing import List, Optional
+from fastapi import APIRouter, Depends, Path, Query
+
 
 # Internal library imports
 from db import Session, get_db as get_db_session
@@ -12,6 +14,7 @@ from app.repositories.sales_person_repositories import MySQLSalesPersonRepositor
 
 from app.repositories.view_repositories.car_purchase_repositories import (
     MySQLCarPurchaseRepository,
+    CarPurchaseReturnResource,
     CustomerWithCarsReturnResource,
     SalesPersonWithCarsReturnResource
 )
@@ -90,3 +93,68 @@ async def get_customer_with_car_purchases(
             customer_id=str(customer_id)
         )
     )
+
+@router.get(
+    path="/cars_with_purchase",
+    response_model=List[CarPurchaseReturnResource],
+    response_description=
+    """
+    Successfully retrieved a list of cars with purchases.
+    Returns: List[CarPurchaseReturnResource].
+    """,
+    summary="Retrieve Cars with Purchase - Requires authorization token in header.",
+    description=
+    """
+    Retrieves all or a limited amount of Cars with Purchase from the MySQL 
+    database and returns a list of 'CarPurchaseReturnResource'.
+    """
+)
+async def get_cars_with_purchase(
+        limit: Optional[int] = Query(
+            default=None, ge=1,
+            description="""Set a limit for the amount of cars with purchase that is returned."""
+        ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        session: Session = Depends(get_db)
+):
+    return error_handler(
+        error_message="Failed to get cars with purchase from the MySQL database",
+        callback=
+        lambda: service.get_cars_with_purchase(
+            repository=MySQLCarPurchaseRepository(session),
+            cars_purchase_limit=limit
+        )
+    )
+
+@router.get(
+    path="/car_with_purchase/{car_id}",
+    response_model=CarPurchaseReturnResource,
+    response_description=
+    """
+    Successfully retrieved a car with purchase.
+    Returns: CarPurchaseReturnResource.
+    """,
+    summary="Retrieve a Car with Purchase by car ID - Requires authorization token in header.",
+    description=
+    """
+    Retrieves a Car with Purchase by ID from the MySQL database 
+    by giving a UUID in the path for the car 
+    and returns it as a 'CarPurchaseReturnResource'.
+    """
+)
+async def get_sales_person(
+        car_id: UUID = Path(
+            default=...,
+            description="""The UUID of the car to retrieve."""
+        ),
+        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        session: Session = Depends(get_db)
+):
+    return error_handler(
+        error_message="Failed to get car with purchase from the MySQL database",
+        callback=lambda: service.get_car_with_purchase_by_id(
+            repository=MySQLCarPurchaseRepository(session),
+            car_id=str(car_id)
+        )
+    )
+

@@ -8,7 +8,11 @@ from db import Base
 from app.models.customer import CustomerMySQLEntity
 from app.models.sales_person import SalesPersonMySQLEntity
 from app.models.purchase import PurchaseMySQLEntity, CarMySQLEntity
-from app.resources.view_resources.car_purchase_resource import CarPurchaseCustomerReturnResource, CarPurchaseSalePersonReturnResource
+from app.resources.view_resources.car_purchase_resource import (
+    CarPurchaseCustomerReturnResource,
+    CarPurchaseSalePersonReturnResource,
+    CarPurchaseReturnResource
+)
 
 
 class CarPurchaseView(Base):
@@ -47,6 +51,21 @@ class CarPurchaseView(Base):
             model=self.car.model.as_resource_without_colors(),
             color=self.car.color.as_resource(),
             purchase=self.car_purchase.as_resource_without_car() if self.car_purchase else None,
+            customer=self.car_customer.as_resource(),
+            accessories=[accessory.as_resource() for accessory in self.car.accessories],
+            insurances=[insurance.as_resource() for insurance in self.car.insurances],
+        )
+
+    def as_resource(self) -> CarPurchaseReturnResource:
+        return CarPurchaseReturnResource(
+            id=self.car_id,
+            total_price=self.car.total_price,
+            purchase_deadline=self.car.purchase_deadline,
+            is_past_deadline=self.is_past_deadline,
+            model=self.car.model.as_resource_without_colors(),
+            color=self.car.color.as_resource(),
+            purchase=self.car_purchase.as_resource_without_car() if self.car_purchase else None,
+            sales_person=self.car_sales_person.as_resource(),
             customer=self.car_customer.as_resource(),
             accessories=[accessory.as_resource() for accessory in self.car.accessories],
             insurances=[insurance.as_resource() for insurance in self.car.insurances],
