@@ -166,6 +166,26 @@ jobs:
     needs:
       - deploy-staging
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Create reports directory
+        run: mkdir reports
+
+      - name: Wait for App Readiness
+        run: |
+          for i in {1..30}; do
+            echo "Checking if the app is ready (attempt $i)..."
+            if curl -s -o /dev/null -w "%{http_code}" https://staging.c7pixel.com/docs | grep -q "200"; then
+              echo "App is ready!"
+              exit 0
+            fi
+            echo "App is not ready yet. Retrying in 10 seconds..."
+            sleep 10
+          done
+          echo "App did not become ready in time!"
+          exit 1
+
       - name: Start Server Monitoring
         uses: appleboy/ssh-action@master
         with:
@@ -177,12 +197,6 @@ jobs:
             nohup sar 1 360 > /logs/cpu_mem_usage.log 2>&1 &
             nohup iostat -x 1 360 > /logs/disk_usage.log 2>&1 &
             nohup vmstat 1 360 > /logs/vmstat_usage.log 2>&1 &
-
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Create reports directory
-        run: mkdir reports
 
       - name: JMeter Test
         uses: QAInsights/PerfAction@v5.6.2
