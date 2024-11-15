@@ -137,6 +137,7 @@ The pipeline consists of the following stages:
 1. pre-test
 2. deploy-staging
 3. load-test
+4. deploy-production
 
 The `pre-test` pipeline consists of following checks that must pass:
 1. All pytest
@@ -146,8 +147,15 @@ The `pre-test` pipeline consists of following checks that must pass:
 5. All End-to-end tests must pass
 
 The `deploy-staging` pipeline consists of following checks that must pass:
-1. Deploy the application to the staging server
+1. Copy the application to the staging server
+2. Build the Docker image using the Dockerfile
+3. Run the `docker-compose.yaml` file to start all required services
 
 The `load-test` pipeline consists of following checks that must pass:
 1. Run the load test on the staging server
 2. All CPU Thresholds must pass
+
+The `deploy-production` pipeline consists of following checks that must pass:
+1. Deploy the application to the production server
+2. Build the Docker image using the Dockerfile
+3. Run the `docker-compose.yaml` file to start all required services
