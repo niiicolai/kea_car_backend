@@ -135,3 +135,7 @@ class CarReturnResource(CarBaseReturnResource):
         default=...,
         description="The car's Sales Person as a SalesPersonReturnResource."
     )
+    is_purchased: bool = Field(
+        default=...,
+        description="Whether the car is purchased or not."
+    )

@@ -85,7 +85,7 @@ def error_handler(error_message: str, callback: Callable):
         # Raise a generic internal server error for the client
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(f"Internal Server Error Caught: {error_message})")
+            detail=str(f"Internal Server Error Caught: {error_message}.")
         )
 
 def log_error(error_message: str, error: Exception):

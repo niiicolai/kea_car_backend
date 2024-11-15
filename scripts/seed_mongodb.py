@@ -17,7 +17,9 @@ collections = [
     'sales_people',
     'colors',
     'brands',
-    'models'
+    'models',
+    'cars',
+    'purchases'
 ]
 
 

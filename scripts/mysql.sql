@@ -118,7 +118,7 @@ CREATE TABLE `cars` (
 
 LOCK TABLES `cars` WRITE;
 /*!40000 ALTER TABLE `cars` DISABLE KEYS */;
-INSERT INTO `cars` VALUES ('0be86135-c58f-43b6-a369-a3c5445b9948','d4bd413c-00d8-45ce-be0e-1d1333ac5e75','7bb35b1d-37ff-43c2-988a-cf85c5b6d690','f159bdaf-bc83-46c3-8a3f-f6b5c93ebbdc','f9097a97-eca4-49b6-85a0-08423789c320',10530.8,'2024-12-07'),('a1b1e305-1a89-4b06-86d1-21ac1fa3c8a6','d4bd413c-00d8-45ce-be0e-1d1333ac5e75','7bb35b1d-37ff-43c2-988a-cf85c5b6d690','f159bdaf-bc83-46c3-8a3f-f6b5c93ebbdc','d096d2e1-f06a-4555-9cd1-afa9f930f10c',10530.8,'2024-12-04'),('a5503fbb-c388-4789-a10c-d7ae7bdf7408','d4bd413c-00d8-45ce-be0e-1d1333ac5e75','7bb35b1d-37ff-43c2-988a-cf85c5b6d690','f159bdaf-bc83-46c3-8a3f-f6b5c93ebbdc','f9097a97-eca4-49b6-85a0-08423789c320',10530.8,'2024-12-05'),('d4c7f1f8-4451-43bc-a827-63216a2ddece','d4bd413c-00d8-45ce-be0e-1d1333ac5e75','7bb35b1d-37ff-43c2-988a-cf85c5b6d690','0ac1d668-55aa-46a1-898a-8fa61457facb','f9097a97-eca4-49b6-85a0-08423789c320',10530.8,'2024-10-04');
+INSERT INTO `cars` VALUES ('0be86135-c58f-43b6-a369-a3c5445b9948','d4bd413c-00d8-45ce-be0e-1d1333ac5e75','7bb35b1d-37ff-43c2-988a-cf85c5b6d690','f159bdaf-bc83-46c3-8a3f-f6b5c93ebbdc','f9097a97-eca4-49b6-85a0-08423789c320',10530.8,'2024-12-07'),('a1b1e305-1a89-4b06-86d1-21ac1fa3c8a6','d4bd413c-00d8-45ce-be0e-1d1333ac5e75','7bb35b1d-37ff-43c2-988a-cf85c5b6d690','f159bdaf-bc83-46c3-8a3f-f6b5c93ebbdc','d096d2e1-f06a-4555-9cd1-afa9f930f10c',10530.8,'2024-12-04'),('a5503fbb-c388-4789-a10c-d7ae7bdf7408','d4bd413c-00d8-45ce-be0e-1d1333ac5e75','7bb35b1d-37ff-43c2-988a-cf85c5b6d690','f159bdaf-bc83-46c3-8a3f-f6b5c93ebbdc','f9097a97-eca4-49b6-85a0-08423789c320',10530.8,'2024-12-05'),('d4c7f1f8-4451-43bc-a827-63216a2ddece','d4bd413c-00d8-45ce-be0e-1d1333ac5e75','7bb35b1d-37ff-43c2-988a-cf85c5b6d690','0ac1d668-55aa-46a1-898a-8fa61457facb','f9097a97-eca4-49b6-85a0-08423789c320',10530.8,'2024-12-04');
 /*!40000 ALTER TABLE `cars` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -543,6 +543,24 @@ BEGIN
 END ;;
 DELIMITER ;
 
+--
+-- View structure for view `car_purchase_view`
+--
+DROP VIEW IF EXISTS `car_purchase_view`;
+
+CREATE
+    ALGORITHM = UNDEFINED
+    SQL SECURITY DEFINER
+VIEW `car_purchase_view` AS
+    SELECT
+        car.id AS car_id,
+        purchase.id AS purchase_id,
+        car.sales_people_id AS sales_person_id,
+        car.customers_id AS customer_id,
+        IS_PAST_DEADLINE(car.purchase_deadline, purchase.id) AS is_past_deadline
+    FROM
+        `cars` car
+        LEFT JOIN `purchases` purchase ON purchase.cars_id = car.id;
 
 --
 -- Dumping events for database 'kea_cars_dev'
