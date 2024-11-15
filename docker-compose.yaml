@@ -5,8 +5,8 @@ services:
     ports:
       - "127.0.0.1:3307:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=kea_cars_dev
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_BACKEND_DATABASE}
     networks:
       - appnet
     volumes:
@@ -30,7 +30,7 @@ services:
       - "127.0.0.1:7474:7474"
       - "127.0.0.1:7687:7687"
     environment:
-      - NEO4J_AUTH=neo4j/password
+      - NEO4J_AUTH=${NEO4J_ROOT_USER}/${NEO4J_ROOT_PASSWORD}
     volumes:
       - neo4j-volume:/data
     networks:
@@ -42,16 +42,16 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     environment:
-      - DB_HOST=mysql
-      - DB_NAME=kea_cars_dev
-      - DB_USER=root
-      - DB_PASSWORD=root
+      - DB_HOST=${MYSQL_BACKEND_HOST}
+      - DB_NAME=${MYSQL_BACKEND_DATABASE}
+      - DB_USER=${MYSQL_BACKEND_PASSWORD}
+      - DB_PASSWORD=${MYSQL_BACKEND_PASSWORD}
       - DB_PORT=
-      - MYSQL_USER=root
-      - MYSQL_ROOT_PASSWORD=root
-      - MONGO_DB_HOST=mongodb
-      - MONGO_DB_PORT=27017
-      - MONGO_DB_NAME=cars
+      - MYSQL_USER=${MYSQL_BACKEND_USER}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MONGO_DB_HOST=${MONGO_BACKEND_HOST}
+      - MONGO_DB_PORT=${MONGO_BACKEND_PORT}
+      - MONGO_DB_NAME=${MONGO_BACKEND_HOST}
     depends_on:
       - mysql
       - mongodb
