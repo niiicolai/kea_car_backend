@@ -581,30 +581,30 @@ DELIMITER ;
 
 
 -- Grant the required privileges
-GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON * TO 'application_user'@'%';
+--GRANT SELECT, INSERT, UPDATE, DELETE, EXECUTE ON * TO 'application_user'@'%';
 
 -- Apply the changes
-FLUSH PRIVILEGES;
+--FLUSH PRIVILEGES;
 
 
 
 -- Grant SELECT privileges on all tables in all databases
-GRANT SELECT ON * TO 'readonly_user'@'%';
+--GRANT SELECT ON * TO 'readonly_user'@'%';
 
 -- Grant EXECUTE privilege specifically for the "get_all_cars" stored procedure
-GRANT EXECUTE ON PROCEDURE get_all_cars TO 'readonly_user'@'%';
+--GRANT EXECUTE ON PROCEDURE get_all_cars TO 'readonly_user'@'%';
 
 -- Apply the changes
-FLUSH PRIVILEGES;
+--FLUSH PRIVILEGES;
 
 
 
 -- Grant SELECT privileges on specific tables
-GRANT SELECT ON accessories TO 'limited_reader'@'%';
-GRANT SELECT ON insurances TO 'limited_reader'@'%';
-GRANT SELECT ON brands TO 'limited_reader'@'%';
-GRANT SELECT ON colors TO 'limited_reader'@'%';
-GRANT SELECT ON models TO 'limited_reader'@'%';
+--GRANT SELECT ON accessories TO 'limited_reader'@'%';
+--GRANT SELECT ON insurances TO 'limited_reader'@'%';
+--GRANT SELECT ON brands TO 'limited_reader'@'%';
+--GRANT SELECT ON colors TO 'limited_reader'@'%';
+--GRANT SELECT ON models TO 'limited_reader'@'%';
 
 -- Apply the changes
-FLUSH PRIVILEGES;
+--FLUSH PRIVILEGES;
