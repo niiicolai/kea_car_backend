@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Path, Query, Body, status
 from db import Session, get_db as get_db_session
 from app.services import customers_service as service
 from app.controllers.error_handler import error_handler
-from app.core.security import TokenPayload, get_current_mysql_sales_person_token
+from app.core.security import TokenPayload, get_current_sales_person_token
 
 from app.repositories.customer_repositories import (
     MySQLCustomerRepository,
@@ -21,6 +21,7 @@ router: APIRouter = APIRouter()
 def get_db():
     with get_db_session() as session:
         yield session
+        session.commit()
 
 @router.get(
     path="/customers",
@@ -42,7 +43,7 @@ async def get_customers(
             default=None, ge=1,
             description="""Set a limit for the amount of customers that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -74,7 +75,7 @@ async def get_customer(
             default=...,
             description="""The UUID of the customer to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -104,7 +105,7 @@ async def get_customer(
 )
 async def create_customer(
         customer_create_data: CustomerCreateResource,
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -142,7 +143,7 @@ async def update_customer(
             default=...,
             title="CustomerUpdateResource"
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -176,7 +177,7 @@ async def delete_customer(
             default=...,
             description="""The UUID of the customer to delete."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(

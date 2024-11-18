@@ -7,9 +7,14 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # Internal library imports
 from db import Base
-from app.models.brand import BrandMySQLEntity, BrandMongoEntity
+from app.models.brand import BrandMySQLEntity, BrandMongoEntity, BrandNeo4jEntity
 from app.resources.model_resource import ModelReturnResource, ModelBaseReturnResource
-from app.models.color import ColorMySQLEntity, models_has_colors, ColorMongoEntity
+from app.models.color import (
+    ColorMySQLEntity,
+    models_has_colors,
+    ColorMongoEntity,
+    ColorNeo4jEntity
+)
 
 
 class ModelMySQLEntity(Base):
@@ -51,6 +56,27 @@ class ModelMongoEntity(BaseModel):
     price: float
     image_url: str
     colors: List[ColorMongoEntity]
+
+
+    model_config = ConfigDict(from_attributes=True)
+
+    def as_resource(self) -> ModelReturnResource:
+        return ModelReturnResource(
+            id=self.id,
+            brand=self.brand.as_resource(),
+            colors=[color.as_resource() for color in self.colors],
+            name=self.name,
+            price=self.price,
+            image_url=self.image_url,
+        )
+
+class ModelNeo4jEntity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    brand: BrandNeo4jEntity
+    name: str
+    price: float
+    image_url: str
+    colors: List[ColorNeo4jEntity]
 
 
     model_config = ConfigDict(from_attributes=True)

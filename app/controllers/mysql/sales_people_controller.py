@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Form, Path, Query
 from db import Session, get_db as get_db_session
 from app.controllers.error_handler import error_handler
 from app.services import sales_people_service as service
-from app.core.security import TokenPayload, get_current_mysql_sales_person_token
+from app.core.security import TokenPayload, get_current_sales_person_token
 from app.repositories.sales_person_repositories import (
     MySQLSalesPersonRepository,
     SalesPersonReturnResource,
@@ -21,6 +21,7 @@ router: APIRouter = APIRouter()
 def get_db():
     with get_db_session() as session:
         yield session
+        session.commit()
 
 @router.post(
     path="/token",
@@ -118,7 +119,7 @@ async def get_sales_people(
             default=None, ge=1,
             description="""Set a limit for the amount of sales people that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -151,7 +152,7 @@ async def get_sales_person(
             default=...,
             description="""The UUID of the sales person to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -181,7 +182,7 @@ async def get_sales_person(
 )
 async def create_sales_person(
         sales_person_create_data: SalesPersonCreateResource,
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(

@@ -54,4 +54,4 @@ def session():
         try:
             yield session
         finally:
-            session.close()
+            session.rollback()

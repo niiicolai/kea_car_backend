@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy.orm import Session
 from pymongo.database import Database
+from neo4j import Session as Neo4jSession
 
 # Internal library imports
 from app.resources.model_resource import BrandReturnResource
@@ -11,7 +12,10 @@ from app.models.model import (
     ModelMySQLEntity,
     ModelMongoEntity,
     BrandMongoEntity,
-    ColorMongoEntity
+    ColorMongoEntity,
+    ModelNeo4jEntity,
+    BrandNeo4jEntity,
+    ColorNeo4jEntity
 )
 
 
@@ -41,7 +45,7 @@ class MySQLModelRepository(ModelRepository):
 
 
     def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:
-        model: Optional[ModelMySQLEntity] = self.session.query(ModelMySQLEntity).get(model_id)
+        model: Optional[ModelMySQLEntity] = self.session.get(ModelMySQLEntity, model_id)
         if model is not None:
             return model.as_resource()
         return None
@@ -77,6 +81,50 @@ class MongoDBModelRepository(ModelRepository):
             return ModelMongoEntity(**model).as_resource()
         return None
 
+class Neo4jModelRepository(ModelRepository):
+    def __init__(self, neo4j_session: Neo4jSession):
+        self.neo4j_session = neo4j_session
+
+    def get_all(self, brand_resource: Optional[BrandReturnResource], limit: Optional[int]) -> List[ModelReturnResource]:
+        query = """
+        MATCH (m:Model)-[:BELONGS_TO]->(b:Brand)
+        OPTIONAL MATCH (m)-[:HAS_COLOR]->(c:Color)
+        RETURN m, b, collect(c) as colors
+        """
+        parameters = {}
+        if brand_resource is not None and isinstance(brand_resource, BrandReturnResource):
+            query = """
+            MATCH (m:Model)-[:BELONGS_TO]->(b:Brand {id: $brand_id})
+            OPTIONAL MATCH (m)-[:HAS_COLOR]->(c:Color)
+            RETURN m, b, collect(c) as colors
+            """
+            parameters["brand_id"] = brand_resource.id
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            query += " LIMIT $limit"
+            parameters["limit"] = limit
+        result = self.neo4j_session.run(query, parameters)
+        models: List[ModelReturnResource] = []
+        for record in result:
+            brand = BrandNeo4jEntity(**record["b"])
+            colors = [ColorNeo4jEntity(**color) for color in record["colors"]]
+            model = ModelNeo4jEntity(**record["m"], brand=brand, colors=colors)
+            models.append(model.as_resource())
+        return models
+
+    def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:
+        query = """
+        MATCH (m:Model {id: $model_id})-[:BELONGS_TO]->(b:Brand)
+        OPTIONAL MATCH (m)-[:HAS_COLOR]->(c:Color)
+        RETURN m, b, collect(c) as colors
+        """
+        result = self.neo4j_session.run(query, model_id=model_id)
+        record = result.single()
+        if record:
+            brand = BrandNeo4jEntity(**record["b"])
+            colors = [ColorNeo4jEntity(**color) for color in record["colors"]]
+            model = ModelNeo4jEntity(**record["m"], brand=brand, colors=colors)
+            return model.as_resource()
+        return None
 
 # Placeholder for future repositories
 # class OtherDBModelRepository(ModelRepository):

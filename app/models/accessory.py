@@ -45,3 +45,17 @@ class AccessoryMongoEntity(BaseModel):
             name=self.name,
             price=self.price
         )
+
+class AccessoryNeo4jEntity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    name: str
+    price: float
+
+    model_config = ConfigDict(from_attributes=True)
+
+    def as_resource(self) -> AccessoryReturnResource:
+        return AccessoryReturnResource(
+            id=self.id,
+            name=self.name,
+            price=self.price
+        )

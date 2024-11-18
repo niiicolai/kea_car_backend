@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Path, Query
 from db import Session, get_db as get_db_session
 from app.services import insurances_service as service
 from app.controllers.error_handler import error_handler
-from app.core.security import TokenPayload, get_current_mysql_sales_person_token
+from app.core.security import TokenPayload, get_current_sales_person_token
 from app.repositories.insurance_repository import MySQLInsuranceRepository, InsuranceReturnResource
 
 
@@ -17,6 +17,7 @@ router: APIRouter = APIRouter()
 def get_db():
     with get_db_session() as session:
         yield session
+        session.commit()
 
 @router.get(
     path="/insurances",
@@ -38,7 +39,7 @@ async def get_insurances(
             default=None, ge=1,
             description="""Set a limit for the amount of insurances that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -70,7 +71,7 @@ async def get_insurance(
             default=...,
             description="""The UUID of the insurance to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(

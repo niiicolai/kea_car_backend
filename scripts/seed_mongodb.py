@@ -32,7 +32,26 @@ def read_json():
 if __name__ == '__main__':
     data = read_json()
     client = MongoClient(host=MONGO_DB_HOST, port=int(MONGO_DB_PORT))
-    db = client[MONGO_DB_NAME]
+    db = client.get_database(MONGO_DB_NAME)
+
+    db.drop_collection('accessories')
+    db.create_collection('accessories').create_index('name', unique=True)
+    db.drop_collection('brands')
+    db.create_collection('brands').create_index('name', unique=True)
+    db.drop_collection('cars')
+    db.create_collection('cars')
+    db.drop_collection('colors')
+    db.create_collection('colors').create_index('name', unique=True)
+    db.drop_collection('customers')
+    db.create_collection('customers').create_index('email', unique=True)
+    db.drop_collection('insurances')
+    db.create_collection('insurances').create_index('name', unique=True)
+    db.drop_collection('models')
+    db.create_collection('models')
+    db.drop_collection('purchases')
+    db.create_collection('purchases').create_index('car._id', unique=True)
+    db.drop_collection('sales_people')
+    db.create_collection('sales_people').create_index('email', unique=True)
 
     for collection_name in collections:      
         bulk_operations = [

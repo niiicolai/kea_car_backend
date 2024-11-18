@@ -12,11 +12,10 @@ from app.core.tokens import (
     Token
 )
 from app.core.config import (
-    oauth2_mongodb,
-    oauth2_mysql,
     pwd_context,
     SECRET_KEY,
-    ALGORITHM
+    ALGORITHM,
+    oauth2
 )
 
 logger = logging.getLogger(__name__)
@@ -118,8 +117,6 @@ def get_current_sales_person_token(token: str) -> TokenPayload:
         raise internal_server_error
 
 
-async def get_current_mysql_sales_person_token(token: str = Depends(oauth2_mysql)):
+async def get_current_sales_person_token(token: str = Depends(oauth2)):
     return get_current_sales_person_token(token)
 
-async def get_current_mongodb_sales_person_token(token: str = Depends(oauth2_mongodb)):
-    return get_current_sales_person_token(token)

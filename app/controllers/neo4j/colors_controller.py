@@ -4,19 +4,17 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Path, Query
 
 # Internal library imports
-from db import Session, get_db as get_db_session
+from db import Neo4jSession, get_neo4j
 from app.services import colors_service as service
 from app.controllers.error_handler import error_handler
-from app.core.security import TokenPayload, get_current_sales_person_token
-from app.repositories.color_repositories import MySQLColorRepository, ColorReturnResource
+from app.repositories.color_repositories import Neo4jColorRepository, ColorReturnResource
 
 
 router: APIRouter = APIRouter()
 
 def get_db():
-    with get_db_session() as session:
+    with get_neo4j() as session:
         yield session
-        session.commit()
 
 @router.get(
     path="/colors",
@@ -26,10 +24,10 @@ def get_db():
     Successfully retrieved a list of colors.
     Returns: List[ColorReturnResource].
     """,
-    summary="Retrieve Colors - Requires authorization token in header.",
+    summary="Retrieve Colors.",
     description=
     """
-    Retrieves all or a limited amount of Colors from the MySQL 
+    Retrieves all or a limited amount of Colors from the Neo4j 
     database and returns a list of 'ColorReturnResource'.
     """
 )
@@ -38,13 +36,12 @@ async def get_colors(
             default=None, ge=1,
             description="""Set a limit for the amount of colors that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
-        session: Session = Depends(get_db)
+        session: Neo4jSession = Depends(get_db)
 ):
     return error_handler(
-        error_message="Failed to get colors from the MySQL database",
+        error_message="Failed to get colors from the Neo4j database",
         callback=lambda: service.get_all(
-            repository=MySQLColorRepository(session),
+            repository=Neo4jColorRepository(session),
             colors_limit=limit
         )
     )
@@ -58,10 +55,10 @@ async def get_colors(
     Successfully retrieved a color.
     Returns: ColorReturnResource.
     """,
-    summary="Retrieve a Color by ID - Requires authorization token in header.",
+    summary="Retrieve a Color by ID.",
     description=
     """
-    Retrieves a Color by ID from the MySQL 
+    Retrieves a Color by ID from the Neo4j 
     database and returns it as a 'ColorReturnResource'.
     """
 )
@@ -70,13 +67,12 @@ async def get_color(
             default=...,
             description="""The UUID of the color to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
-        session: Session = Depends(get_db)
+        session: Neo4jSession = Depends(get_db)
 ):
     return error_handler(
-        error_message="Failed to get color from the MySQL database",
+        error_message="Failed to get color from the Neo4j database",
         callback=lambda: service.get_by_id(
-            repository=MySQLColorRepository(session),
+            repository=Neo4jColorRepository(session),
             color_id=str(color_id)
         )
     )
