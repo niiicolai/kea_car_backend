@@ -173,9 +173,13 @@ The GitHub Action contains a single job called `test` that runs the following ch
 
 ### Example
 
-1. Create a new branch called `demo` (if you don't already have one)
+1. Create a new branch or use an existing branch called `demo`
 ```bash	
-git checkout -b demo
+# Create a new branch called demo
+git checkout -b demo 
+
+# Use an existing branch called demo
+git checkout demo
 ```
 
 2. Make some changes to the code and push the changes to the `demo` branch on GitHub
