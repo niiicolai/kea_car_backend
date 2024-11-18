@@ -56,9 +56,6 @@ jobs:
         run: |
           pytest
 
-      - name: Pylint score must be at least 7.0
-        run: pylint app/* --fail-under=7.0
-
       - name: Start API Server
         run: |
           fastapi dev main.py &
@@ -71,32 +68,3 @@ jobs:
 
       - name: Run Postman collection with Mysql environment (API tests)
         run: newman run ./api-tests/KEA\ Car\ API\ Test.postman_collection.json --environment ./api-tests/KEA\ Car\ Mysql.postman_environment.json
-
-      - name: Clone frontend repository
-        uses: actions/checkout@v2
-        with:
-          repository: OliverRoat/kea_car_frontend
-          path: frontend
-
-      - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm install
-
-      - name: Start frontend server
-        run: |
-          cd frontend
-          npm run dev &
-
-      - name: Wait for frontend to be ready
-        run: sleep 10
-
-      - name: Install Cypress
-        run: |
-          cd frontend
-          npm install cypress
-
-      - name: Run Cypress tests (E2E)
-        run: |
-          cd frontend
-          npx cypress run

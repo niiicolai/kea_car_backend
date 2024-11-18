@@ -140,7 +140,7 @@ The pipeline consists of the following stages:
 4. deploy-production
 
 The `pre-test` pipeline consists of following checks that must pass:
-1. All pytest
+1. All pytest must pass
 2. Coverage must be at least 80%
 3. Pylint score must be at least 7.0
 4. All API tests must pass
@@ -162,14 +162,12 @@ The `deploy-production` pipeline consists of following checks that must pass:
 
 ## Demonstration Flow
 The project contains a GitHub Action that can be used to demonstrate a minifed version of the CI/CD pipeline.
-The file is called `short-ci-cd.yaml` and can be found in the `.github/workflows` directory.
+The file is called `short-ci.yaml` and can be found in the `.github/workflows` directory.
 It is designed to run on push events to a branch called `demo`.
 
 The GitHub Action contains a single job called `test` that runs the following checks:
-1. All pytest
-2. Pylint score must be at least 7.0
-3. All API tests must pass
-4. All End-to-end tests must pass  
+1. All pytest must pass
+2. All API tests must pass
 
 ### Example
 
