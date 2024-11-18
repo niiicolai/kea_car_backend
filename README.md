@@ -159,3 +159,32 @@ The `deploy-production` pipeline consists of following checks that must pass:
 1. Copy the application to the production server
 2. Build the Docker image using the Dockerfile
 3. Run the `docker-compose.yaml` file to start all required services
+
+## Demonstration Flow
+The project contains a GitHub Action that can be used to demonstrate a minifed version of the CI/CD pipeline.
+The file is called `short-ci-cd.yaml` and can be found in the `.github/workflows` directory.
+It is designed to run on push events to a branch called `demo`.
+
+The GitHub Action contains a single job called `test` that runs the following checks:
+1. All pytest
+2. Pylint score must be at least 7.0
+3. All API tests must pass
+4. All End-to-end tests must pass  
+
+### Example
+
+1. Create a new branch called `demo` (if you don't already have one)
+```bash	
+git checkout -b demo
+```
+
+2. Make some changes to the code and push the changes to the `demo` branch on GitHub
+```bash
+git add .
+git commit -m "I changed ..."
+git push origin demo
+```
+
+The GitHub action will automatically run the checks at this point and can be found under the Actions tab on GitHub.
+To clean up after the demonstration, merge the `demo` branch into the `main` branch by creating a pull request on GitHub.
+
