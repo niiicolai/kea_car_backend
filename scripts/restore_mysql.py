@@ -9,7 +9,8 @@ load_dotenv()
 
 host = os.getenv('DB_HOST')
 database = os.getenv('DB_NAME')
-username = os.getenv('DB_USER')
+root_user = os.getenv('DB_ROOT_USER')
+username = root_user if root_user else os.getenv('DB_USER')
 password = os.getenv('DB_PASSWORD')
 port = os.getenv('DB_PORT')
 
