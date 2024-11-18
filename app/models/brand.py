@@ -37,3 +37,17 @@ class BrandMongoEntity(BaseModel):
             name=self.name,
             logo_url=self.logo_url,
         )
+
+class BrandNeo4jEntity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    name: str
+    logo_url: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+    def as_resource(self) -> BrandReturnResource:
+        return BrandReturnResource(
+            id=self.id,
+            name=self.name,
+            logo_url=self.logo_url,
+        )

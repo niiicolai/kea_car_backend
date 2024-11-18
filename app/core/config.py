@@ -7,5 +7,4 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 10080 # One Week
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_mysql = OAuth2PasswordBearer(tokenUrl="/mysql/token")
-oauth2_mongodb = OAuth2PasswordBearer(tokenUrl="/mongo/token")
+oauth2 = OAuth2PasswordBearer(tokenUrl="/mysql/token")

@@ -29,7 +29,7 @@ class MySQLInsuranceRepository(InsuranceRepository):
         return [insurance.as_resource() for insurance in insurances]
 
     def get_by_id(self, insurance_id: str) -> Optional[InsuranceReturnResource]:
-        insurance: Optional[InsuranceMySQLEntity] = self.session.query(InsuranceMySQLEntity).get(insurance_id)
+        insurance: Optional[InsuranceMySQLEntity] = self.session.get(InsuranceMySQLEntity, insurance_id)
         if insurance is not None:
             return insurance.as_resource()
         return None

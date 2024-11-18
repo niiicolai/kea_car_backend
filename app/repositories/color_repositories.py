@@ -3,9 +3,15 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy.orm import Session
 from pymongo.database import Database
+from neo4j import Session as Neo4jSession
 
 # Internal library imports
-from app.models.color import ColorReturnResource, ColorMySQLEntity, ColorMongoEntity
+from app.models.color import (
+    ColorReturnResource,
+    ColorMySQLEntity,
+    ColorMongoEntity,
+    ColorNeo4jEntity
+)
 
 
 class ColorRepository(ABC):
@@ -31,7 +37,7 @@ class MySQLColorRepository(ColorRepository):
         return [color.as_resource() for color in colors]
 
     def get_by_id(self, color_id: str) -> Optional[ColorReturnResource]:
-        color: Optional[ColorMySQLEntity] = self.session.query(ColorMySQLEntity).get(color_id)
+        color: Optional[ColorMySQLEntity] = self.session.get(ColorMySQLEntity, color_id)
         if color is not None:
             return color.as_resource()
         return None
@@ -57,6 +63,31 @@ class MongoDBColorRepository(ColorRepository):
             return ColorMongoEntity(
                 **color
             ).as_resource()
+        return None
+
+
+class Neo4jColorRepository(ColorRepository):
+    def __init__(self, neo4j_session: Neo4jSession):
+        self.neo4j_session = neo4j_session
+
+    def get_all(self, limit: Optional[int]) -> List[ColorReturnResource]:
+        query = "MATCH (c:Color) RETURN c"
+        parameters = {}
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            query += " LIMIT $limit"
+            parameters["limit"] = limit
+        result = self.neo4j_session.run(query, parameters)
+        brands = [ColorNeo4jEntity(**record["c"]).as_resource() for record in result]
+        return brands
+
+    def get_by_id(self, color_id: str) -> Optional[ColorReturnResource]:
+        result = self.neo4j_session.run(
+            "MATCH (c:Color {id: $id}) RETURN c",
+            id=color_id
+        )
+        record = result.single()
+        if record:
+            return ColorNeo4jEntity(**record["c"]).as_resource()
         return None
 
 # Placeholder for future repositories

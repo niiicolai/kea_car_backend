@@ -8,7 +8,7 @@ from db import Session, get_db as get_db_session
 from app.services import purchases_service as service
 from app.controllers.error_handler import error_handler
 from app.repositories.car_repositories import MySQLCarRepository
-from app.core.security import TokenPayload, get_current_mysql_sales_person_token
+from app.core.security import TokenPayload, get_current_sales_person_token
 from app.repositories.purchase_repositories import (
     MySQLPurchaseRepository,
     PurchaseReturnResource,
@@ -21,6 +21,7 @@ router: APIRouter = APIRouter()
 def get_db():
     with get_db_session() as session:
         yield session
+        session.commit()
 
 @router.get(
     path="/purchases",
@@ -42,7 +43,7 @@ async def get_purchases(
             default=None, ge=1,
             description="""Set a limit for the amount of purchases that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -75,7 +76,7 @@ async def get_purchase(
             default=...,
             description="""The UUID of the purchase to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -108,7 +109,7 @@ async def get_purchase_by_car_id(
             default=...,
             description="""The UUID of the purchase's car to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -139,7 +140,7 @@ async def get_purchase_by_car_id(
 )
 async def create_purchase(
         purchase_create_data: PurchaseCreateResource,
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(

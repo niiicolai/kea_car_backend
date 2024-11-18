@@ -4,19 +4,17 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Path, Query
 
 # Internal library imports
-from db import Session, get_db as get_db_session
+from db import Neo4jSession, get_neo4j
 from app.services import models_service as service
 from app.controllers.error_handler import error_handler
-from app.repositories.brand_repositories import MySQLBrandRepository
-from app.core.security import TokenPayload, get_current_sales_person_token
-from app.repositories.model_repositories import MySQLModelRepository, ModelReturnResource
+from app.repositories.brand_repositories import Neo4jBrandRepository
+from app.repositories.model_repositories import Neo4jModelRepository, ModelReturnResource
 
 router: APIRouter = APIRouter()
 
 def get_db():
-    with get_db_session() as session:
+    with get_neo4j() as session:
         yield session
-        session.commit()
 
 @router.get(
     path="/models",
@@ -26,10 +24,10 @@ def get_db():
     Successfully retrieved a list of models.
     Returns: List[ModelReturnResource].
     """,
-    summary="Retrieve Models - Requires authorization token in header.",
+    summary="Retrieve Models.",
     description=
     """
-    Retrieves all or a limited amount of Models from the MySQL database 
+    Retrieves all or a limited amount of Models from the Neo4j database 
     potentially filtered by models belonging to a brand 
     and returns a list of 'ModelReturnResource'.
     """
@@ -43,14 +41,13 @@ async def get_models(
             default=None, ge=1,
             description="""Set a limit for the amount of models that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
-        session: Session = Depends(get_db)
+        session: Neo4jSession = Depends(get_db)
 ):
     return error_handler(
-        error_message="Failed to get models from the MySQL database",
+        error_message="Failed to get models from the Neo4j database",
         callback=lambda: service.get_all(
-            model_repository=MySQLModelRepository(session),
-            brand_repository=MySQLBrandRepository(session),
+            model_repository=Neo4jModelRepository(session),
+            brand_repository=Neo4jBrandRepository(session),
             brand_id=None if not brand_id else str(brand_id),
             brands_limit=limit
         )
@@ -65,10 +62,10 @@ async def get_models(
     Successfully retrieved a model.
     Returns: ModelReturnResource.
     """,
-    summary="Retrieve a Model by ID - Requires authorization token in header.",
+    summary="Retrieve a Model by ID.",
     description=
     """
-    Retrieves a Model by ID from the MySQL database 
+    Retrieves a Model by ID from the Neo4j database 
     by giving a UUID in the path for the model 
     and returns it as a 'ModelReturnResource'.
     """
@@ -78,13 +75,12 @@ async def get_model(
             default=...,
             description="""The UUID of the model to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
-        session: Session = Depends(get_db)
+        session: Neo4jSession = Depends(get_db)
 ):
     return error_handler(
-        error_message="Failed to get model from the MySQL database",
+        error_message="Failed to get model from the Neo4j database",
         callback=lambda: service.get_by_id(
-            repository=MySQLModelRepository(session),
+            repository=Neo4jModelRepository(session),
             model_id=str(model_id)
         )
     )

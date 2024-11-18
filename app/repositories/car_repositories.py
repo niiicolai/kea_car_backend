@@ -169,7 +169,7 @@ class MySQLCarRepository(CarRepository):
         return cars
 
     def get_by_id(self, car_id: str) -> Optional[CarReturnResource]:
-        car: Optional[CarMySQLEntity] = self.session.query(CarMySQLEntity).get(car_id)
+        car: Optional[CarMySQLEntity] = self.session.get(CarMySQLEntity, car_id)
         if car is not None:
             is_car_purchased: bool = (self.session.query(PurchaseMySQLEntity)
                                      .filter_by(cars_id=car.id).first() is not None)
@@ -214,7 +214,7 @@ class MySQLCarRepository(CarRepository):
                 ).values(cars_id=new_car.id, insurances_id=insurance_resource.id)
                 self.session.execute(insert)
 
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(new_car)
             return new_car.as_resource(is_purchased=False)
         except Exception as e:
@@ -222,12 +222,13 @@ class MySQLCarRepository(CarRepository):
             raise e
 
     def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool):
+        car_id = car_resource.id
         try:
             if delete_purchase_too:
-                self.session.query(PurchaseMySQLEntity).filter_by(cars_id=car_resource.id).delete()
+                self.session.query(PurchaseMySQLEntity).filter_by(cars_id=car_id).delete()
                 self.session.flush()
-            self.session.query(CarMySQLEntity).filter_by(id=car_resource.id).delete()
-            self.session.commit()
+            self.session.query(CarMySQLEntity).filter_by(id=car_id).delete()
+            self.session.flush()
         except Exception as e:
             self.session.rollback()
             raise e

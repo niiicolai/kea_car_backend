@@ -56,7 +56,7 @@ class MySQLSalesPersonRepository(SalesPersonRepository):
 
 
     def get_by_id(self, sales_person_id: str) -> Optional[SalesPersonReturnResource]:
-        sales_person: Optional[SalesPersonMySQLEntity] = self.session.query(SalesPersonMySQLEntity).get(sales_person_id)
+        sales_person: Optional[SalesPersonMySQLEntity] = self.session.get(SalesPersonMySQLEntity, sales_person_id)
         if sales_person is None:
             return None
 
@@ -71,7 +71,7 @@ class MySQLSalesPersonRepository(SalesPersonRepository):
             last_name=sales_person_create_data.last_name,
         )
         self.session.add(new_sales_person)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(new_sales_person)
 
         return new_sales_person.as_resource()

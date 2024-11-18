@@ -46,7 +46,7 @@ class MySQLPurchaseRepository(PurchaseRepository):
         return [purchase.as_resource() for purchase in purchases]
 
     def get_by_id(self, purchase_id: str) -> Optional[PurchaseReturnResource]:
-        purchase: Optional[PurchaseMySQLEntity] = self.session.query(PurchaseMySQLEntity).get(purchase_id)
+        purchase: Optional[PurchaseMySQLEntity] = self.session.get(PurchaseMySQLEntity, purchase_id)
         if purchase is not None:
             return purchase.as_resource()
         return None
@@ -63,7 +63,7 @@ class MySQLPurchaseRepository(PurchaseRepository):
             date_of_purchase=purchase_create_data.date_of_purchase
         )
         self.session.add(new_purchase)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(new_purchase)
 
         return new_purchase.as_resource()

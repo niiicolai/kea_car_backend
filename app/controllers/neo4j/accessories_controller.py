@@ -4,22 +4,21 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, Path, Query
 
 # Internal library imports
-from db import Session, get_db as get_db_session
+from db import Neo4jSession, get_neo4j
 from app.services import accessories_service as service
 from app.controllers.error_handler import error_handler
-from app.core.security import TokenPayload, get_current_sales_person_token
+
 from app.repositories.accessory_repositories import (
     AccessoryReturnResource,
-    MySQLAccessoryRepository
+    Neo4jAccessoryRepository
 )
 
 router: APIRouter = APIRouter()
 
 
 def get_db():
-    with get_db_session() as session:
+    with get_neo4j() as session:
         yield session
-        session.commit()
 
 
 @router.get(
@@ -30,11 +29,11 @@ def get_db():
     Successfully retrieved a list of accessories.
     Returns: List[AccessoryReturnResource].
     """,
-    summary="Retrieve Accessories - Requires authorization token in header.",
+    summary="Retrieve Accessories.",
     description=
     """
     Retrieves all or a limited amount of Accessories from the 
-    MySQL database and returns a list of 'AccessoryReturnResource'.
+    Neo4j database and returns a list of 'AccessoryReturnResource'.
     """
 )
 async def get_accessories(
@@ -42,13 +41,12 @@ async def get_accessories(
             default=None, ge=1,
             description="""Set a limit for the amount of accessories that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
-        session: Session = Depends(get_db)
+        session: Neo4jSession = Depends(get_db)
 ):
     return error_handler(
-        error_message="Failed to get accessories from the MySQL database",
+        error_message="Failed to get accessories from the Neo4j database",
         callback=lambda: service.get_all(
-            repository=MySQLAccessoryRepository(session),
+            repository=Neo4jAccessoryRepository(session),
             accessory_limit=limit
         )
     )
@@ -62,10 +60,10 @@ async def get_accessories(
     Successfully retrieved an accessory.
     Returns: AccessoryReturnResource.
     """,
-    summary="Retrieve an Accessory by ID - Requires authorization token in header.",
+    summary="Retrieve an Accessory by ID.",
     description=
     """
-    Retrieves an Accessory by ID from the MySQL database 
+    Retrieves an Accessory by ID from the Neo4j database 
     by giving a UUID in the path for the accessory and 
     returns it as an 'AccessoryReturnResource'.
     """
@@ -75,13 +73,12 @@ async def get_accessory(
             default=...,
             description="""The UUID of the accessory to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
-        session: Session = Depends(get_db)
+        session: Neo4jSession = Depends(get_db)
 ):
     return error_handler(
-        error_message="Failed to get accessory from the MySQL database",
+        error_message="Failed to get accessory from the Neo4j database",
         callback=lambda: service.get_by_id(
-            repository=MySQLAccessoryRepository(session),
+            repository=Neo4jAccessoryRepository(session),
             accessory_id=str(accessory_id)
         )
     )

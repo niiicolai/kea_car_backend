@@ -13,7 +13,7 @@ from app.repositories.purchase_repositories import MySQLPurchaseRepository
 from app.repositories.insurance_repository import MySQLInsuranceRepository
 from app.repositories.customer_repositories import MySQLCustomerRepository
 from app.repositories.accessory_repositories import MySQLAccessoryRepository
-from app.core.security import TokenPayload, get_current_mysql_sales_person_token
+from app.core.security import TokenPayload, get_current_sales_person_token
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
 from app.repositories.car_repositories import (
     MySQLCarRepository,
@@ -27,6 +27,7 @@ router: APIRouter = APIRouter()
 def get_db():
     with get_db_session() as session:
         yield session
+        session.commit()
 
 
 @router.get(
@@ -87,7 +88,7 @@ async def get_cars(
             default=None, ge=1,
             description="""Set a limit for the amount of cars that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -125,7 +126,7 @@ async def get_car(
             default=...,
             description="""The UUID of the car to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -155,7 +156,7 @@ async def get_car(
 )
 async def create_car(
         car_data: CarCreateResource,
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -203,7 +204,7 @@ async def delete_car(
             the car with its purchase if it has one.
             """
         ),
-        current_token: TokenPayload = Depends(get_current_mysql_sales_person_token),
+        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
