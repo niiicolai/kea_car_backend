@@ -14,14 +14,24 @@
    pip install -r requirements.txt
    ```
 4. Create a .env file with these keys and ask for values:
-   DB_HOST=your_host
-   DB_NAME=your_db
-   DB_USER=your_user
-   DB_PASSWORD=your_password
-   DB_PORT=your_port
-   SECRET_KEY=Ask for the key
+```
+   * DB_HOST=your_local_mysql_host
+   * DB_NAME=your_local_mysql_db_name
+   * DB_USER=your_local_mysql_user_name
+   * DB_PASSWORD=your_local_mysql_password
+   * DB_PORT=your_local_mysql_port
+   * MONGO_DB_HOST=your_local_mongo_host
+   * MONGO_DB_PORT=your_local_mongo_db_port
+   * MONGO_DB_NAME=your_local_mongo_db_name
+   * NEO4J_URI=your_local_neo4j_uri
+   * NEO4J_USER=your_local_neo4j_db_user_name
+   * NEO4J_PASSWORD=your_local_neo4j_db_password
+   * SECRET_KEY=Ask for the key
+```
 5. Run the project:
-   python main.py
+   ```bash
+   uvicorn main:app --reload --log-level debug
+    ```
 
 
 ## Coverage
