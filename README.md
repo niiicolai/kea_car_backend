@@ -15,16 +15,16 @@
    ```
 4. Create a .env file with these keys and ask for values:
 ```
-   * DB_HOST=your_local_mysql_host
-   * DB_NAME=your_local_mysql_db_name
-   * DB_USER=your_local_mysql_user_name
+   * DB_HOST=your_local_mysql_host (localhost)
+   * DB_NAME=your_local_mysql_db_name (kea_cars_dev)
+   * DB_USER=your_local_mysql_user_name (root)
    * DB_PASSWORD=your_local_mysql_password
-   * DB_PORT=your_local_mysql_port
-   * MONGO_DB_HOST=your_local_mongo_host
-   * MONGO_DB_PORT=your_local_mongo_db_port
-   * MONGO_DB_NAME=your_local_mongo_db_name
-   * NEO4J_URI=your_local_neo4j_uri
-   * NEO4J_USER=your_local_neo4j_db_user_name
+   * DB_PORT=your_local_mysql_port (3306)
+   * MONGO_DB_HOST=your_local_mongo_host (localhost)
+   * MONGO_DB_PORT=your_local_mongo_db_port (27017)
+   * MONGO_DB_NAME=your_local_mongo_db_name (kea_cars_dev)
+   * NEO4J_URI=your_local_neo4j_uri (bolt://localhost:7687)
+   * NEO4J_USER=your_local_neo4j_db_user_name (neo4j)
    * NEO4J_PASSWORD=your_local_neo4j_db_password
    * SECRET_KEY=Ask for the key
 ```
