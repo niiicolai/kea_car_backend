@@ -121,6 +121,26 @@ python scripts/restore_mysql.py --filepath="./backups/<INSERT_DUMP_NAME>.sql"
 
 Note: The script will overwrite the existing database with the data from the dump file.
 
+## Mongo Database Restore
+To restore the database from a Mongo dump, do remember to have a local mongodb called kea_cars_dev, 
+run the following command:
+```bash
+# Restore the database using the specified file
+python scripts/seed_mongodb.py
+```
+
+Note: The script will overwrite the existing database with the data from the seed file.
+
+## Neo4j Database Restore
+To restore the database from a Neo4j dump, do remember to have a local neo4j database called kea_cars_dev and have it running, 
+run the following command:
+```bash
+# Restore the database using the specified file
+python scripts/seed_neo4j.py
+```
+
+Note: The script will overwrite the existing database with the data from the seed file.
+
 ## Docker
 To build the Docker image, run the following command:
 ```bash
