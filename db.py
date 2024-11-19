@@ -31,7 +31,7 @@ def get_db_connection_string() -> str:
 
 def get_engine() -> Engine:
     connection_string = get_db_connection_string()
-    engine = create_engine(connection_string, echo=True, pool_pre_ping=True)
+    engine = create_engine(connection_string, pool_pre_ping=True)
     return engine
 
 session_local = sessionmaker(autocommit=False, autoflush=False)

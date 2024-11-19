@@ -43,5 +43,8 @@ python ./scripts/restore_mysql.py --filepath="./scripts/mysql.sql"
 echo "Restoring MongoDB dump..."
 python ./scripts/seed_mongodb.py
 
+echo "Restoring Neo4j dump..."
+python ./scripts/seed_neo4j.py
+
 echo "Starting FastAPI server..."
 uvicorn main:app --host 0.0.0.0 --port 8000

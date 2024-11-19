@@ -24,9 +24,12 @@ collections = [
 
 
 def read_json():
-    with open("./scripts/mongodb_insert_data.json", 'r') as file:
-        data = json.load(file)
-    return data
+    try:
+        with open('./scripts/mongodb_insert_data.json', 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        with open('mongodb_insert_data.json', 'r') as file:
+            return json.load(file)
 
 
 if __name__ == '__main__':

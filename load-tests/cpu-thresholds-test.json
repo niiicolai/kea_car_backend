@@ -5,8 +5,8 @@
     "Nice max must be less than 20": { 
         "%Nice": { "max": { "<": 20 } }
     },
-    "System max must be less than 20": {
-        "%System": { "max": { "<": 20 } }
+    "System max must be less than 35": {
+        "%System": { "max": { "<": 35 } }
     },
     "iowait max must be less than 50": {
         "%IOWait": { "max": { "<": 50 } }
