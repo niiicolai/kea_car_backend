@@ -89,7 +89,7 @@ def decode_access_token(token: str) -> TokenPayload:
         )
         raise e
 
-def get_current_sales_person_token(token: str) -> TokenPayload:
+def get_sales_person_token(token: str) -> TokenPayload:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -118,5 +118,5 @@ def get_current_sales_person_token(token: str) -> TokenPayload:
 
 
 async def get_current_sales_person_token(token: str = Depends(oauth2)):
-    return get_current_sales_person_token(token)
+    return get_sales_person_token(token)
 
