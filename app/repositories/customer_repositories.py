@@ -12,7 +12,7 @@ from app.resources.customer_resource import CustomerCreateResource, CustomerUpda
 class CustomerRepository(ABC):
 
     @abstractmethod
-    def get_all(self, limit: Optional[int]) -> List[CustomerReturnResource]:
+    def get_all(self, email_filter: Optional[str], limit: Optional[int]) -> List[CustomerReturnResource]:
         pass
 
     @abstractmethod
@@ -39,8 +39,10 @@ class MySQLCustomerRepository(CustomerRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self, limit: Optional[int]) -> List[CustomerReturnResource]:
+    def get_all(self, email_filter: Optional[str], limit: Optional[int]) -> List[CustomerReturnResource]:
         customers_query = self.session.query(CustomerMySQLEntity)
+        if email_filter is not None and isinstance(email_filter, str):
+            customers_query = customers_query.filter(CustomerMySQLEntity.email.contains(email_filter))
         if limit is not None and isinstance(limit, int) and limit > 0:
             customers_query = customers_query.limit(limit)
         customers: List[CustomerMySQLEntity] = cast(List[CustomerMySQLEntity], customers_query.all())

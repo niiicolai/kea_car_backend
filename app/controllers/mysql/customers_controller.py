@@ -34,11 +34,16 @@ def get_db():
     summary="Retrieve Customers - Requires authorization token in header.",
     description=
     """
-    Retrieves all or a limited amount of Customers from the 
-    MySQL database and returns a list of 'CustomerReturnResource'.
+    Retrieves all or a limited amount of Customers from 
+    the MySQL database potentially filtered by email 
+    and returns a list of 'CustomerReturnResource'.
     """
 )
 async def get_customers(
+        email_filter: Optional[str] = Query(
+            default=None, min_length=1,
+            description="""Filter customers by their email."""
+        ),
         limit: Optional[int] = Query(
             default=None, ge=1,
             description="""Set a limit for the amount of customers that is returned."""
@@ -50,6 +55,7 @@ async def get_customers(
         error_message="Failed to get customers from the MySQL database",
         callback=lambda: service.get_all(
             repository=MySQLCustomerRepository(session),
+            filter_customer_by_email=email_filter,
             customers_limit=limit
         )
     )
