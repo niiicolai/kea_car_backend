@@ -58,7 +58,7 @@ def create(
         raise TypeError(f"customer_create_data must be of type CustomerCreateResource, "
                         f"not {type(customer_create_data).__name__}.")
 
-    if repository.is_email_taken(customer_create_data.email):
+    if repository.is_email_taken(customer_create_data):
         raise AlreadyTakenFieldValueError(
             entity_name="Customer",
             field="email",
@@ -83,7 +83,7 @@ def update(
         raise TypeError(f"customer_update_data must be of type CustomerUpdateResource, "
                         f"not {type(customer_update_data).__name__}.")
 
-    if customer_update_data.email is not None and repository.is_email_taken(customer_update_data.email):
+    if customer_update_data.email is not None and repository.is_email_taken(customer_update_data, customer_id):
         raise AlreadyTakenFieldValueError(
             entity_name="Customer",
             field="email",

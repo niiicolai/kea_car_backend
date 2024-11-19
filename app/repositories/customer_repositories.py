@@ -1,6 +1,6 @@
 # External Library imports
 from abc import ABC, abstractmethod
-from typing import Optional, List, cast
+from typing import Optional, Union, List, cast
 from sqlalchemy.orm import Session
 
 
@@ -32,7 +32,7 @@ class CustomerRepository(ABC):
         pass
 
     @abstractmethod
-    def is_email_taken(self, email: str) -> bool:
+    def is_email_taken(self, customer_resource: Union[CustomerUpdateResource, CustomerCreateResource], customer_id: Optional[str] = None) -> bool:
         pass
 
 class MySQLCustomerRepository(CustomerRepository):
@@ -85,8 +85,12 @@ class MySQLCustomerRepository(CustomerRepository):
         )
         self.session.flush()
 
-    def is_email_taken(self, email: str) -> bool:
-        return self.session.query(CustomerMySQLEntity).filter_by(email=email).first() is not None
+    def is_email_taken(self, customer_resource: Union[CustomerUpdateResource, CustomerCreateResource], customer_id: Optional[str] = None) -> bool:
+        if isinstance(customer_resource, CustomerUpdateResource) and customer_id is not None:
+            customer = self.session.get(CustomerMySQLEntity, customer_id)
+            if customer is not None and customer.email == customer_resource.email:
+                return False
+        return self.session.query(CustomerMySQLEntity).filter_by(email=customer_resource.email).first() is not None
 
 # Placeholder for future repositories
 # class OtherDBCustomerRepository(CustomerRepository):
