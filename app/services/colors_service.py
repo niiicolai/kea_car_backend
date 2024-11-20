@@ -14,7 +14,11 @@ def get_all(
     if not isinstance(repository, ColorRepository):
         raise TypeError(f"repository must be of type ColorRepository, "
                         f"not {type(repository).__name__}.")
-    if not (isinstance(colors_limit, int) or colors_limit is None):
+    if isinstance(
+            colors_limit, bool
+    ) or not (
+            isinstance(colors_limit, int) or colors_limit is None
+    ):
         raise TypeError(f"colors_limit must be of type int or None, "
                         f"not {type(colors_limit).__name__}.")
 
