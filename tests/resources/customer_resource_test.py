@@ -35,10 +35,10 @@ from app.resources.customer_resource import CustomerCreateResource, CustomerUpda
          "last_name": "Henriksen",
          "address": None
      }),
-    ("a@b.c", "1234", "He", "He", "Rando",
+    ("a@b.c", "+4510203040", "He", "He", "Rando",
      {
          "email": "a@b.c",
-         "phone_number": "1234",
+         "phone_number": "+4510203040",
          "first_name": "He",
          "last_name": "He",
          "address": "Rando"
@@ -131,7 +131,7 @@ def test_create_customer_resource_does_not_work_with_invalid_email(invalid_email
     "1A2B3C4D",
     "1@2+3.4?",
     "102 3040",
-    "123",
+    "1234567",
     "1234567890123456789012345678901",
     10203040
 ])
@@ -246,7 +246,7 @@ def test_update_customer_resource_works_without_setting_any_fields():
     ("this_is_a_valid_email_address_part@example-with-a-much-longer-subdomain-and-suffix.com",
      "this_is_a_valid_email_address_part@example-with-a-much-longer-subdomain-and-suffix.com"),
 ])
-def test_update_customer_resource_works_with_valid_email_data(email, expected_outcome):
+def test_update_customer_resource_works_with_valid_email(email, expected_outcome):
     customer_update_data = CustomerUpdateResource(
         email=email,
     )
@@ -264,10 +264,10 @@ def test_update_customer_resource_works_with_valid_email_data(email, expected_ou
     (" 10203040 ", "10203040"),
     (None, None),
     ("01234567", "01234567"),
-    ("1234", "1234"),
+    ("+4510203040", "+4510203040"),
     ("123456789012345678901234567890", "123456789012345678901234567890"),
 ])
-def test_update_customer_resource_works_with_valid_phone_number_data(phone_number, expected_outcome):
+def test_update_customer_resource_works_with_valid_phone_number(phone_number, expected_outcome):
     customer_update_data = CustomerUpdateResource(
         phone_number=phone_number,
     )
@@ -288,7 +288,7 @@ def test_update_customer_resource_works_with_valid_phone_number_data(phone_numbe
     ("He", "He"),
     ("Maximilianaelizabethannamarialucreciavictoria", "Maximilianaelizabethannamarialucreciavictoria"),
 ])
-def test_update_customer_resource_works_with_valid_first_name_data(first_name, expected_outcome):
+def test_update_customer_resource_works_with_valid_first_name(first_name, expected_outcome):
     customer_update_data = CustomerUpdateResource(
         first_name=first_name,
     )
@@ -309,7 +309,7 @@ def test_update_customer_resource_works_with_valid_first_name_data(first_name, e
     ("He", "He"),
     ("Featherstonehaughworthingtonsmythenbishopsons", "Featherstonehaughworthingtonsmythenbishopsons"),
 ])
-def test_update_customer_resource_works_with_valid_last_name_data(last_name, expected_outcome):
+def test_update_customer_resource_works_with_valid_last_name(last_name, expected_outcome):
     customer_update_data = CustomerUpdateResource(
         last_name=last_name,
     )
@@ -336,7 +336,7 @@ def test_update_customer_resource_works_with_valid_last_name_data(last_name, exp
      "Name With Extra Letters, 99999-1234, Country With A Very Long Name That "
      "Might Just Fit In Perfectly Here As Well"),
 ])
-def test_update_customer_resource_works_with_valid_address_data(address, expected_outcome):
+def test_update_customer_resource_works_with_valid_address(address, expected_outcome):
     customer_update_data = CustomerUpdateResource(
         address=address,
     )
@@ -373,7 +373,7 @@ def test_update_customer_resource_does_not_work_with_invalid_email(invalid_email
     "1A2B3C4D",
     "1@2+3.4?",
     "102 3040",
-    "123",
+    "1234567",
     "1234567890123456789012345678901",
     10203040
 ])

@@ -11,7 +11,7 @@ load_dotenv()
 
 Base = declarative_base()
 
-def get_db_connection_string() -> str:
+def get_db_connection_string(is_test_connection_string: bool) -> str:
     """
     Creates a database engine using individual environment variables.
     """
@@ -20,6 +20,9 @@ def get_db_connection_string() -> str:
     db_user = os.getenv('DB_USER')
     db_password = os.getenv('DB_PASSWORD')
     db_port = os.getenv('DB_PORT')
+    if is_test_connection_string:
+        db_name = os.getenv('TEST_DB_NAME') if os.getenv('TEST_DB_NAME') else db_name
+
 
     # When using docker, we don't need to specify the port.
     # Instead, we only specify the host as the service name.
@@ -29,16 +32,16 @@ def get_db_connection_string() -> str:
     
     return connection_string
 
-def get_engine() -> Engine:
-    connection_string = get_db_connection_string()
+def get_engine(is_test_engine: bool) -> Engine:
+    connection_string = get_db_connection_string(is_test_connection_string=is_test_engine)
     engine = create_engine(connection_string, pool_pre_ping=True)
     return engine
 
 session_local = sessionmaker(autocommit=False, autoflush=False)
 
 @contextmanager
-def get_db() -> Session:
-    engine = get_engine()
+def get_db(is_test_db=False) -> Session:
+    engine = get_engine(is_test_engine=is_test_db)
     session = session_local(bind=engine)
     try:
         yield session

@@ -50,7 +50,7 @@ def mySQLSalesPersonRepository(session):
 
 @pytest.fixture(scope="function")
 def session():
-    with get_db() as session:
+    with get_db(is_test_db=True) as session:
         try:
             yield session
         finally:

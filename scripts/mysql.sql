@@ -1,4 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `kea_cars_dev` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE IF NOT EXISTS `kea_cars_dev`; /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `kea_cars_dev`;
 -- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
@@ -572,8 +572,8 @@ ON SCHEDULE EVERY 1 DAY
 DO
 BEGIN
 	DELETE car
-	FROM kea_cars_dev.cars car
-	INNER JOIN kea_cars_dev.car_purchase_view cpv ON car.id = cpv.car_id
+	FROM cars car
+	INNER JOIN car_purchase_view cpv ON car.id = cpv.car_id
 	WHERE cpv.is_past_deadline = TRUE;
 END //
 DELIMITER ;

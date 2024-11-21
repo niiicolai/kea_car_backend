@@ -41,10 +41,10 @@ class CustomerBaseResource(BaseModel):
             raise ValueError(f"The given email {email} is {email_length - maximum_length_of_email} characters too long, "
                              f"it can only be maximum {maximum_length_of_email} characters and not {email_length}.")
         return email
-    
+
     @field_validator('phone_number')
     def validate_phone_number(cls, phone_number: Optional[str]) -> Optional[str]:
-        minimum_length_of_phone_number = 4
+        minimum_length_of_phone_number = 8
         maximum_length_of_phone_number = 30
         if phone_number is not None:
             phone_number = phone_number.strip()
@@ -56,7 +56,10 @@ class CustomerBaseResource(BaseModel):
             if len(phone_number) > maximum_length_of_phone_number:
                 raise ValueError(f"The given phone number {phone_number} is too long, "
                                  f"it can only be maximum {maximum_length_of_phone_number} characters long.")
-            if not phone_number.isdigit():
+            if phone_number.startswith('+'):
+                if not phone_number[1:].isdigit():
+                    raise ValueError(f"The given phone number {phone_number} can only contain digits after the '+'.")
+            elif not phone_number.isdigit():
                 raise ValueError(f"The given phone number {phone_number} can only contain digits.")
         return phone_number
     
