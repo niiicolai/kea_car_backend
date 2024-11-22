@@ -1,5 +1,5 @@
 # External Library imports
-from typing import List
+from typing import List, Optional
 from datetime import date, timedelta
 from pydantic import BaseModel, ConfigDict, UUID4, Field, field_validator
 
@@ -14,9 +14,10 @@ from app.resources.model_resource import (
     ColorReturnResource
 )
 
+DAYS_TO_DEADLINE = 30
 
 def calculate_purchase_deadline() -> date:
-    return date.today() + timedelta(days=30)
+    return date.today() + timedelta(days=DAYS_TO_DEADLINE)
 
 class CarBaseResource(BaseModel):
     purchase_deadline: date = Field(
@@ -28,7 +29,7 @@ class CarBaseResource(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class CarCreateResource(CarBaseResource):
-    purchase_deadline: date = Field(
+    purchase_deadline: Optional[date] = Field(
         default_factory=calculate_purchase_deadline,
         description="The deadline for when the car must be purchased.",
         examples=[calculate_purchase_deadline()]
@@ -84,14 +85,14 @@ class CarCreateResource(CarBaseResource):
         return insurance_ids
 
     @field_validator('purchase_deadline')
-    def validate_purchase_deadline(cls, purchase_deadline: date) -> date:
-        if purchase_deadline is None:
-            raise ValueError("The given purchase deadline must not be None.")
-        current_date = date.today()
-
-        if purchase_deadline < current_date:
-            raise ValueError(f"The given purchase deadline '{purchase_deadline.strftime('%dd-%m-%Y')}' "
-                             f"must be before the current date '{current_date.strftime('%d-%m-%Y')}'.")
+    def validate_purchase_deadline(cls, purchase_deadline: Optional[date]) -> date:
+        if purchase_deadline is not None:
+            current_date = date.today()
+            if purchase_deadline < current_date:
+                raise ValueError(f"The given purchase deadline '{purchase_deadline.strftime('%d-%m-%Y')}' "
+                                 f"must be before the current date '{current_date.strftime('%d-%m-%Y')}'.")
+        else:
+            purchase_deadline = calculate_purchase_deadline()
         return purchase_deadline
 
 class CarBaseReturnResource(CarBaseResource):

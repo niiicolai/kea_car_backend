@@ -187,7 +187,7 @@ def delete(
         car_repository: CarRepository,
         purchase_repository: PurchaseRepository,
         car_id: str, delete_purchase_too: bool
-):
+) -> None:
 
     if not isinstance(car_repository, CarRepository):
         raise TypeError(f"car_repository must be of type CarRepository, "

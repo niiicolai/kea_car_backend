@@ -1,5 +1,7 @@
 import main # Import main to ensure all classes are loaded
 import pytest
+import random
+import string
 
 from db import get_db
 from app.repositories.color_repositories import MySQLColorRepository
@@ -11,6 +13,26 @@ from app.repositories.insurance_repository import MySQLInsuranceRepository
 from app.repositories.model_repositories import MySQLModelRepository
 from app.repositories.purchase_repositories import MySQLPurchaseRepository
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
+
+@pytest.fixture(scope="module")
+def valid_customer_data() -> dict:
+    domains = ["gmail.com", "hotmail.com", "yahoo.com", "outlook.com"]
+    domain = random.choice(domains)
+    username_length = random.randint(5, 10)
+    username = ''.join(random.choices(string.ascii_lowercase + string.digits, k=username_length))
+    phone_number = f"+45{random.randint(10000000, 99999999)}"
+    first_name = ''.join(random.choices(string.ascii_uppercase, k=random.randint(3, 10))).capitalize()
+    last_name = ''.join(random.choices(string.ascii_uppercase, k=random.randint(3, 10))).capitalize()
+    address = ''.join(random.choices(string.ascii_uppercase + string.digits, k=random.randint(10, 30)))
+    return \
+        {
+            "email": f"{username}@{domain}",
+            "phone_number": phone_number,
+            "first_name": first_name,
+            "last_name": last_name,
+            "address": address
+        }
+
 
 @pytest.fixture(scope="function")
 def mySQLColorRepository(session):

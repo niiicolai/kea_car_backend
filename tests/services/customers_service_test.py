@@ -1,6 +1,443 @@
 import pytest
 from pydantic import ValidationError
 from app.services import customers_service
-from app.resources.customer_resource import CustomerCreateResource, CustomerUpdateResource
 from app.exceptions.database_errors import UnableToFindIdError
+from app.resources.customer_resource import (
+    CustomerCreateResource,
+    CustomerUpdateResource,
+    CustomerReturnResource
+)
+
+amount_of_expected_customers = 5
+amount_of_expected_cars = 4
+amount_of_expected_purchases = 1
+
+customer_henrik_with_one_purchased_cars = {
+    "id": "0ac1d668-55aa-46a1-898a-8fa61457facb",
+    "email": "henrik@gmail.com",
+    "phone_number": "10203040",
+    "first_name": "Henrik",
+    "last_name": "Henriksen",
+    "address": "Randomgade nr. 10 4. tv.",
+    "amount_of_cars": 1,
+    "amount_of_purchased_cars": 1,
+    "car_ids": ["bdfca7c4-e0ad-4618-8766-9bb355371c81"]
+}
+
+customer_oliver_with_zero_cars = {
+    "id": "bbbb06bc-268d-4f88-8b8e-3da4df118328",
+    "email": "oli@oli.dk",
+    "phone_number": "12345678",
+    "first_name": "Oliver",
+    "last_name": "Jorgensen",
+    "address": "asdasd123",
+    "amount_of_cars": 0,
+}
+
+customer_tom_with_zero_cars = {
+    "id": "daf830ad-be98-4f95-8fa8-3dc7efa540fe",
+    "email": "tom@gmail.com",
+    "phone_number": "12345678",
+    "first_name": "Tom",
+    "last_name": "Tomsen",
+    "address": "Test 21",
+    "amount_of_cars": 0
+}
+
+customer_james_with_three_none_purchased_cars = {
+    "id": "f159bdaf-bc83-46c3-8a3f-f6b5c93ebbdc",
+    "email": "james@gmail.com",
+    "phone_number": "12345678",
+    "first_name": "James",
+    "last_name": "Jamesen",
+    "address": "Test 21",
+    "amount_of_cars": 3,
+    "amount_of_purchased_cars": 0,
+    "car_ids":
+        ["0be86135-c58f-43b6-a369-a3c5445b9948",
+         "a1b1e305-1a89-4b06-86d1-21ac1fa3c8a6",
+         "a5503fbb-c388-4789-a10c-d7ae7bdf7408"]
+}
+
+customer_test_with_zero_cars = {
+    "id": "fc40f99e-13f0-460d-b79d-f75206acdd07",
+    "email": "test@test.dk",
+    "phone_number": "12345678",
+    "first_name": "Test",
+    "last_name": "Teste",
+    "address": "Test 21",
+    "amount_of_cars": 0
+}
+
+
+# VALID TESTS FOR get_customer_by_id
+
+@pytest.mark.parametrize("expected_customer", [
+    customer_henrik_with_one_purchased_cars,
+    customer_oliver_with_zero_cars,
+    customer_tom_with_zero_cars,
+    customer_james_with_three_none_purchased_cars,
+    customer_test_with_zero_cars,
+])
+def test_get_customer_by_id_with_valid_partitions(
+        mySQLCustomerRepository, expected_customer
+):
+    customer = customers_service.get_by_id(
+        repository=mySQLCustomerRepository,
+        customer_id=expected_customer.get('id')
+    )
+    assert isinstance(customer, CustomerReturnResource), \
+        (f"Customer is not of type CustomerReturnResource, "
+         f"but {type(customer).__name__}")
+
+    assert customer.id == expected_customer.get('id'), \
+        (f"Customer ID {customer.id} does not match "
+         f"{expected_customer.get('id')}")
+
+    assert customer.email == expected_customer.get('email'), \
+        (f"Customer email {customer.email} does not match "
+         f"{expected_customer.get('email')}")
+
+    assert customer.phone_number == expected_customer.get('phone_number'), \
+        (f"Customer phone number {customer.phone_number} does not match "
+         f"{expected_customer.get('phone_number')}")
+
+    assert customer.first_name == expected_customer.get('first_name'), \
+        (f"Customer first name {customer.first_name} does not match "
+         f"{expected_customer.get('first_name')}")
+
+    assert customer.last_name == expected_customer.get('last_name'), \
+        (f"Customer last name {customer.last_name} does not match "
+         f"{expected_customer.get('last_name')}")
+
+    assert customer.address == expected_customer.get('address'), \
+        (f"Customer address {customer.address} does not match "
+         f"{expected_customer.get('address')}")
+
+
+# INVALID TESTS FOR get_customer_by_id
+
+@pytest.mark.parametrize("invalid_customer_id, expected_error, expecting_error_message", [
+    (None, TypeError, "customer_id must be of type str, not NoneType."),
+    (True, TypeError, "customer_id must be of type str, not bool."),
+    (1, TypeError, "customer_id must be of type str, not int."),
+    ("unknown-id", UnableToFindIdError, "Customer with ID: unknown-id does not exist."),
+])
+def test_get_customer_by_id_with_invalid_customer_id_partitions(
+        mySQLCustomerRepository, invalid_customer_id, expected_error, expecting_error_message
+):
+    with pytest.raises(expected_error, match=expecting_error_message):
+        customers_service.get_by_id(
+            repository=mySQLCustomerRepository,
+            customer_id=invalid_customer_id
+        )
+
+
+@pytest.mark.parametrize("invalid_customer_repository, expecting_error_message", [
+    (None, "repository must be of type CustomerRepository, not NoneType."),
+    (1, "repository must be of type CustomerRepository, not int."),
+    ("repository", "repository must be of type CustomerRepository, not str."),
+])
+def test_get_customer_by_id_with_invalid_repository_type_partitions(invalid_customer_repository,
+                                                                    expecting_error_message):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        customers_service.get_by_id(
+            repository=invalid_customer_repository,
+            customer_id=customer_test_with_zero_cars.get('id')
+        )
+
+
+def test_get_customer_by_id_with_invalid_repository_types_partitions(
+        mySQLColorRepository, mySQLCarRepository, mySQLPurchaseRepository
+):
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLColorRepository).__name__}."
+                       ):
+        customers_service.get_by_id(
+            repository=mySQLColorRepository,
+            customer_id=customer_test_with_zero_cars.get('id')
+        )
+
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLCarRepository).__name__}."
+                       ):
+        customers_service.get_by_id(
+            repository=mySQLCarRepository,
+            customer_id=customer_test_with_zero_cars.get('id')
+        )
+
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLPurchaseRepository).__name__}."
+                       ):
+        customers_service.get_by_id(
+            repository=mySQLPurchaseRepository,
+            customer_id=customer_test_with_zero_cars.get('id')
+        )
+
+
+# VALID TESTS FOR get_all_customers
+
+
+def test_get_all_customers_with_valid_partitions(mySQLCustomerRepository):
+    expected_customers = [
+        customer_henrik_with_one_purchased_cars,
+        customer_oliver_with_zero_cars,
+        customer_tom_with_zero_cars,
+        customer_james_with_three_none_purchased_cars,
+        customer_test_with_zero_cars,
+    ]
+
+    customers = customers_service.get_all(repository=mySQLCustomerRepository)
+
+    assert isinstance(customers, list) and all(isinstance(customer, CustomerReturnResource) for customer in customers) \
+        , (f"Customers are not a list of CustomerReturnResource objects, "
+           f"but {type(customers).__name__}")
+
+    assert len(customers) == amount_of_expected_customers, \
+        (f"Amount of customers {len(customers)} does not match "
+         f"{amount_of_expected_customers}")
+
+    for customer in customers:
+        assert isinstance(customer, CustomerReturnResource), \
+            (f"Customer is not of type CustomerReturnResource, "
+             f"but {type(customer).__name__}")
+
+        assert customer.id in [expected_customer.get('id') for expected_customer in expected_customers], \
+            f"Customer ID {customer.id} does not match any of the expected IDs."
+
+
+@pytest.mark.parametrize("valid_customers_limit, expecting_customer_amount", [
+    (-1, amount_of_expected_customers),
+    (None, amount_of_expected_customers),
+    (0, amount_of_expected_customers),
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, amount_of_expected_customers),
+])
+def test_get_all_customers_with_valid_customers_limit_values_partitions(
+        mySQLCustomerRepository, valid_customers_limit, expecting_customer_amount
+):
+    customers = customers_service.get_all(
+        repository=mySQLCustomerRepository,
+        customers_limit=valid_customers_limit
+    )
+
+    assert isinstance(customers, list) and all(isinstance(customer, CustomerReturnResource) for customer in customers) \
+        , f"Customers are not a list of CustomerReturnResource objects, but {type(customers).__name__}"
+
+    assert len(customers) == expecting_customer_amount \
+        , (f"There should be {expecting_customer_amount} customers, "
+           f"not '{len(customers)}'")
+
+
+@pytest.mark.parametrize("valid_email_filter, expecting_customers", [
+    (None, [customer_henrik_with_one_purchased_cars,
+            customer_oliver_with_zero_cars,
+            customer_tom_with_zero_cars,
+            customer_james_with_three_none_purchased_cars,
+            customer_test_with_zero_cars]),
+    ("", [customer_henrik_with_one_purchased_cars,
+          customer_oliver_with_zero_cars,
+          customer_tom_with_zero_cars,
+          customer_james_with_three_none_purchased_cars,
+          customer_test_with_zero_cars]),
+    ("@", [customer_henrik_with_one_purchased_cars,
+           customer_oliver_with_zero_cars,
+           customer_tom_with_zero_cars,
+           customer_james_with_three_none_purchased_cars,
+           customer_test_with_zero_cars]),
+    ("henrik", [customer_henrik_with_one_purchased_cars]),
+    ("gmail", [customer_henrik_with_one_purchased_cars,
+               customer_tom_with_zero_cars,
+               customer_james_with_three_none_purchased_cars]),
+    (".dk", [customer_oliver_with_zero_cars,
+             customer_test_with_zero_cars]),
+    (" ", []),
+    ("unknown-email", []),
+])
+def test_get_all_customers_with_valid_email_filter_values_partitions(
+        mySQLCustomerRepository, valid_email_filter, expecting_customers
+):
+    customers = customers_service.get_all(
+        repository=mySQLCustomerRepository,
+        filter_customer_by_email=valid_email_filter
+    )
+
+    assert isinstance(customers, list) and all(isinstance(customer, CustomerReturnResource) for customer in customers) \
+        , f"Customers are not a list of CustomerReturnResource objects, but {type(customers).__name__}"
+
+    assert len(customers) == len(expecting_customers) \
+        , (f"There should be {len(expecting_customers)} customers, "
+           f"not '{len(customers)}'")
+
+    for customer in customers:
+        assert customer.id in [expected_customer.get('id') for expected_customer in expecting_customers], \
+            f"Customer ID {customer.id} does not match any of the expected IDs."
+
+        if valid_email_filter is not None:
+            assert valid_email_filter in customer.email, \
+                f"Email filter '{valid_email_filter}' is not in customer email '{customer.email}'."
+
+
+@pytest.mark.parametrize("valid_email_filter, valid_customers_limit, expecting_customer_amount", [
+    (None, -1, amount_of_expected_customers),
+    (None, None, amount_of_expected_customers),
+    (None, 0, amount_of_expected_customers),
+    (None, 1, 1),
+    (None, 3, 3),
+    (None, 5, amount_of_expected_customers),
+    (None, 6, amount_of_expected_customers),
+    ("", -1, amount_of_expected_customers),
+    ("", None, amount_of_expected_customers),
+    ("", 0, amount_of_expected_customers),
+    ("", 1, 1),
+    ("", 3, 3),
+    ("", 5, amount_of_expected_customers),
+    ("", 6, amount_of_expected_customers),
+    ("@", -1, amount_of_expected_customers),
+    ("@", None, amount_of_expected_customers),
+    ("@", 0, amount_of_expected_customers),
+    ("@", 1, 1),
+    ("@", 3, 3),
+    ("@", 5, amount_of_expected_customers),
+    ("@", 6, amount_of_expected_customers),
+    ("henrik", -1, 1),
+    ("henrik", None, 1),
+    ("henrik", 0, 1),
+    ("henrik", 1, 1),
+    ("henrik", 3, 1),
+    ("henrik", 5, 1),
+    ("henrik", 6, 1),
+    ("gmail", -1, 3),
+    ("gmail", None, 3),
+    ("gmail", 0, 3),
+    ("gmail", 1, 1),
+    ("gmail", 3, 3),
+    ("gmail", 5, 3),
+    ("gmail", 6, 3),
+    (".dk", -1, 2),
+    (".dk", None, 2),
+    (".dk", 0, 2),
+    (".dk", 1, 1),
+    (".dk", 3, 2),
+    (".dk", 5, 2),
+    (".dk", 6, 2),
+    (" ", -1, 0),
+    (" ", None, 0),
+    (" ", 0, 0),
+    (" ", 1, 0),
+    (" ", 3, 0),
+    (" ", 5, 0),
+    (" ", 6, 0),
+    ("unknown-email", -1, 0),
+    ("unknown-email", None, 0),
+    ("unknown-email", 0, 0),
+    ("unknown-email", 1, 0),
+    ("unknown-email", 3, 0),
+    ("unknown-email", 5, 0),
+    ("unknown-email", 6, 0),
+])
+def test_get_all_customers_with_valid_email_filter_and_customers_limit_values_partitions(
+        mySQLCustomerRepository, valid_email_filter, valid_customers_limit, expecting_customer_amount
+):
+    customers = customers_service.get_all(
+        repository=mySQLCustomerRepository,
+        filter_customer_by_email=valid_email_filter,
+        customers_limit=valid_customers_limit
+    )
+
+    assert isinstance(customers, list) and all(isinstance(customer, CustomerReturnResource) for customer in customers) \
+        , f"Customers are not a list of CustomerReturnResource objects, but {type(customers).__name__}"
+
+    assert len(customers) == expecting_customer_amount \
+        , (f"There should be {expecting_customer_amount} customers, "
+           f"not '{len(customers)}'")
+
+    for customer in customers:
+        if valid_email_filter is not None:
+            assert valid_email_filter in customer.email, \
+                f"Email filter '{valid_email_filter}' is not in customer email '{customer.email}'."
+
+
+# INVALID TESTS FOR get_all_customers
+
+@pytest.mark.parametrize("invalid_customers_limit, expecting_error_message", [
+    ("1", "customers_limit must be of type int or None, not str."),
+    (True, "customers_limit must be of type int or None, not bool."),
+    (1.5, "customers_limit must be of type int or None, not float."),
+])
+def test_get_all_customers_with_invalid_customers_limit_values_partitions(
+        mySQLCustomerRepository, invalid_customers_limit, expecting_error_message
+):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        customers_service.get_all(
+            repository=mySQLCustomerRepository,
+            customers_limit=invalid_customers_limit
+        )
+
+
+@pytest.mark.parametrize("invalid_email_filter, expecting_error_message", [
+    (1, "filter_customer_by_email must be of type str or None, not int."),
+    (True, "filter_customer_by_email must be of type str or None, not bool."),
+    (1.5, "filter_customer_by_email must be of type str or None, not float."),
+])
+def test_get_all_customers_with_invalid_email_filter_values_partitions(
+        mySQLCustomerRepository, invalid_email_filter, expecting_error_message
+):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        customers_service.get_all(
+            repository=mySQLCustomerRepository,
+            filter_customer_by_email=invalid_email_filter
+        )
+
+
+@pytest.mark.parametrize("invalid_repository, expecting_error_message", [
+    (None, "repository must be of type CustomerRepository, not NoneType."),
+    (1, "repository must be of type CustomerRepository, not int."),
+    (True, "repository must be of type CustomerRepository, not bool."),
+    ("customer_repository", "repository must be of type CustomerRepository, not str."),
+])
+def test_get_all_customers_with_invalid_repository_type_partitions(
+        invalid_repository, expecting_error_message
+):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        customers_service.get_all(
+            repository=invalid_repository
+        )
+
+def test_get_all_customers_with_invalid_repository_types_partitions(
+        mySQLColorRepository, mySQLCarRepository, mySQLPurchaseRepository
+):
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLColorRepository).__name__}."
+                       ):
+        customers_service.get_all(
+            repository=mySQLColorRepository
+        )
+
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLCarRepository).__name__}."
+                       ):
+        customers_service.get_all(
+            repository=mySQLCarRepository
+        )
+
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLPurchaseRepository).__name__}."
+                       ):
+        customers_service.get_all(
+            repository=mySQLPurchaseRepository
+        )
+
+
+# VALID TESTS FOR create_customer
 

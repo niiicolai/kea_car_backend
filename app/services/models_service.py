@@ -11,7 +11,7 @@ def get_all(
         model_repository: ModelRepository,
         brand_repository: BrandRepository,
         brand_id: Optional[str] = None,
-        brands_limit: Optional[int] = None
+        models_limit: Optional[int] = None
 ) -> List[ModelReturnResource]:
 
     if not isinstance(model_repository, ModelRepository):
@@ -22,10 +22,10 @@ def get_all(
                         f"not {type(brand_repository).__name__}.")
     if not (isinstance(brand_id, str) or brand_id is None):
         raise TypeError(f"brand_id must be of type str or None, "
-                        f"not {type(brand_id)}")
-    if not (isinstance(brands_limit, int) or brands_limit is None):
-        raise TypeError(f"brands_limit must be of type int or None, "
-                        f"not {type(brands_limit).__name__}.")
+                        f"not {type(brand_id).__name__}.")
+    if isinstance(models_limit, bool) or not (isinstance(models_limit, int) or models_limit is None):
+        raise TypeError(f"models_limit must be of type int or None, "
+                        f"not {type(models_limit).__name__}.")
 
     brand_resource: Optional[BrandReturnResource] = None
     if brand_id is not None:
@@ -36,7 +36,7 @@ def get_all(
                 entity_id=brand_id
             )
 
-    return model_repository.get_all(brand_resource=brand_resource, limit=brands_limit)
+    return model_repository.get_all(brand_resource=brand_resource, limit=models_limit)
 
 def get_by_id(
         repository: ModelRepository,

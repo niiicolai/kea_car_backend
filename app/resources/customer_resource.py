@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, ValidationInfo, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 class CustomerBaseResource(BaseModel):
@@ -8,38 +8,45 @@ class CustomerBaseResource(BaseModel):
         description="Email of the customer.",
         examples=["henrik@gmail.com"]
     )
+
     phone_number: Optional[str] = Field(
         default=...,
         description="Phone number of the customer.",
         examples=["10203040"]
     )
+
     first_name: str = Field(
         default=...,
         description="First name of the customer.",
         examples=["'Henrik"]
     )
+
     last_name: str = Field(
         default=...,
         description="Last name of the customer.",
         examples=["Henriksen"]
     )
+
     address: Optional[str] = Field(
         default=...,
         description="Address of the customer.",
         examples=["Randomgade nr. 10 4. tv."]
     )
-    
+
     model_config = ConfigDict(from_attributes=True)
+
+
+
+class CustomerCreateOrUpdateResource(CustomerBaseResource):
 
     @field_validator('email')
     def validate_email(cls, email: str) -> str:
         maximum_length_of_email = 100
-        if email is None:
-            raise ValueError("The given email cannot be set to None.")
         email_length = len(email)
         if email_length > maximum_length_of_email:
-            raise ValueError(f"The given email {email} is {email_length - maximum_length_of_email} characters too long, "
-                             f"it can only be maximum {maximum_length_of_email} characters and not {email_length}.")
+            raise ValueError(
+                f"The given email {email} is {email_length - maximum_length_of_email} characters too long, "
+                f"it can only be maximum {maximum_length_of_email} characters and not {email_length}.")
         return email
 
     @field_validator('phone_number')
@@ -56,19 +63,19 @@ class CustomerBaseResource(BaseModel):
             if len(phone_number) > maximum_length_of_phone_number:
                 raise ValueError(f"The given phone number {phone_number} is too long, "
                                  f"it can only be maximum {maximum_length_of_phone_number} characters long.")
-            if phone_number.startswith('+'):
-                if not phone_number[1:].isdigit():
-                    raise ValueError(f"The given phone number {phone_number} can only contain digits after the '+'.")
-            elif not phone_number.isdigit():
+            if ' ' in phone_number:
+                raise ValueError(f"The given phone number {phone_number} contains whitespace.")
+            if '+' in phone_number:
+                if not phone_number.startswith('+'):
+                    raise ValueError(f"The given phone number {phone_number} can only contain digits after the +.")
+            if not phone_number.isdigit() and not phone_number[1:].isdigit():
                 raise ValueError(f"The given phone number {phone_number} can only contain digits.")
         return phone_number
-    
+
     @field_validator('first_name')
     def validate_first_name(cls, first_name: str) -> str:
         minimum_length_of_first_name = 2
         maximum_length_of_first_name = 45
-        if first_name is None:
-            raise ValueError("The given first name cannot be set to None.")
         first_name = first_name.strip().capitalize()
         if len(first_name) == 0:
             raise ValueError(f"The given first name {first_name} is an empty string.")
@@ -78,16 +85,16 @@ class CustomerBaseResource(BaseModel):
         if len(first_name) > maximum_length_of_first_name:
             raise ValueError(f"The given first name {first_name} is too long, "
                              f"it can only be maximum {maximum_length_of_first_name} characters long.")
+        if ' ' in first_name:
+            raise ValueError(f"The given first name {first_name} contains whitespace.")
         if not first_name.isalpha():
             raise ValueError(f"The given first name {first_name} can only contain alphabetic characters.")
         return first_name
-    
+
     @field_validator('last_name')
     def validate_last_name(cls, last_name: str) -> str:
         minimum_length_of_first_name = 2
         maximum_length_of_first_name = 45
-        if last_name is None:
-            raise ValueError("The given last name cannot be set to None.")
         last_name = last_name.strip().capitalize()
         if len(last_name) == 0:
             raise ValueError(f"The given last name {last_name} is an empty string.")
@@ -97,10 +104,12 @@ class CustomerBaseResource(BaseModel):
         if len(last_name) > maximum_length_of_first_name:
             raise ValueError(f"The given last name {last_name} is too long, "
                              f"it can only be maximum {maximum_length_of_first_name} characters long.")
+        if ' ' in last_name:
+            raise ValueError(f"The given last name {last_name} contains whitespace.")
         if not last_name.isalpha():
             raise ValueError(f"The given last name {last_name} can only contain alphabetic characters.")
         return last_name
-    
+
     @field_validator('address')
     def validate_address(cls, address: Optional[str]) -> Optional[str]:
         minimum_length_of_address = 5
@@ -116,41 +125,39 @@ class CustomerBaseResource(BaseModel):
                 raise ValueError(f"The given address {address} is too long, "
                                  f"it can only be maximum {maximum_length_of_address} characters long.")
             if '  ' in address:
-                raise ValueError(f"The given address {address} contains multiple whitespaces.")
+                raise ValueError(f"The given address {address} contains extra whitespaces.")
         return address
 
-    @field_validator('*', mode='before')
-    def validate_fields_that_can_not_be_none(cls, value, info: ValidationInfo):
-        values_that_can_be_none = ['phone_number', 'address']
-        if info.field_name not in values_that_can_be_none and value is None:
-            raise ValueError(f"The given field {info.field_name} cannot be None.")
-        return value
 
-
-class CustomerCreateResource(CustomerBaseResource):
+class CustomerCreateResource(CustomerCreateOrUpdateResource):
     pass
 
-class CustomerUpdateResource(CustomerBaseResource):
+
+class CustomerUpdateResource(CustomerCreateOrUpdateResource):
     email: EmailStr = Field(
         default=None,
         description="Updated email of the customer.",
         examples=["henrik@gmail.com"]
     )
+
     phone_number: Optional[str] = Field(
         default=None,
         description="Updated phone number of the customer.",
         examples=["10203040"]
     )
+
     first_name: str = Field(
         default=None,
         description="Updated first name of the customer.",
         examples=["Henrik"]
     )
+
     last_name: str = Field(
         default=None,
         description="Updated last name of the customer.",
         examples=["Henriksen"]
     )
+
     address: Optional[str] = Field(
         default=None,
         description="Updated address of the customer.",
@@ -159,6 +166,7 @@ class CustomerUpdateResource(CustomerBaseResource):
 
     def get_updated_fields(self) -> dict:
         return self.model_dump(exclude_unset=True)
+
 
 class CustomerReturnResource(CustomerBaseResource):
     id: str = Field(
