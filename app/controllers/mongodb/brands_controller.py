@@ -32,8 +32,7 @@ def get_db():
     """
     Retrieves all or a limited amount of Brands from the MongoDB 
     database and returns a list of 'BrandReturnResource'.
-    """,
-    dependencies=[Depends(get_current_sales_person_token)]
+    """
 )
 async def get_brands(
         limit: Optional[int] = Query(
@@ -64,8 +63,7 @@ async def get_brands(
     """
     Retrieves a Brand by ID from the MongoDB database by giving a UUID 
     in the path for the brand and returns it as a 'BrandReturnResource'.
-    """,
-    dependencies=[Depends(get_current_sales_person_token)]
+    """
 )
 async def get_brand(
         brand_id: UUID = Path(

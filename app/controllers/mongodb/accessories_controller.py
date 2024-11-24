@@ -33,8 +33,7 @@ def get_db():
     """
     Retrieves all or a limited amount of Accessories from the 
     MongoDB database and returns a list of 'AccessoryReturnResource'.
-    """,
-    dependencies=[Depends(get_current_sales_person_token)]
+    """
 )
 async def get_accessories(
         limit: Optional[int] = Query(

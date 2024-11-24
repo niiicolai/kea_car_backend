@@ -8,7 +8,10 @@ from db import Neo4jSession, get_neo4j
 from app.services import models_service as service
 from app.controllers.error_handler import error_handler
 from app.repositories.brand_repositories import Neo4jBrandRepository
-from app.repositories.model_repositories import Neo4jModelRepository, ModelReturnResource
+from app.repositories.model_repositories import (
+    Neo4jModelRepository,
+    ModelReturnResource
+)
 
 router: APIRouter = APIRouter()
 

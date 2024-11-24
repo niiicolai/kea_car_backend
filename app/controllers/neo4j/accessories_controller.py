@@ -8,8 +8,8 @@ from db import Neo4jSession, get_neo4j
 from app.services import accessories_service as service
 from app.controllers.error_handler import error_handler
 from app.repositories.accessory_repositories import (
-    AccessoryReturnResource,
-    Neo4jAccessoryRepository
+    Neo4jAccessoryRepository,
+    AccessoryReturnResource
 )
 
 router: APIRouter = APIRouter()
