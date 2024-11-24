@@ -20,6 +20,7 @@
    * DB_USER=your_local_mysql_user_name (root)
    * DB_PASSWORD=your_local_mysql_password
    * DB_PORT=your_local_mysql_port (3306)
+   * TEST_DB_NAME=kea_cars_test
    * MONGO_DB_HOST=your_local_mongo_host (localhost)
    * MONGO_DB_PORT=your_local_mongo_db_port (27017)
    * MONGO_DB_NAME=your_local_mongo_db_name (kea_cars_dev)
