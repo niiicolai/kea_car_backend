@@ -49,11 +49,12 @@ class CarRepository(ABC):
     @abstractmethod
     def get_all(
             self,
-            customer: Optional[CustomerReturnResource],
-            sales_person: Optional[SalesPersonReturnResource],
-            is_purchased: Optional[bool],
-            is_past_purchase_deadline: Optional[bool],
-            limit: Optional[int]) -> List[CarReturnResource]:
+            customer: Optional[CustomerReturnResource] = None,
+            sales_person: Optional[SalesPersonReturnResource] = None,
+            is_purchased: Optional[bool] = None,
+            is_past_purchase_deadline: Optional[bool] = None,
+            limit: Optional[int] = None
+    ) -> List[CarReturnResource]:
         pass
 
     @abstractmethod
@@ -69,7 +70,8 @@ class CarRepository(ABC):
             model_resource: ModelReturnResource,
             color_resource: ColorReturnResource,
             accessory_resources: List[AccessoryReturnResource],
-            insurance_resources: List[InsuranceReturnResource]) -> CarReturnResource:
+            insurance_resources: List[InsuranceReturnResource]
+    ) -> CarReturnResource:
         pass
 
     @abstractmethod
@@ -83,11 +85,12 @@ class MySQLCarRepository(CarRepository):
 
     # This is the past function for get_all,that now uses a stored procedure to handle the logic of filtering all the cars to get
     def get_all_past_function(self,
-                              customer: Optional[CustomerReturnResource],
-                              sales_person: Optional[SalesPersonReturnResource],
-                              is_purchased: Optional[bool],
-                              is_past_purchase_deadline: Optional[bool],
-                              limit: Optional[int]) -> List[CarReturnResource]:
+                              customer: Optional[CustomerReturnResource] = None,
+                              sales_person: Optional[SalesPersonReturnResource] = None,
+                              is_purchased: Optional[bool] = None,
+                              is_past_purchase_deadline: Optional[bool] = None,
+                              limit: Optional[int] = None
+                              ) -> List[CarReturnResource]:
 
         car_query = self.session.query(CarMySQLEntity)
         if customer is not None and isinstance(customer, CustomerReturnResource):
@@ -122,11 +125,12 @@ class MySQLCarRepository(CarRepository):
         return car_resources
 
     def get_all(self,
-                customer: Optional[CustomerReturnResource],
-                sales_person: Optional[SalesPersonReturnResource],
-                is_purchased: Optional[bool],
-                is_past_purchase_deadline: Optional[bool],
-                limit: Optional[int]) -> List[CarReturnResource]:
+                customer: Optional[CustomerReturnResource] = None,
+                sales_person: Optional[SalesPersonReturnResource] = None,
+                is_purchased: Optional[bool] = None,
+                is_past_purchase_deadline: Optional[bool] = None,
+                limit: Optional[int] = None
+                ) -> List[CarReturnResource]:
 
         # Define parameters
         customer_id = customer.id if customer else None

@@ -10,7 +10,7 @@ from app.models.insurance import InsuranceReturnResource, InsuranceMySQLEntity
 
 class InsuranceRepository(ABC):
     @abstractmethod
-    def get_all(self, limit: Optional[int]) -> List[InsuranceReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[InsuranceReturnResource]:
         pass
 
     @abstractmethod
@@ -21,7 +21,7 @@ class MySQLInsuranceRepository(InsuranceRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self, limit: Optional[int]) -> List[InsuranceReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[InsuranceReturnResource]:
         insurances_query = self.session.query(InsuranceMySQLEntity)
         if limit is not None and isinstance(limit, int) and limit > 0:
             insurances_query = insurances_query.limit(limit)

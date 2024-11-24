@@ -21,7 +21,10 @@ from app.models.model import (
 
 class ModelRepository(ABC):
     @abstractmethod
-    def get_all(self, brand_resource: Optional[BrandReturnResource], limit: Optional[int]) -> List[ModelReturnResource]:
+    def get_all(self,
+                brand_resource: Optional[BrandReturnResource] = None,
+                limit: Optional[int] = None
+                ) -> List[ModelReturnResource]:
         pass
 
     @abstractmethod
@@ -32,7 +35,10 @@ class MySQLModelRepository(ModelRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self, brand_resource: Optional[BrandReturnResource], limit: Optional[int]) -> List[ModelReturnResource]:
+    def get_all(self,
+                brand_resource: Optional[BrandReturnResource] = None,
+                limit: Optional[int] = None
+                ) -> List[ModelReturnResource]:
         models_query = self.session.query(ModelMySQLEntity)
         if brand_resource is not None and isinstance(brand_resource, BrandReturnResource):
             models_query = models_query.filter_by(brands_id=brand_resource.id)
@@ -54,7 +60,11 @@ class MongoDBModelRepository(ModelRepository):
     def __init__(self, database: Database):
         self.database = database
 
-    def get_all(self, brand_resource: Optional[BrandReturnResource], limit: Optional[int]) -> List[ModelReturnResource]:
+    def get_all(self,
+                brand_resource: Optional[BrandReturnResource] = None,
+                limit: Optional[int] = None
+                ) -> List[ModelReturnResource]:
+
         models = self.database.get_collection("models")
         if brand_resource is not None and isinstance(brand_resource, BrandReturnResource):
             models = models.find(
@@ -85,7 +95,11 @@ class Neo4jModelRepository(ModelRepository):
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 
-    def get_all(self, brand_resource: Optional[BrandReturnResource], limit: Optional[int]) -> List[ModelReturnResource]:
+    def get_all(self,
+                brand_resource: Optional[BrandReturnResource] = None,
+                limit: Optional[int] = None
+                ) -> List[ModelReturnResource]:
+
         query = """
         MATCH (m:Model)-[:BELONGS_TO]->(b:Brand)
         OPTIONAL MATCH (m)-[:HAS_COLOR]->(c:Color)

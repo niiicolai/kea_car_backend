@@ -12,7 +12,10 @@ from app.resources.customer_resource import CustomerCreateResource, CustomerUpda
 class CustomerRepository(ABC):
 
     @abstractmethod
-    def get_all(self, email_filter: Optional[str], limit: Optional[int]) -> List[CustomerReturnResource]:
+    def get_all(self,
+                email_filter: Optional[str] = None,
+                limit: Optional[int] = None
+                ) -> List[CustomerReturnResource]:
         pass
 
     @abstractmethod
@@ -32,14 +35,22 @@ class CustomerRepository(ABC):
         pass
 
     @abstractmethod
-    def is_email_taken(self, customer_resource: Union[CustomerUpdateResource, CustomerCreateResource], customer_id: Optional[str] = None) -> bool:
+    def is_email_taken(self,
+                       customer_resource: Union[CustomerUpdateResource,
+                       CustomerCreateResource],
+                       customer_id: Optional[str] = None
+                       ) -> bool:
         pass
+
 
 class MySQLCustomerRepository(CustomerRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self, email_filter: Optional[str], limit: Optional[int]) -> List[CustomerReturnResource]:
+    def get_all(self,
+                email_filter: Optional[str] = None,
+                limit: Optional[int] = None
+                ) -> List[CustomerReturnResource]:
         customers_query = self.session.query(CustomerMySQLEntity)
         if email_filter is not None and isinstance(email_filter, str):
             customers_query = customers_query.filter(CustomerMySQLEntity.email.contains(email_filter))
@@ -87,7 +98,11 @@ class MySQLCustomerRepository(CustomerRepository):
         )
         self.session.flush()
 
-    def is_email_taken(self, customer_resource: Union[CustomerUpdateResource, CustomerCreateResource], customer_id: Optional[str] = None) -> bool:
+    def is_email_taken(self,
+                       customer_resource: Union[CustomerUpdateResource,
+                       CustomerCreateResource],
+                       customer_id: Optional[str] = None
+                       ) -> bool:
         if isinstance(customer_resource, CustomerUpdateResource) and customer_id is not None:
             customer = self.session.get(CustomerMySQLEntity, customer_id)
             if customer is not None and customer.email == customer_resource.email:

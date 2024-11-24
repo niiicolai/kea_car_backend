@@ -17,7 +17,7 @@ from app.models.color import (
 class ColorRepository(ABC):
 
     @abstractmethod
-    def get_all(self, limit: Optional[int]) -> List[ColorReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[ColorReturnResource]:
         pass
 
     @abstractmethod
@@ -29,7 +29,7 @@ class MySQLColorRepository(ColorRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self, limit: Optional[int]) -> List[ColorReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[ColorReturnResource]:
         colors_query = self.session.query(ColorMySQLEntity)
         if limit is not None and isinstance(limit, int) and limit > 0:
             colors_query = colors_query.limit(limit)
@@ -46,7 +46,7 @@ class MongoDBColorRepository(ColorRepository):
     def __init__(self, database: Database):
         self.database = database
 
-    def get_all(self, limit: Optional[int]) -> List[ColorReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[ColorReturnResource]:
         colors = self.database.get_collection("colors").find(
         ).limit(0 if not limit else limit)
         colors = [
@@ -70,7 +70,7 @@ class Neo4jColorRepository(ColorRepository):
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 
-    def get_all(self, limit: Optional[int]) -> List[ColorReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[ColorReturnResource]:
         query = "MATCH (c:Color) RETURN c"
         parameters = {}
         if limit is not None and isinstance(limit, int) and limit > 0:

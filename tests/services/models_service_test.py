@@ -3,6 +3,7 @@ from app.services import models_service
 from app.resources.model_resource import ModelReturnResource, BrandReturnResource
 from app.exceptions.database_errors import UnableToFindIdError
 
+
 # VALID TESTS FOR get_model_by_id
 
 @pytest.mark.parametrize("valid_model_id, expected_model", [
@@ -87,6 +88,7 @@ def test_get_model_by_id_with_invalid_model_id_partitions(
 @pytest.mark.parametrize("invalid_model_repository, expecting_error_message", [
     (None, "repository must be of type ModelRepository, not NoneType."),
     (1, "repository must be of type ModelRepository, not int."),
+    (True, "repository must be of type ModelRepository, not bool."),
     ("repository", "repository must be of type ModelRepository, not str."),
 ])
 def test_get_model_by_id_with_invalid_repository_type_partitions(invalid_model_repository, expecting_error_message):
@@ -196,7 +198,6 @@ def test_get_all_models_with_valid_models_limit_values_partitions(
         , f"There should be {expecting_model_amount} models, not '{len(models)}'"
 
 
-
 @pytest.mark.parametrize("valid_brand_id, expected_models", [
     (None, [
         {"model_id": "053b1148-1bb6-4445-85b1-9f71db5b7143", "model_name": "A4"},
@@ -252,7 +253,8 @@ def test_get_all_models_with_valid_brand_id_values_partitions(
             f"Model ID {model.id} does not exist in models"
 
         assert next(
-            (expected_model["model_name"] for expected_model in expected_models if model.id == expected_model["model_id"]
+            (expected_model["model_name"] for expected_model in expected_models if
+             model.id == expected_model["model_id"]
              ), None) == model.name \
             , f"Model name {model.name} not found"
 
@@ -341,6 +343,7 @@ def test_get_all_models_with_invalid_brand_id_partitions(
             brand_id=invalid_brand_id
         )
 
+
 @pytest.mark.parametrize("invalid_model_repository_type, expecting_error_message", [
     (None, "model_repository must be of type ModelRepository, not NoneType."),
     (1, "model_repository must be of type ModelRepository, not int."),
@@ -356,6 +359,7 @@ def test_get_all_models_with_invalid_model_repository_type_partitions(
             brand_repository=mySQLBrandRepository
         )
 
+
 @pytest.mark.parametrize("invalid_brand_repository_type, expecting_error_message", [
     (None, "brand_repository must be of type BrandRepository, not NoneType."),
     (1, "brand_repository must be of type BrandRepository, not int."),
@@ -370,6 +374,7 @@ def test_get_all_models_with_invalid_brand_repository_type_partitions(
             model_repository=mySQLModelRepository,
             brand_repository=invalid_brand_repository_type
         )
+
 
 def test_get_all_models_with_invalid_repository_types_partitions(
         mySQLModelRepository, mySQLBrandRepository

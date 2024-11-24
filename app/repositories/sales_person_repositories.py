@@ -11,11 +11,13 @@ from app.resources.sales_person_resource import SalesPersonCreateResource, Sales
 
 class SalesPersonRepository(ABC):
     @abstractmethod
-    def login_by_email(self, sales_person_login_info: SalesPersonLoginResource) -> Optional[Tuple[SalesPersonReturnResource, str]]:
+    def login_by_email(self,
+                       sales_person_login_info: SalesPersonLoginResource
+                       ) -> Optional[Tuple[SalesPersonReturnResource, str]]:
         pass
 
     @abstractmethod
-    def get_all(self, limit: Optional[int]) -> List[SalesPersonReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[SalesPersonReturnResource]:
         pass
 
     @abstractmethod
@@ -23,7 +25,10 @@ class SalesPersonRepository(ABC):
         pass
 
     @abstractmethod
-    def create(self, sales_person_create_data: SalesPersonCreateResource, hashed_password: str) -> SalesPersonReturnResource:
+    def create(self,
+               sales_person_create_data: SalesPersonCreateResource,
+               hashed_password: str
+               ) -> SalesPersonReturnResource:
         pass
 
 
@@ -35,7 +40,10 @@ class MySQLSalesPersonRepository(SalesPersonRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def login_by_email(self, sales_person_login_info: SalesPersonLoginResource) -> Optional[Tuple[SalesPersonReturnResource, str]]:
+    def login_by_email(self,
+                       sales_person_login_info: SalesPersonLoginResource
+                       ) -> Optional[Tuple[SalesPersonReturnResource, str]]:
+
         sales_person_query = self.session.query(SalesPersonMySQLEntity).filter_by(email=sales_person_login_info.email)
         sales_person: Optional[SalesPersonMySQLEntity] = sales_person_query.first()
 
@@ -47,7 +55,7 @@ class MySQLSalesPersonRepository(SalesPersonRepository):
         return sales_person_resource, hashed_password
 
 
-    def get_all(self, limit: Optional[int]) -> List[SalesPersonReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[SalesPersonReturnResource]:
         sales_people_query = self.session.query(SalesPersonMySQLEntity)
         if limit is not None and isinstance(limit, int) and limit > 0:
             sales_people_query = sales_people_query.limit(limit)
@@ -63,7 +71,11 @@ class MySQLSalesPersonRepository(SalesPersonRepository):
         return sales_person.as_resource()
 
 
-    def create(self, sales_person_create_data: SalesPersonCreateResource, hashed_password: str) -> SalesPersonReturnResource:
+    def create(self,
+               sales_person_create_data: SalesPersonCreateResource,
+               hashed_password: str
+               ) -> SalesPersonReturnResource:
+
         new_sales_person = SalesPersonMySQLEntity(
             email=sales_person_create_data.email,
             hashed_password=hashed_password,

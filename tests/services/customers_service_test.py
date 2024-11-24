@@ -1,7 +1,9 @@
 import pytest
-from pydantic import ValidationError
 from app.services import customers_service
-from app.exceptions.database_errors import UnableToFindIdError
+from app.exceptions.database_errors import (
+    UnableToFindIdError,
+    AlreadyTakenFieldValueError
+)
 from app.resources.customer_resource import (
     CustomerCreateResource,
     CustomerUpdateResource,
@@ -11,6 +13,23 @@ from app.resources.customer_resource import (
 amount_of_expected_customers = 5
 amount_of_expected_cars = 4
 amount_of_expected_purchases = 1
+
+
+def prepare_customer_to_update_data(customer_to_update: dict) -> tuple:
+    customer_to_update = customer_to_update.copy()
+    customer_to_update_keys = customer_to_update.keys()
+    if 'amount_of_cars' in customer_to_update_keys:
+        customer_to_update.pop('amount_of_cars')
+    if 'amount_of_purchased_cars' in customer_to_update_keys:
+        customer_to_update.pop('amount_of_purchased_cars')
+    if 'car_ids' in customer_to_update_keys:
+        customer_to_update.pop('car_ids')
+
+    customer_to_update_id = customer_to_update.pop('id')
+    updated_customer_fields = customer_to_update.keys()
+
+    return (customer_to_update, customer_to_update_id, updated_customer_fields)
+
 
 customer_henrik_with_one_purchased_cars = {
     "id": "0ac1d668-55aa-46a1-898a-8fa61457facb",
@@ -411,6 +430,7 @@ def test_get_all_customers_with_invalid_repository_type_partitions(
             repository=invalid_repository
         )
 
+
 def test_get_all_customers_with_invalid_repository_types_partitions(
         mySQLColorRepository, mySQLCarRepository, mySQLPurchaseRepository
 ):
@@ -441,3 +461,317 @@ def test_get_all_customers_with_invalid_repository_types_partitions(
 
 # VALID TESTS FOR create_customer
 
+def test_create_customer_with_valid_partitions(mySQLCustomerRepository, valid_customer_data):
+    amount_of_customers_before_creation = len(mySQLCustomerRepository.get_all())
+
+    created_customer = customers_service.create(
+        repository=mySQLCustomerRepository,
+        customer_create_data=CustomerCreateResource(**valid_customer_data)
+    )
+
+    expected_amount_of_customers_after_creation = amount_of_customers_before_creation + 1
+    actual_amount_of_customers_after_creation = len(mySQLCustomerRepository.get_all())
+
+    assert isinstance(created_customer, CustomerReturnResource), \
+        (f"Customer is not of type CustomerReturnResource, "
+         f"but {type(created_customer).__name__}")
+
+    assert created_customer.email == valid_customer_data.get('email'), \
+        (f"Customer email {created_customer.email} does not match "
+         f"{valid_customer_data.get('email')}")
+
+    assert created_customer.phone_number == valid_customer_data.get('phone_number'), \
+        (f"Customer phone number {created_customer.phone_number} does not match "
+         f"{valid_customer_data.get('phone_number')}")
+
+    assert created_customer.first_name == valid_customer_data.get('first_name'), \
+        (f"Customer first name {created_customer.first_name} does not match "
+         f"{valid_customer_data.get('first_name')}")
+
+    assert created_customer.last_name == valid_customer_data.get('last_name'), \
+        (f"Customer last name {created_customer.last_name} does not match "
+         f"{valid_customer_data.get('last_name')}")
+
+    assert created_customer.address == valid_customer_data.get('address'), \
+        (f"Customer address {created_customer.address} does not match "
+         f"{valid_customer_data.get('address')}")
+
+    assert mySQLCustomerRepository.get_by_id(created_customer.id) is not None, \
+        f"Customer with ID {created_customer.id} was not created."
+
+    assert actual_amount_of_customers_after_creation == expected_amount_of_customers_after_creation, \
+        (f"Amount of customers after creation {actual_amount_of_customers_after_creation} does not match "
+         f"the expected amount of customers after creation {expected_amount_of_customers_after_creation}")
+
+
+# INVALID TESTS FOR create_customer
+
+@pytest.mark.parametrize("invalid_customer_create_data, expected_error, expecting_error_message", [
+    (None, TypeError, "customer_create_data must be of type CustomerCreateResource, not NoneType."),
+    (1, TypeError, "customer_create_data must be of type CustomerCreateResource, not int."),
+    (True, TypeError, "customer_create_data must be of type CustomerCreateResource, not bool."),
+    ("customer_data", TypeError, "customer_create_data must be of type CustomerCreateResource, not str."),
+    (CustomerUpdateResource(), TypeError, f"customer_create_data must be of type CustomerCreateResource, "
+                                          f"not {type(CustomerUpdateResource()).__name__}."),
+    ({}, TypeError, "customer_create_data must be of type CustomerCreateResource, not dict."),
+    ({"email": customer_test_with_zero_cars.get('email')}, AlreadyTakenFieldValueError,
+     f"email: {customer_test_with_zero_cars.get('email')} is already taken."),
+    ({"email": customer_henrik_with_one_purchased_cars.get('email')}, AlreadyTakenFieldValueError,
+     f"email: {customer_henrik_with_one_purchased_cars.get('email')} is already taken."),
+])
+def test_create_customer_with_invalid_customer_create_data_partitions(
+        mySQLCustomerRepository, valid_customer_data, invalid_customer_create_data, expected_error,
+        expecting_error_message
+):
+    expected_amount_of_customers_after_creation = len(mySQLCustomerRepository.get_all())
+    if isinstance(invalid_customer_create_data, dict) and invalid_customer_create_data.get('email') is not None:
+        valid_customer_data['email'] = invalid_customer_create_data.get('email')
+        invalid_customer_create_data = CustomerCreateResource(**valid_customer_data)
+
+    with pytest.raises(expected_error, match=expecting_error_message):
+        customers_service.create(
+            repository=mySQLCustomerRepository,
+            customer_create_data=invalid_customer_create_data
+        )
+
+    actual_amount_of_customers_after_creation = len(mySQLCustomerRepository.get_all())
+    assert actual_amount_of_customers_after_creation == expected_amount_of_customers_after_creation, \
+        (f"Amount of customers after creation {actual_amount_of_customers_after_creation} does not match "
+         f"the expected amount of customers after creation {expected_amount_of_customers_after_creation}")
+
+
+@pytest.mark.parametrize("invalid_repository, expecting_error_message", [
+    (None, "repository must be of type CustomerRepository, not NoneType."),
+    (1, "repository must be of type CustomerRepository, not int."),
+    (True, "repository must be of type CustomerRepository, not bool."),
+    ("customer_repository", "repository must be of type CustomerRepository, not str."),
+])
+def test_create_customer_with_invalid_repository_type_partitions(
+        mySQLCustomerRepository, valid_customer_data, invalid_repository, expecting_error_message
+):
+    expected_amount_of_customers_after_creation = len(mySQLCustomerRepository.get_all())
+    with pytest.raises(TypeError, match=expecting_error_message):
+        customers_service.create(
+            repository=invalid_repository,
+            customer_create_data=CustomerCreateResource(**valid_customer_data)
+        )
+
+    actual_amount_of_customers_after_creation = len(mySQLCustomerRepository.get_all())
+    assert actual_amount_of_customers_after_creation == expected_amount_of_customers_after_creation, \
+        (f"Amount of customers after creation {actual_amount_of_customers_after_creation} does not match "
+         f"the expected amount of customers after creation {expected_amount_of_customers_after_creation}")
+
+
+def test_create_customer_with_invalid_repository_types_partitions(
+        mySQLCustomerRepository, mySQLColorRepository, mySQLCarRepository, mySQLPurchaseRepository, valid_customer_data
+):
+    expected_amount_of_customers_after_creation = len(mySQLCustomerRepository.get_all())
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLColorRepository).__name__}."
+                       ):
+        customers_service.create(
+            repository=mySQLColorRepository,
+            customer_create_data=CustomerCreateResource(**valid_customer_data)
+        )
+
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLCarRepository).__name__}."
+                       ):
+        customers_service.create(
+            repository=mySQLCarRepository,
+            customer_create_data=CustomerCreateResource(**valid_customer_data)
+        )
+
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLPurchaseRepository).__name__}."
+                       ):
+        customers_service.create(
+            repository=mySQLPurchaseRepository,
+            customer_create_data=CustomerCreateResource(**valid_customer_data)
+        )
+
+    actual_amount_of_customers_after_creation = len(mySQLCustomerRepository.get_all())
+    assert actual_amount_of_customers_after_creation == expected_amount_of_customers_after_creation, \
+        (f"Amount of customers after creation {actual_amount_of_customers_after_creation} does not match "
+         f"the expected amount of customers after creation {expected_amount_of_customers_after_creation}")
+
+
+# VALID TESTS FOR update_customer
+
+@pytest.mark.parametrize("customer_to_update", [
+    customer_henrik_with_one_purchased_cars,
+    customer_oliver_with_zero_cars,
+    customer_tom_with_zero_cars,
+    customer_james_with_three_none_purchased_cars,
+    customer_test_with_zero_cars,
+])
+def test_update_customer_with_valid_partitions(
+        mySQLCustomerRepository, valid_customer_data, customer_to_update
+):
+    customer_to_update, customer_to_update_id, updated_customer_fields = (
+        prepare_customer_to_update_data(customer_to_update)
+    )
+
+    valid_customer_update_create_data = CustomerUpdateResource(**customer_to_update)
+    updated_customer = customers_service.update(
+        repository=mySQLCustomerRepository,
+        customer_id=customer_to_update_id,
+        customer_update_data=valid_customer_update_create_data
+    )
+
+    assert isinstance(updated_customer, CustomerReturnResource), \
+        (f"Customer is not of type CustomerReturnResource, "
+         f"but {type(updated_customer).__name__}")
+
+    assert updated_customer.id == customer_to_update_id, \
+        (f"Updated customer ID {updated_customer.id} does not match "
+         f"the expected ID {customer_to_update_id}")
+
+    for updated_customer_field in updated_customer_fields:
+        actual_updated_customer_field_data = getattr(updated_customer, updated_customer_field)
+        expected_updated_customer_field_data = customer_to_update.get(updated_customer_field)
+        not_expected_updated_customer_field_data = valid_customer_data.get(updated_customer_field)
+        assert actual_updated_customer_field_data != not_expected_updated_customer_field_data, \
+            (f"Updated customer {updated_customer_field}: {actual_updated_customer_field_data} "
+             f"is still the same as before update {not_expected_updated_customer_field_data}")
+        assert actual_updated_customer_field_data == expected_updated_customer_field_data, \
+            (f"Updated customer {updated_customer_field}: {actual_updated_customer_field_data} does not match "
+             f"the expected update data {expected_updated_customer_field_data}")
+
+
+@pytest.mark.parametrize("customer_to_update", [
+    customer_henrik_with_one_purchased_cars,
+    customer_oliver_with_zero_cars,
+    customer_tom_with_zero_cars,
+    customer_james_with_three_none_purchased_cars,
+    customer_test_with_zero_cars,
+])
+def test_update_customer_email_to_their_own_email_with_valid_partitions(
+        mySQLCustomerRepository, customer_to_update
+):
+    customer_to_update, customer_to_update_id, updated_customer_fields = (
+        prepare_customer_to_update_data(customer_to_update)
+    )
+
+    valid_customer_update_create_data = CustomerUpdateResource(email=customer_to_update.get('email'))
+    updated_customer = customers_service.update(
+        repository=mySQLCustomerRepository,
+        customer_id=customer_to_update_id,
+        customer_update_data=valid_customer_update_create_data
+    )
+
+    assert isinstance(updated_customer, CustomerReturnResource), \
+        (f"Customer is not of type CustomerReturnResource, "
+         f"but {type(updated_customer).__name__}")
+
+    assert updated_customer.id == customer_to_update_id, \
+        (f"Updated customer ID {updated_customer.id} does not match "
+         f"the expected ID {customer_to_update_id}")
+
+    assert updated_customer.email == customer_to_update.get('email'), \
+        (f"Updated customer email {updated_customer.email} does not match "
+         f"the expected email {customer_to_update.get('email')}")
+
+
+# INVALID TESTS FOR update_customer
+
+@pytest.mark.parametrize("invalid_customer_update_data, expected_error, expecting_error_message", [
+    (None, TypeError, "customer_update_data must be of type CustomerUpdateResource, not NoneType."),
+    (1, TypeError, "customer_update_data must be of type CustomerUpdateResource, not int."),
+    (True, TypeError, "customer_update_data must be of type CustomerUpdateResource, not bool."),
+    ("customer_data", TypeError, "customer_update_data must be of type CustomerUpdateResource, not str."),
+    ({}, TypeError, "customer_update_data must be of type CustomerUpdateResource, not dict."),
+    (CustomerUpdateResource(email=customer_test_with_zero_cars.get('email')), AlreadyTakenFieldValueError,
+     f"email: {customer_test_with_zero_cars.get('email')} is already taken."),
+])
+def test_update_customer_with_invalid_customer_update_data_partitions(
+        mySQLCustomerRepository,
+        invalid_customer_update_data,
+        expected_error,
+        expecting_error_message,
+):
+    valid_customer_id = customer_oliver_with_zero_cars.get('id')
+    with pytest.raises(expected_error, match=expecting_error_message):
+        customers_service.update(
+            repository=mySQLCustomerRepository,
+            customer_id=valid_customer_id,
+            customer_update_data=invalid_customer_update_data
+        )
+
+
+@pytest.mark.parametrize("invalid_customer_id, expected_error, expecting_error_message", [
+    (None, TypeError, "customer_id must be of type str, not NoneType."),
+    (1, TypeError, "customer_id must be of type str, not int."),
+    (True, TypeError, "customer_id must be of type str, not bool."),
+    ("unknown-id", UnableToFindIdError, "Customer with ID: unknown-id does not exist."),
+])
+def test_update_customer_with_invalid_customer_id_partitions(
+        mySQLCustomerRepository, valid_customer_data, invalid_customer_id, expected_error, expecting_error_message
+):
+    with pytest.raises(expected_error, match=expecting_error_message):
+        customers_service.update(
+            repository=mySQLCustomerRepository,
+            customer_id=invalid_customer_id,
+            customer_update_data=CustomerUpdateResource(**valid_customer_data)
+        )
+
+@pytest.mark.parametrize("invalid_customer_repository, expecting_error_message", [
+    (None, "repository must be of type CustomerRepository, not NoneType."),
+    (1, "repository must be of type CustomerRepository, not int."),
+    (True, "repository must be of type CustomerRepository, not bool."),
+    ("customer_repository", "repository must be of type CustomerRepository, not str."),
+])
+def test_update_customer_with_invalid_repository_type_partitions(
+        mySQLCustomerRepository, valid_customer_data, invalid_customer_repository, expecting_error_message
+):
+    valid_customer_id = customer_oliver_with_zero_cars.get('id')
+    valid_customer_update_data = CustomerUpdateResource(**valid_customer_data)
+    with pytest.raises(TypeError, match=expecting_error_message):
+        customers_service.update(
+            repository=invalid_customer_repository,
+            customer_id=valid_customer_id,
+            customer_update_data=valid_customer_update_data
+        )
+
+
+def test_update_customer_with_invalid_repository_types_partitions(
+        mySQLColorRepository, mySQLCarRepository, mySQLPurchaseRepository, valid_customer_data
+):
+    valid_customer_id = customer_oliver_with_zero_cars.get('id')
+    valid_customer_update_data = CustomerUpdateResource(**valid_customer_data)
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLColorRepository).__name__}."
+                       ):
+        customers_service.update(
+            repository=mySQLColorRepository,
+            customer_id=valid_customer_id,
+            customer_update_data=valid_customer_update_data
+        )
+
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLCarRepository).__name__}."
+                       ):
+        customers_service.update(
+            repository=mySQLCarRepository,
+            customer_id=valid_customer_id,
+            customer_update_data=valid_customer_update_data
+        )
+
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLPurchaseRepository).__name__}."
+                       ):
+        customers_service.update(
+            repository=mySQLPurchaseRepository,
+            customer_id=valid_customer_id,
+            customer_update_data=valid_customer_update_data
+        )
+
+# VALID TESTS FOR delete_customer
+
+# INVALID TESTS FOR delete_customer

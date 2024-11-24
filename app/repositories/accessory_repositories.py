@@ -17,7 +17,7 @@ from app.models.accessory import (
 
 class AccessoryRepository(ABC):
     @abstractmethod
-    def get_all(self, limit: Optional[int]) -> List[AccessoryReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:
         pass
 
     @abstractmethod
@@ -28,7 +28,7 @@ class MySQLAccessoryRepository(AccessoryRepository):
     def __init__(self, session: MySQLSession):
         self.session = session
 
-    def get_all(self, limit: Optional[int]) -> List[AccessoryReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:
         accessories_query = self.session.query(AccessoryMySQLEntity)
         if limit is not None and isinstance(limit, int) and limit > 0:
             accessories_query = accessories_query.limit(limit)
@@ -46,7 +46,7 @@ class MongoDBAccessoryRepository(AccessoryRepository):
     def __init__(self, database: Database):
         self.database = database
 
-    def get_all(self, limit: Optional[int]) -> List[AccessoryReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:
         accessories = self.database.get_collection("accessories").find(
         ).limit(0 if not limit else limit)
         accessories = [
@@ -69,7 +69,7 @@ class Neo4jAccessoryRepository(AccessoryRepository):
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 
-    def get_all(self, limit: Optional[int]) -> List[AccessoryReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:
         query = "MATCH (a:Accessory) RETURN a"
         parameters = {}
         if limit is not None and isinstance(limit, int) and limit > 0:

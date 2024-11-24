@@ -18,7 +18,7 @@ from app.models.brand import (
 class BrandRepository(ABC):
 
     @abstractmethod
-    def get_all(self, limit: Optional[int]) -> List[BrandReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[BrandReturnResource]:
         pass
 
     @abstractmethod
@@ -29,7 +29,7 @@ class MySQLBrandRepository(BrandRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self, limit: Optional[int]) -> List[BrandReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[BrandReturnResource]:
         brands_query = self.session.query(BrandMySQLEntity)
         if limit is not None and isinstance(limit, int) and limit > 0:
             brands_query = brands_query.limit(limit)
@@ -48,7 +48,7 @@ class MongoDBBrandRepository(BrandRepository):
     def __init__(self, database: Database):
         self.database = database
 
-    def get_all(self, limit: Optional[int]) -> List[BrandReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[BrandReturnResource]:
         brands = self.database.get_collection("brands").find(
         ).limit(0 if not limit else limit)
         brands = [
@@ -71,7 +71,7 @@ class Neo4jBrandRepository(BrandRepository):
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 
-    def get_all(self, limit: Optional[int]) -> List[BrandReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[BrandReturnResource]:
         query = "MATCH (b:Brand) RETURN b"
         parameters = {}
         if limit is not None and isinstance(limit, int) and limit > 0:

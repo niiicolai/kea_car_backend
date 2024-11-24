@@ -14,7 +14,7 @@ from app.resources.purchase_resource import PurchaseCreateResource, CarReturnRes
 class PurchaseRepository(ABC):
 
     @abstractmethod
-    def get_all(self, limit: Optional[int]) -> List[PurchaseReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[PurchaseReturnResource]:
         pass
 
     @abstractmethod
@@ -26,7 +26,10 @@ class PurchaseRepository(ABC):
         pass
 
     @abstractmethod
-    def create(self, purchase_create_data: PurchaseCreateResource, car_resource: CarReturnResource) -> PurchaseReturnResource:
+    def create(self,
+               purchase_create_data: PurchaseCreateResource,
+               car_resource: CarReturnResource
+               ) -> PurchaseReturnResource:
         pass
 
     @abstractmethod
@@ -38,7 +41,7 @@ class MySQLPurchaseRepository(PurchaseRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self, limit: Optional[int]) -> List[PurchaseReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[PurchaseReturnResource]:
         purchases_query = self.session.query(PurchaseMySQLEntity)
         if limit is not None and isinstance(limit, int) and limit > 0:
             purchases_query = purchases_query.limit(limit)

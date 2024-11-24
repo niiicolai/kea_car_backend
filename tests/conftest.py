@@ -14,7 +14,7 @@ from app.repositories.model_repositories import MySQLModelRepository
 from app.repositories.purchase_repositories import MySQLPurchaseRepository
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def valid_customer_data() -> dict:
     domains = ["gmail.com", "hotmail.com", "yahoo.com", "outlook.com"]
     domain = random.choice(domains)
