@@ -228,23 +228,48 @@ def test_create_customer_resource_works_with_valid_address_data(
 # INVALID TESTS FOR CustomerCreateResource
 
 def test_create_customer_resource_does_not_work_without_setting_all_fields(valid_customer_data):
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError, match="Field required"):
         CustomerCreateResource()
 
-    with pytest.raises(ValidationError):
-        CustomerCreateResource(email=valid_customer_data.get("email"))
+    with pytest.raises(ValidationError, match="email\n  Field required"):
+        CustomerCreateResource(
+            phone_number=valid_customer_data.get("phone_number"),
+            first_name=valid_customer_data.get("first_name"),
+            last_name=valid_customer_data.get("last_name"),
+            address=valid_customer_data.get("address")
+        )
 
-    with pytest.raises(ValidationError):
-        CustomerCreateResource(phone_number=valid_customer_data.get("phone_number"))
+    with pytest.raises(ValidationError, match="phone_number\n  Field required"):
+        CustomerCreateResource(
+            email=valid_customer_data.get("email"),
+            first_name=valid_customer_data.get("first_name"),
+            last_name=valid_customer_data.get("last_name"),
+            address=valid_customer_data.get("address")
+        )
 
-    with pytest.raises(ValidationError):
-        CustomerCreateResource(first_name=valid_customer_data.get("first_name"))
+    with pytest.raises(ValidationError, match="first_name\n  Field required"):
+        CustomerCreateResource(
+            email=valid_customer_data.get("email"),
+            phone_number=valid_customer_data.get("phone_number"),
+            last_name=valid_customer_data.get("last_name"),
+            address=valid_customer_data.get("address")
+        )
 
-    with pytest.raises(ValidationError):
-        CustomerCreateResource(last_name=valid_customer_data.get("last_name"))
+    with pytest.raises(ValidationError, match="last_name\n  Field required"):
+        CustomerCreateResource(
+            email=valid_customer_data.get("email"),
+            phone_number=valid_customer_data.get("phone_number"),
+            first_name=valid_customer_data.get("first_name"),
+            address=valid_customer_data.get("address")
+        )
 
-    with pytest.raises(ValidationError):
-        CustomerCreateResource(address=valid_customer_data.get("address"))
+    with pytest.raises(ValidationError, match="address\n  Field required"):
+        CustomerCreateResource(
+            email=valid_customer_data.get("email"),
+            phone_number=valid_customer_data.get("phone_number"),
+            first_name=valid_customer_data.get("first_name"),
+            last_name=valid_customer_data.get("last_name")
+        )
 
 
 @pytest.mark.parametrize("invalid_email, expecting_error_message", invalid_email_test_data)
