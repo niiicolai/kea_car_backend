@@ -14,8 +14,8 @@ from app.resources.view_resources.car_purchase_resource import (
     SalesPersonReturnResource,
     CarPurchaseReturnResource,
     CustomerReturnResource
-
 )
+
 
 def create_sales_person_with_cars_resource(
     sales_person_resource: SalesPersonReturnResource,
@@ -45,6 +45,7 @@ def create_customer_with_cars_resource(
         cars=customer_cars
     )
 
+
 class CarPurchaseRepository(ABC):
     @abstractmethod
     def get_sales_person_with_cars(self, sales_person_resource: SalesPersonReturnResource) -> SalesPersonWithCarsReturnResource:
@@ -62,6 +63,7 @@ class CarPurchaseRepository(ABC):
     def get_car_with_purchase_by_id(self, car_id: str) -> Optional[CarPurchaseReturnResource]:
         pass
 
+
 class MySQLCarPurchaseRepository(CarPurchaseRepository):
     def __init__(self, session: Session):
         self.session = session
@@ -71,10 +73,6 @@ class MySQLCarPurchaseRepository(CarPurchaseRepository):
             sales_person_resource: SalesPersonReturnResource
     ) -> SalesPersonWithCarsReturnResource:
 
-        if not isinstance(sales_person_resource, SalesPersonReturnResource):
-            raise TypeError(f"sales_person_resource should be a SalesPersonReturnResource, "
-                            f"not {type(sales_person_resource)}.")
-
         car_purchase_sales_person_query = self.session.query(CarPurchaseView).filter_by(
             sales_person_id=sales_person_resource.id
         )
@@ -83,15 +81,10 @@ class MySQLCarPurchaseRepository(CarPurchaseRepository):
 
         return create_sales_person_with_cars_resource(
             sales_person_resource,
-            sale_person_cars=
-            [
-                sales_person_car.as_sales_person_resource() for sales_person_car in sales_person_cars
-            ]
+            sale_person_cars=[sales_person_car.as_sales_person_resource() for sales_person_car in sales_person_cars]
         )
 
     def get_customer_with_cars(self, customer_resource: CustomerReturnResource) -> CustomerWithCarsReturnResource:
-        if not isinstance(customer_resource, CustomerReturnResource):
-            raise TypeError(f"customer_resource should be a CustomerReturnResource, not {type(customer_resource)}.")
 
         car_purchase_customer_query = self.session.query(CarPurchaseView).filter_by(
             customer_id=customer_resource.id
@@ -119,3 +112,8 @@ class MySQLCarPurchaseRepository(CarPurchaseRepository):
         if car_with_purchase is not None:
             return car_with_purchase.as_resource()
         return None
+
+
+# Placeholder for future repositories
+# class OtherDBCustomerRepository(CustomerRepository):
+#     ...
