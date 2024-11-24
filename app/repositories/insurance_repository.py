@@ -1,7 +1,6 @@
 # External Library imports
 from abc import ABC, abstractmethod
 from typing import Optional, List, cast
-
 from sqlalchemy.orm import Session
 
 # Internal library imports
@@ -16,6 +15,7 @@ class InsuranceRepository(ABC):
     @abstractmethod
     def get_by_id(self, insurance_id: str) -> Optional[InsuranceReturnResource]:
         pass
+
 
 class MySQLInsuranceRepository(InsuranceRepository):
     def __init__(self, session: Session):
@@ -33,6 +33,7 @@ class MySQLInsuranceRepository(InsuranceRepository):
         if insurance is not None:
             return insurance.as_resource()
         return None
+
 
 # Placeholder for future repositories
 # class OtherDBInsuranceRepository(InsuranceRepository):

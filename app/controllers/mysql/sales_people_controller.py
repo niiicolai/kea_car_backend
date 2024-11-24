@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Form, Path, Query
 from db import Session, get_db as get_db_session
 from app.controllers.error_handler import error_handler
 from app.services import sales_people_service as service
-from app.core.security import TokenPayload, get_current_sales_person_token
+from app.core.security import get_current_sales_person_token
 from app.repositories.sales_person_repositories import (
     MySQLSalesPersonRepository,
     SalesPersonReturnResource,
@@ -15,13 +15,14 @@ from app.repositories.sales_person_repositories import (
     SalesPersonLoginResource
 )
 
-
 router: APIRouter = APIRouter()
+
 
 def get_db():
     with get_db_session() as session:
         yield session
         session.commit()
+
 
 @router.post(
     path="/token",
@@ -65,6 +66,7 @@ async def login_for_access_token(
             )
         )
     )
+
 
 @router.post(
     path="/login",
@@ -112,14 +114,14 @@ async def login(
     """
     Retrieves all or a limited amount of Sales People from the MySQL 
     database and returns a list of 'SalesPersonReturnResource'.
-    """
+    """,
+    dependencies=[Depends(get_current_sales_person_token)]
 )
 async def get_sales_people(
         limit: Optional[int] = Query(
             default=None, ge=1,
             description="""Set a limit for the amount of sales people that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -145,14 +147,14 @@ async def get_sales_people(
     Retrieves a Sales Person by ID from the MySQL database 
     by giving a UUID in the path for the sales person 
     and returns it as a 'SalesPersonReturnResource'.
-    """
+    """,
+    dependencies=[Depends(get_current_sales_person_token)]
 )
 async def get_sales_person(
         sales_person_id: UUID = Path(
             default=...,
             description="""The UUID of the sales person to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -178,11 +180,11 @@ async def get_sales_person(
     Creates a Sales Person within the MySQL database 
     by giving a request body 'SalesPersonCreateResource' 
     and returns it as a 'SalesPersonReturnResource'.
-    """
+    """,
+    dependencies=[Depends(get_current_sales_person_token)]
 )
 async def create_sales_person(
         sales_person_create_data: SalesPersonCreateResource,
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(

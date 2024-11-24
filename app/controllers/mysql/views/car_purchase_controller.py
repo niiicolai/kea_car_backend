@@ -7,9 +7,9 @@ from fastapi import APIRouter, Depends, Path, Query
 # Internal library imports
 from db import Session, get_db as get_db_session
 from app.controllers.error_handler import error_handler
+from app.core.security import get_current_sales_person_token
 from app.services.view_services import car_purchase_service as service
 from app.repositories.customer_repositories import MySQLCustomerRepository
-from app.core.security import TokenPayload, get_current_sales_person_token
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
 
 from app.repositories.view_repositories.car_purchase_repositories import (
@@ -41,14 +41,14 @@ def get_db():
     """
     Retrieves a Sales Person with cars from the MySQL database by giving a UUID in the 
     path for the sales person and returns it as a 'SalesPersonWithCarsReturnResource'.
-    """
+    """,
+    dependencies=[Depends(get_current_sales_person_token)]
 )
 async def get_sales_person_with_car_purchases(
         sales_person_id: UUID = Path(
             default=...,
             description="""The UUID of the sales person to retrieve with cars."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -75,14 +75,14 @@ async def get_sales_person_with_car_purchases(
     """
     Retrieves a Customer with cars from the MySQL database by giving a UUID in the 
     path for the customer and returns it as a 'CustomerWithCarsReturnResource'.
-    """
+    """,
+    dependencies=[Depends(get_current_sales_person_token)]
 )
 async def get_customer_with_car_purchases(
         customer_id: UUID = Path(
             default=...,
             description="""The UUID of the customer to retrieve with cars."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -108,14 +108,14 @@ async def get_customer_with_car_purchases(
     """
     Retrieves all or a limited amount of Cars with Purchase from the MySQL 
     database and returns a list of 'CarPurchaseReturnResource'.
-    """
+    """,
+    dependencies=[Depends(get_current_sales_person_token)]
 )
 async def get_cars_with_purchase(
         limit: Optional[int] = Query(
             default=None, ge=1,
             description="""Set a limit for the amount of cars with purchase that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -141,14 +141,14 @@ async def get_cars_with_purchase(
     Retrieves a Car with Purchase by ID from the MySQL database 
     by giving a UUID in the path for the car 
     and returns it as a 'CarPurchaseReturnResource'.
-    """
+    """,
+    dependencies=[Depends(get_current_sales_person_token)]
 )
 async def get_sales_person(
         car_id: UUID = Path(
             default=...,
             description="""The UUID of the car to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(

@@ -7,7 +7,10 @@ from fastapi import APIRouter, Depends, Path, Query
 from db import Neo4jSession, get_neo4j
 from app.services import brands_service as service
 from app.controllers.error_handler import error_handler
-from app.repositories.brand_repositories import Neo4jBrandRepository, BrandReturnResource
+from app.repositories.brand_repositories import (
+    Neo4jBrandRepository,
+    BrandReturnResource
+)
 
 
 router: APIRouter = APIRouter()

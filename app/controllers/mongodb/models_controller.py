@@ -8,7 +8,10 @@ from db import Database, get_mongodb
 from app.services import models_service as service
 from app.controllers.error_handler import error_handler
 from app.repositories.brand_repositories import MongoDBBrandRepository
-from app.repositories.model_repositories import MongoDBModelRepository, ModelReturnResource
+from app.repositories.model_repositories import (
+    MongoDBModelRepository,
+    ModelReturnResource
+)
 
 router: APIRouter = APIRouter()
 
@@ -49,7 +52,7 @@ async def get_models(
             model_repository=MongoDBModelRepository(database),
             brand_repository=MongoDBBrandRepository(database),
             brand_id=None if not brand_id else str(brand_id),
-            brands_limit=limit
+            models_limit=limit
         )
     )
 

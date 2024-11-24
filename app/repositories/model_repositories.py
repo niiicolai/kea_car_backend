@@ -1,9 +1,9 @@
 # External Library imports
 from abc import ABC, abstractmethod
-from typing import Optional, List, cast
+from typing import Optional, List, cast, LiteralString
 from sqlalchemy.orm import Session
 from pymongo.database import Database
-from neo4j import Session as Neo4jSession
+from neo4j import Session as Neo4jSession, Query
 
 # Internal library imports
 from app.resources.model_resource import BrandReturnResource
@@ -21,24 +21,28 @@ from app.models.model import (
 
 class ModelRepository(ABC):
     @abstractmethod
-    def get_all(self,
-                brand_resource: Optional[BrandReturnResource] = None,
-                limit: Optional[int] = None
-                ) -> List[ModelReturnResource]:
+    def get_all(
+            self,
+            brand_resource: Optional[BrandReturnResource] = None,
+            limit: Optional[int] = None
+    ) -> List[ModelReturnResource]:
         pass
 
     @abstractmethod
     def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:
         pass
 
+
 class MySQLModelRepository(ModelRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def get_all(self,
-                brand_resource: Optional[BrandReturnResource] = None,
-                limit: Optional[int] = None
-                ) -> List[ModelReturnResource]:
+    def get_all(
+            self,
+            brand_resource: Optional[BrandReturnResource] = None,
+            limit: Optional[int] = None
+    ) -> List[ModelReturnResource]:
+
         models_query = self.session.query(ModelMySQLEntity)
         if brand_resource is not None and isinstance(brand_resource, BrandReturnResource):
             models_query = models_query.filter_by(brands_id=brand_resource.id)
@@ -49,12 +53,12 @@ class MySQLModelRepository(ModelRepository):
         models: List[ModelMySQLEntity] = cast(List[ModelMySQLEntity], models_query.all())
         return [model.as_resource() for model in models]
 
-
     def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:
         model: Optional[ModelMySQLEntity] = self.session.get(ModelMySQLEntity, model_id)
         if model is not None:
             return model.as_resource()
         return None
+
 
 class MongoDBModelRepository(ModelRepository):
     def __init__(self, database: Database):
@@ -91,55 +95,60 @@ class MongoDBModelRepository(ModelRepository):
             return ModelMongoEntity(**model).as_resource()
         return None
 
+
 class Neo4jModelRepository(ModelRepository):
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 
-    def get_all(self,
-                brand_resource: Optional[BrandReturnResource] = None,
-                limit: Optional[int] = None
-                ) -> List[ModelReturnResource]:
+    def get_all(
+            self,
+            brand_resource: Optional[BrandReturnResource] = None,
+            limit: Optional[int] = None
+    ) -> List[ModelReturnResource]:
 
-        query = """
-        MATCH (m:Model)-[:BELONGS_TO]->(b:Brand)
-        OPTIONAL MATCH (m)-[:HAS_COLOR]->(c:Color)
-        RETURN m, b, collect(c) as colors
-        """
+        query = Query(
+            """
+            MATCH (model:Model)-[:BELONGS_TO]->(brand:Brand)
+            OPTIONAL MATCH (model)-[:HAS_COLOR]->(color:Color)
+            RETURN model, brand, collect(color) AS colors
+            """
+        )
         parameters = {}
         if brand_resource is not None and isinstance(brand_resource, BrandReturnResource):
-            query = """
-            MATCH (m:Model)-[:BELONGS_TO]->(b:Brand {id: $brand_id})
-            OPTIONAL MATCH (m)-[:HAS_COLOR]->(c:Color)
-            RETURN m, b, collect(c) as colors
-            """
+            query = Query(
+                """
+                MATCH (model:Model)-[:BELONGS_TO]->(brand:Brand {id: $brand_id})
+                OPTIONAL MATCH (model)-[:HAS_COLOR]->(color:Color)
+                RETURN model, brand, collect(color) AS colors
+                """
+            )
             parameters["brand_id"] = brand_resource.id
         if limit is not None and isinstance(limit, int) and limit > 0:
-            query += " LIMIT $limit"
+            query = Query(f"{query.text} LIMIT $limit")
             parameters["limit"] = limit
         result = self.neo4j_session.run(query, parameters)
         models: List[ModelReturnResource] = []
         for record in result:
-            brand = BrandNeo4jEntity(**record["b"])
+            brand = BrandNeo4jEntity(**record["brand"])
             colors = [ColorNeo4jEntity(**color) for color in record["colors"]]
-            model = ModelNeo4jEntity(**record["m"], brand=brand, colors=colors)
+            model = ModelNeo4jEntity(**record["model"], brand=brand, colors=colors)
             models.append(model.as_resource())
         return models
 
     def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:
-        query = """
-        MATCH (m:Model {id: $model_id})-[:BELONGS_TO]->(b:Brand)
-        OPTIONAL MATCH (m)-[:HAS_COLOR]->(c:Color)
-        RETURN m, b, collect(c) as colors
-        """
+        query = Query(
+            """
+            MATCH (model:Model {id: $model_id})-[:BELONGS_TO]->(brand:Brand)
+            OPTIONAL MATCH (model)-[:HAS_COLOR]->(color:Color)
+            RETURN model, brand, collect(color) AS colors
+            """
+        )
         result = self.neo4j_session.run(query, model_id=model_id)
         record = result.single()
         if record:
-            brand = BrandNeo4jEntity(**record["b"])
+            brand = BrandNeo4jEntity(**record["brand"])
             colors = [ColorNeo4jEntity(**color) for color in record["colors"]]
-            model = ModelNeo4jEntity(**record["m"], brand=brand, colors=colors)
+            model = ModelNeo4jEntity(**record["model"], brand=brand, colors=colors)
             return model.as_resource()
         return None
 
-# Placeholder for future repositories
-# class OtherDBModelRepository(ModelRepository):
-#     ...

@@ -3,8 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy.orm import Session
 from pymongo.database import Database
-from neo4j import Session as Neo4jSession
-
+from neo4j import Session as Neo4jSession, Query
 
 # Internal library imports
 from app.models.brand import (
@@ -24,6 +23,7 @@ class BrandRepository(ABC):
     @abstractmethod
     def get_by_id(self, brand_id: str) -> Optional[BrandReturnResource]:
         pass
+
 
 class MySQLBrandRepository(BrandRepository):
     def __init__(self, session: Session):
@@ -67,30 +67,27 @@ class MongoDBBrandRepository(BrandRepository):
             ).as_resource()
         return None
 
+
 class Neo4jBrandRepository(BrandRepository):
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 
     def get_all(self, limit: Optional[int] = None) -> List[BrandReturnResource]:
-        query = "MATCH (b:Brand) RETURN b"
+        query = Query("MATCH (brand:Brand) RETURN b")
         parameters = {}
         if limit is not None and isinstance(limit, int) and limit > 0:
-            query += " LIMIT $limit"
+            query += Query("MATCH (brand:Brand) RETURN brand LIMIT $limit")
             parameters["limit"] = limit
         result = self.neo4j_session.run(query, parameters)
-        brands = [BrandNeo4jEntity(**record["b"]).as_resource() for record in result]
+        brands = [BrandNeo4jEntity(**record["brand"]).as_resource() for record in result]
         return brands
 
     def get_by_id(self, brand_id: str) -> Optional[BrandReturnResource]:
         result = self.neo4j_session.run(
-            "MATCH (b:Brand {id: $id}) RETURN b",
+            "MATCH (brand:Brand {id: $id}) RETURN brand",
             id=brand_id
         )
         record = result.single()
-        if record:
-            return BrandNeo4jEntity(**record["b"]).as_resource()
+        if record is not None:
+            return BrandNeo4jEntity(**record["brand"]).as_resource()
         return None
-
-# Placeholder for future repositories
-# class OtherDBBrandRepository(BrandRepository):
-#     ...

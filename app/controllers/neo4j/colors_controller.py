@@ -7,7 +7,10 @@ from fastapi import APIRouter, Depends, Path, Query
 from db import Neo4jSession, get_neo4j
 from app.services import colors_service as service
 from app.controllers.error_handler import error_handler
-from app.repositories.color_repositories import Neo4jColorRepository, ColorReturnResource
+from app.repositories.color_repositories import (
+    Neo4jColorRepository,
+    ColorReturnResource
+)
 
 
 router: APIRouter = APIRouter()

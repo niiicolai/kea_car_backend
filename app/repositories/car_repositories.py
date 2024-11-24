@@ -84,13 +84,14 @@ class MySQLCarRepository(CarRepository):
         self.session = session
 
     # This is the past function for get_all,that now uses a stored procedure to handle the logic of filtering all the cars to get
-    def get_all_past_function(self,
-                              customer: Optional[CustomerReturnResource] = None,
-                              sales_person: Optional[SalesPersonReturnResource] = None,
-                              is_purchased: Optional[bool] = None,
-                              is_past_purchase_deadline: Optional[bool] = None,
-                              limit: Optional[int] = None
-                              ) -> List[CarReturnResource]:
+    def get_all_past_function(
+            self,
+            customer: Optional[CustomerReturnResource] = None,
+            sales_person: Optional[SalesPersonReturnResource] = None,
+            is_purchased: Optional[bool] = None,
+            is_past_purchase_deadline: Optional[bool] = None,
+            limit: Optional[int] = None
+    ) -> List[CarReturnResource]:
 
         car_query = self.session.query(CarMySQLEntity)
         if customer is not None and isinstance(customer, CustomerReturnResource):
@@ -159,7 +160,6 @@ class MySQLCarRepository(CarRepository):
 
         cars: List[CarReturnResource] = []
         for car_result in cars_result:
-            # Construct the dictionary directly
             car_id: str = car_result[0]
             if not isinstance(car_id, str):
                 raise SQLAlchemyError(f"The car_id '{car_id}' was not a string but a '{type(car_id).__name__}'.")
@@ -176,21 +176,21 @@ class MySQLCarRepository(CarRepository):
         car: Optional[CarMySQLEntity] = self.session.get(CarMySQLEntity, car_id)
         if car is not None:
             is_car_purchased: bool = (self.session.query(PurchaseMySQLEntity)
-                                     .filter_by(cars_id=car.id).first() is not None)
+                                      .filter_by(cars_id=car.id).first() is not None)
             return car.as_resource(is_car_purchased)
         return None
 
-    def create(self,
-               car_create_data: CarCreateResource,
-               customer_resource: CustomerReturnResource,
-               sales_person_resource: SalesPersonReturnResource,
-               model_resource: ModelReturnResource,
-               color_resource: ColorReturnResource,
-               accessory_resources: List[AccessoryReturnResource],
-               insurance_resources: List[InsuranceReturnResource]) -> CarReturnResource:
+    def create(
+            self,
+            car_create_data: CarCreateResource,
+            customer_resource: CustomerReturnResource,
+            sales_person_resource: SalesPersonReturnResource,
+            model_resource: ModelReturnResource,
+            color_resource: ColorReturnResource,
+            accessory_resources: List[AccessoryReturnResource],
+            insurance_resources: List[InsuranceReturnResource]) -> CarReturnResource:
 
         try:
-
             new_car = CarMySQLEntity(
                 models_id=model_resource.id,
                 colors_id=color_resource.id,
@@ -236,6 +236,8 @@ class MySQLCarRepository(CarRepository):
         except Exception as e:
             self.session.rollback()
             raise e
+
+
 
 # Placeholder for future repositories
 # class OtherDBCarRepository(CarRepository):

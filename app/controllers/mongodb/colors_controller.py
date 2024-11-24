@@ -7,7 +7,10 @@ from fastapi import APIRouter, Depends, Path, Query
 from db import Database, get_mongodb
 from app.services import colors_service as service
 from app.controllers.error_handler import error_handler
-from app.repositories.color_repositories import MongoDBColorRepository, ColorReturnResource
+from app.repositories.color_repositories import (
+    MongoDBColorRepository,
+    ColorReturnResource
+)
 
 
 router: APIRouter = APIRouter()

@@ -7,8 +7,10 @@ from fastapi import APIRouter, Depends, Path, Query
 from db import Session, get_db as get_db_session
 from app.services import colors_service as service
 from app.controllers.error_handler import error_handler
-from app.core.security import TokenPayload, get_current_sales_person_token
-from app.repositories.color_repositories import MySQLColorRepository, ColorReturnResource
+from app.repositories.color_repositories import (
+    MySQLColorRepository,
+    ColorReturnResource
+)
 
 
 router: APIRouter = APIRouter()
@@ -26,7 +28,7 @@ def get_db():
     Successfully retrieved a list of colors.
     Returns: List[ColorReturnResource].
     """,
-    summary="Retrieve Colors - Requires authorization token in header.",
+    summary="Retrieve Colors.",
     description=
     """
     Retrieves all or a limited amount of Colors from the MySQL 
@@ -38,7 +40,6 @@ async def get_colors(
             default=None, ge=1,
             description="""Set a limit for the amount of colors that is returned."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(
@@ -58,7 +59,7 @@ async def get_colors(
     Successfully retrieved a color.
     Returns: ColorReturnResource.
     """,
-    summary="Retrieve a Color by ID - Requires authorization token in header.",
+    summary="Retrieve a Color by ID.",
     description=
     """
     Retrieves a Color by ID from the MySQL 
@@ -70,7 +71,6 @@ async def get_color(
             default=...,
             description="""The UUID of the color to retrieve."""
         ),
-        current_token: TokenPayload = Depends(get_current_sales_person_token),
         session: Session = Depends(get_db)
 ):
     return error_handler(

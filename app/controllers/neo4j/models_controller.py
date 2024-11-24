@@ -49,7 +49,7 @@ async def get_models(
             model_repository=Neo4jModelRepository(session),
             brand_repository=Neo4jBrandRepository(session),
             brand_id=None if not brand_id else str(brand_id),
-            brands_limit=limit
+            models_limit=limit
         )
     )
 

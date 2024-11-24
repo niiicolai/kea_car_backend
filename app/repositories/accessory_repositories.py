@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy.orm import Session as MySQLSession
 from pymongo.database import Database
-from neo4j import Session as Neo4jSession
+from neo4j import Session as Neo4jSession, Query
 
 # Internal library imports
 from app.models.accessory import (
@@ -14,7 +14,6 @@ from app.models.accessory import (
 )
 
 
-
 class AccessoryRepository(ABC):
     @abstractmethod
     def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:
@@ -23,6 +22,7 @@ class AccessoryRepository(ABC):
     @abstractmethod
     def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:
         pass
+
 
 class MySQLAccessoryRepository(AccessoryRepository):
     def __init__(self, session: MySQLSession):
@@ -65,30 +65,27 @@ class MongoDBAccessoryRepository(AccessoryRepository):
             ).as_resource()
         return None
 
+
 class Neo4jAccessoryRepository(AccessoryRepository):
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 
     def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:
-        query = "MATCH (a:Accessory) RETURN a"
+        query = Query("MATCH (accessory:Accessory) RETURN a")
         parameters = {}
         if limit is not None and isinstance(limit, int) and limit > 0:
-            query += " LIMIT $limit"
+            query = Query("MATCH (accessory:Accessory) RETURN accessory LIMIT $limit")
             parameters["limit"] = limit
         result = self.neo4j_session.run(query, parameters)
-        accessories = [AccessoryNeo4jEntity(**record["a"]).as_resource() for record in result]
+        accessories = [AccessoryNeo4jEntity(**record["accessory"]).as_resource() for record in result]
         return accessories
 
     def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:
         result = self.neo4j_session.run(
-            "MATCH (a:Accessory {id: $id}) RETURN a",
+            "MATCH (accessory:Accessory {id: $id}) RETURN accessory",
             id=accessory_id
         )
         record = result.single()
-        if record:
-            return AccessoryNeo4jEntity(**record["a"]).as_resource()
+        if record is not None:
+            return AccessoryNeo4jEntity(**record["accessory"]).as_resource()
         return None
-
-# Placeholder for future repositories
-# class OtherDBAccessoryRepository(AccessoryRepository):
-#     ...

@@ -7,7 +7,6 @@ from fastapi import APIRouter, Depends, Path, Query
 from db import Database, get_mongodb
 from app.services import accessories_service as service
 from app.controllers.error_handler import error_handler
-
 from app.repositories.accessory_repositories import (
     AccessoryReturnResource,
     MongoDBAccessoryRepository
@@ -29,12 +28,13 @@ def get_db():
     Successfully retrieved a list of accessories.
     Returns: List[AccessoryReturnResource].
     """,
-    summary="Retrieve Accessories.",
+    summary="Retrieve Accessories - Requires authorization token in header.",
     description=
     """
     Retrieves all or a limited amount of Accessories from the 
     MongoDB database and returns a list of 'AccessoryReturnResource'.
-    """
+    """,
+    dependencies=[Depends(get_current_sales_person_token)]
 )
 async def get_accessories(
         limit: Optional[int] = Query(

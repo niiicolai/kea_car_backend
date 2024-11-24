@@ -9,8 +9,6 @@ from app.models.purchase import PurchaseReturnResource, PurchaseMySQLEntity
 from app.resources.purchase_resource import PurchaseCreateResource, CarReturnResource
 
 
-
-
 class PurchaseRepository(ABC):
 
     @abstractmethod
@@ -26,10 +24,11 @@ class PurchaseRepository(ABC):
         pass
 
     @abstractmethod
-    def create(self,
-               purchase_create_data: PurchaseCreateResource,
-               car_resource: CarReturnResource
-               ) -> PurchaseReturnResource:
+    def create(
+            self,
+            purchase_create_data: PurchaseCreateResource,
+            car_resource: CarReturnResource
+    ) -> PurchaseReturnResource:
         pass
 
     @abstractmethod
@@ -55,12 +54,14 @@ class MySQLPurchaseRepository(PurchaseRepository):
         return None
 
     def get_by_car_id(self, car_resource: CarReturnResource) -> Optional[PurchaseReturnResource]:
-        purchase: Optional[PurchaseMySQLEntity] = self.session.query(PurchaseMySQLEntity).filter_by(cars_id=car_resource.id).first()
+        purchase: Optional[PurchaseMySQLEntity] = self.session.query(PurchaseMySQLEntity).filter_by(
+            cars_id=car_resource.id).first()
         if purchase is not None:
             return purchase.as_resource()
         return None
 
-    def create(self, purchase_create_data: PurchaseCreateResource, car_resource: CarReturnResource) -> PurchaseReturnResource:
+    def create(self, purchase_create_data: PurchaseCreateResource,
+               car_resource: CarReturnResource) -> PurchaseReturnResource:
         new_purchase = PurchaseMySQLEntity(
             cars_id=car_resource.id,
             date_of_purchase=purchase_create_data.date_of_purchase
@@ -70,7 +71,6 @@ class MySQLPurchaseRepository(PurchaseRepository):
         self.session.refresh(new_purchase)
 
         return new_purchase.as_resource()
-
 
     def is_car_taken(self, car_resource: CarReturnResource) -> bool:
         return self.session.query(PurchaseMySQLEntity).filter_by(cars_id=car_resource.id).first() is not None
