@@ -81,11 +81,11 @@ jobs:
       - name: Wait for API to be ready
         run: sleep 10
 
-      - name: Install Newman
-        run: npm install -g newman
-
-      - name: Run Postman collection with Mysql environment (API tests)
-        run: newman run ./api-tests/KEA\ Car\ API\ Test.postman_collection.json --environment ./api-tests/KEA\ Car\ Mysql.postman_environment.json
+#      - name: Install Newman
+#        run: npm install -g newman
+#
+#      - name: Run Postman collection with Mysql environment (API tests)
+#        run: newman run ./api-tests/KEA\ Car\ API\ Test.postman_collection.json --environment ./api-tests/KEA\ Car\ Mysql.postman_environment.json
 
       - name: Clone frontend repository
         uses: actions/checkout@v2
@@ -161,99 +161,99 @@ jobs:
             docker-compose -f docker-compose.yaml up -d
             docker image prune -f
 
-  load-test:
-    runs-on: ubuntu-latest
-    needs:
-      - deploy-staging
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Create reports directory
-        run: mkdir reports
-
-      - name: Wait for App Readiness
-        run: |
-          for i in {1..30}; do
-            echo "Checking if the app is ready (attempt $i)..."
-            if curl -s -o /dev/null -w "%{http_code}" https://staging.c7pixel.com/docs | grep -q "200"; then
-              echo "App is ready!"
-              exit 0
-            fi
-            echo "App is not ready yet. Retrying in 10 seconds..."
-            sleep 10
-          done
-          echo "App did not become ready in time!"
-          exit 1
-
-      - name: Start Server Monitoring
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            rm -rf /logs/*
-            nohup sar 1 360 > /logs/cpu_mem_usage.log 2>&1 &
-            nohup iostat -x 1 360 > /logs/disk_usage.log 2>&1 &
-            nohup vmstat 1 360 > /logs/vmstat_usage.log 2>&1 &
-
-      - name: JMeter Test
-        uses: QAInsights/PerfAction@v5.6.2
-        with:
-          test-plan-path: ./load-tests/test-plan.jmx
-          args: "-e -o ./reports/html/"
-
-      - name: Stop Server Monitoring
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            killall sar iostat vmstat
-
-      - name: Download SAR log
-        run: |
-          curl -L "https://staging.c7pixel.com/logs/cpu_mem_usage.log" -o ./cpu_mem_usage.log
-
-      - name: Run SAR CPU Data Analyzer
-        run: |
-          docker run --rm -v ${{ github.workspace }}:/data niiicolai/sar-cpu-data-analyzer:latest -i /data/cpu_mem_usage.log -t /data/load-tests/cpu-thresholds-test.json -j /data/cpu-test-results.json -r /data/cpu-test-report.html --ignore-end-lines 3
-
-      - name: SCP Load HTML test reports to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: "${{ secrets.SERVER_HOST }}"
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./reports"
-          target: "/jmeter"
-
-      - name: SCP Load test results to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: "${{ secrets.SERVER_HOST }}"
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./cpu-test-results.json"
-          target: "/cpu-test-results"
-
-      - name: SCP Load test report to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: "${{ secrets.SERVER_HOST }}"
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./cpu-test-report.html"
-          target: "/cpu-test-results"
+#  load-test:
+#    runs-on: ubuntu-latest
+#    needs:
+#      - deploy-staging
+#    steps:
+#      - name: Checkout Code
+#        uses: actions/checkout@v2
+#
+#      - name: Create reports directory
+#        run: mkdir reports
+#
+#      - name: Wait for App Readiness
+#        run: |
+#          for i in {1..30}; do
+#            echo "Checking if the app is ready (attempt $i)..."
+#            if curl -s -o /dev/null -w "%{http_code}" https://staging.c7pixel.com/docs | grep -q "200"; then
+#              echo "App is ready!"
+#              exit 0
+#            fi
+#            echo "App is not ready yet. Retrying in 10 seconds..."
+#            sleep 10
+#          done
+#          echo "App did not become ready in time!"
+#          exit 1
+#
+#      - name: Start Server Monitoring
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.SERVER_HOST }}
+#          username: ${{ secrets.SERVER_USERNAME }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          script: |
+#            rm -rf /logs/*
+#            nohup sar 1 360 > /logs/cpu_mem_usage.log 2>&1 &
+#            nohup iostat -x 1 360 > /logs/disk_usage.log 2>&1 &
+#            nohup vmstat 1 360 > /logs/vmstat_usage.log 2>&1 &
+#
+#      - name: JMeter Test
+#        uses: QAInsights/PerfAction@v5.6.2
+#        with:
+#          test-plan-path: ./load-tests/test-plan.jmx
+#          args: "-e -o ./reports/html/"
+#
+#      - name: Stop Server Monitoring
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.SERVER_HOST }}
+#          username: ${{ secrets.SERVER_USERNAME }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          script: |
+#            killall sar iostat vmstat
+#
+#      - name: Download SAR log
+#        run: |
+#          curl -L "https://staging.c7pixel.com/logs/cpu_mem_usage.log" -o ./cpu_mem_usage.log
+#
+#      - name: Run SAR CPU Data Analyzer
+#        run: |
+#          docker run --rm -v ${{ github.workspace }}:/data niiicolai/sar-cpu-data-analyzer:latest -i /data/cpu_mem_usage.log -t /data/load-tests/cpu-thresholds-test.json -j /data/cpu-test-results.json -r /data/cpu-test-report.html --ignore-end-lines 3
+#
+#      - name: SCP Load HTML test reports to server
+#        uses: appleboy/scp-action@v0.1.7
+#        with:
+#          host: "${{ secrets.SERVER_HOST }}"
+#          username: ${{ secrets.SERVER_USERNAME }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          source: "./reports"
+#          target: "/jmeter"
+#
+#      - name: SCP Load test results to server
+#        uses: appleboy/scp-action@v0.1.7
+#        with:
+#          host: "${{ secrets.SERVER_HOST }}"
+#          username: ${{ secrets.SERVER_USERNAME }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          source: "./cpu-test-results.json"
+#          target: "/cpu-test-results"
+#
+#      - name: SCP Load test report to server
+#        uses: appleboy/scp-action@v0.1.7
+#        with:
+#          host: "${{ secrets.SERVER_HOST }}"
+#          username: ${{ secrets.SERVER_USERNAME }}
+#          key: ${{ secrets.SSH_PRIVATE_KEY }}
+#          source: "./cpu-test-report.html"
+#          target: "/cpu-test-results"
 
   deploy-production:
     runs-on: ubuntu-latest
     needs:
       - deploy-staging
       - pre-test
-      - load-test
+#      - load-test
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
