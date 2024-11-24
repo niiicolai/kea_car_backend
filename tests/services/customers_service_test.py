@@ -1,3 +1,4 @@
+from typing import Optional
 import pytest
 from app.services import customers_service
 from app.exceptions.database_errors import (
@@ -15,20 +16,27 @@ amount_of_expected_cars = 4
 amount_of_expected_purchases = 1
 
 
-def prepare_customer_to_update_data(customer_to_update: dict) -> tuple:
-    customer_to_update = customer_to_update.copy()
-    customer_to_update_keys = customer_to_update.keys()
-    if 'amount_of_cars' in customer_to_update_keys:
-        customer_to_update.pop('amount_of_cars')
-    if 'amount_of_purchased_cars' in customer_to_update_keys:
-        customer_to_update.pop('amount_of_purchased_cars')
-    if 'car_ids' in customer_to_update_keys:
-        customer_to_update.pop('car_ids')
+def prepare_customer_data(
+        customer_data: dict,
+        customer_resource: Optional[CustomerReturnResource] = None
+) -> tuple[dict, list, str]:
 
-    customer_to_update_id = customer_to_update.pop('id')
-    updated_customer_fields = customer_to_update.keys()
+    customer_data = customer_data.copy()
+    customer_keys = customer_data.keys()
+    if 'amount_of_cars' in customer_keys:
+        customer_data.pop('amount_of_cars')
+    if 'amount_of_purchased_cars' in customer_keys:
+        customer_data.pop('amount_of_purchased_cars')
+    if 'car_ids' in customer_keys:
+        customer_data.pop('car_ids')
+    customer_id = ""
+    if 'id' in customer_keys:
+        customer_id = customer_data.pop('id')
+    if isinstance(customer_resource, CustomerReturnResource) and customer_resource is not None:
+        customer_id = customer_resource.id
+    updated_customer_fields = list(customer_data.keys())
 
-    return (customer_to_update, customer_to_update_id, updated_customer_fields)
+    return customer_data, updated_customer_fields, customer_id
 
 
 customer_henrik_with_one_purchased_cars = {
@@ -101,37 +109,24 @@ customer_test_with_zero_cars = {
 def test_get_customer_by_id_with_valid_partitions(
         mySQLCustomerRepository, expected_customer
 ):
+    expected_customer_data, customer_fields, expected_customer_id = prepare_customer_data(expected_customer)
+
     customer = customers_service.get_by_id(
         repository=mySQLCustomerRepository,
-        customer_id=expected_customer.get('id')
+        customer_id=expected_customer_id
     )
     assert isinstance(customer, CustomerReturnResource), \
         (f"Customer is not of type CustomerReturnResource, "
          f"but {type(customer).__name__}")
 
-    assert customer.id == expected_customer.get('id'), \
+    assert customer.id == expected_customer_id, \
         (f"Customer ID {customer.id} does not match "
-         f"{expected_customer.get('id')}")
+         f"expected customer ID {expected_customer_id}")
 
-    assert customer.email == expected_customer.get('email'), \
-        (f"Customer email {customer.email} does not match "
-         f"{expected_customer.get('email')}")
-
-    assert customer.phone_number == expected_customer.get('phone_number'), \
-        (f"Customer phone number {customer.phone_number} does not match "
-         f"{expected_customer.get('phone_number')}")
-
-    assert customer.first_name == expected_customer.get('first_name'), \
-        (f"Customer first name {customer.first_name} does not match "
-         f"{expected_customer.get('first_name')}")
-
-    assert customer.last_name == expected_customer.get('last_name'), \
-        (f"Customer last name {customer.last_name} does not match "
-         f"{expected_customer.get('last_name')}")
-
-    assert customer.address == expected_customer.get('address'), \
-        (f"Customer address {customer.address} does not match "
-         f"{expected_customer.get('address')}")
+    for field in customer_fields:
+        assert getattr(customer, field) == expected_customer_data.get(field), \
+            (f"Customer {field}: {getattr(customer, field)} does not match "
+             f"the expected data: {expected_customer_data.get(field)}")
 
 
 # INVALID TESTS FOR get_customer_by_id
@@ -476,32 +471,22 @@ def test_create_customer_with_valid_partitions(mySQLCustomerRepository, valid_cu
         (f"Customer is not of type CustomerReturnResource, "
          f"but {type(created_customer).__name__}")
 
-    assert created_customer.email == valid_customer_data.get('email'), \
-        (f"Customer email {created_customer.email} does not match "
-         f"{valid_customer_data.get('email')}")
+    expected_customer_data, customer_fields, expected_customer_id = prepare_customer_data(
+        valid_customer_data, created_customer
+    )
 
-    assert created_customer.phone_number == valid_customer_data.get('phone_number'), \
-        (f"Customer phone number {created_customer.phone_number} does not match "
-         f"{valid_customer_data.get('phone_number')}")
-
-    assert created_customer.first_name == valid_customer_data.get('first_name'), \
-        (f"Customer first name {created_customer.first_name} does not match "
-         f"{valid_customer_data.get('first_name')}")
-
-    assert created_customer.last_name == valid_customer_data.get('last_name'), \
-        (f"Customer last name {created_customer.last_name} does not match "
-         f"{valid_customer_data.get('last_name')}")
-
-    assert created_customer.address == valid_customer_data.get('address'), \
-        (f"Customer address {created_customer.address} does not match "
-         f"{valid_customer_data.get('address')}")
-
-    assert mySQLCustomerRepository.get_by_id(created_customer.id) is not None, \
-        f"Customer with ID {created_customer.id} was not created."
+    assert mySQLCustomerRepository.get_by_id(expected_customer_id) is not None, \
+        f"Customer with ID {expected_customer_id} was not created."
 
     assert actual_amount_of_customers_after_creation == expected_amount_of_customers_after_creation, \
         (f"Amount of customers after creation {actual_amount_of_customers_after_creation} does not match "
          f"the expected amount of customers after creation {expected_amount_of_customers_after_creation}")
+
+    for customer_field in customer_fields:
+        assert getattr(created_customer, customer_field) == expected_customer_data.get(customer_field), \
+            (f"Customer {customer_field}: {getattr(created_customer, customer_field)} does not match "
+             f"the expected data: {expected_customer_data.get(customer_field)}")
+
 
 
 # INVALID TESTS FOR create_customer
@@ -611,8 +596,8 @@ def test_create_customer_with_invalid_repository_types_partitions(
 def test_update_customer_with_valid_partitions(
         mySQLCustomerRepository, valid_customer_data, customer_to_update
 ):
-    customer_to_update, customer_to_update_id, updated_customer_fields = (
-        prepare_customer_to_update_data(customer_to_update)
+    customer_to_update, updated_customer_fields, customer_to_update_id = (
+        prepare_customer_data(customer_to_update)
     )
 
     valid_customer_update_create_data = CustomerUpdateResource(**customer_to_update)
@@ -652,8 +637,8 @@ def test_update_customer_with_valid_partitions(
 def test_update_customer_email_to_their_own_email_with_valid_partitions(
         mySQLCustomerRepository, customer_to_update
 ):
-    customer_to_update, customer_to_update_id, updated_customer_fields = (
-        prepare_customer_to_update_data(customer_to_update)
+    customer_to_update, updated_customer_fields, customer_to_update_id = (
+        prepare_customer_data(customer_to_update)
     )
 
     valid_customer_update_create_data = CustomerUpdateResource(email=customer_to_update.get('email'))
@@ -717,6 +702,7 @@ def test_update_customer_with_invalid_customer_id_partitions(
             customer_id=invalid_customer_id,
             customer_update_data=CustomerUpdateResource(**valid_customer_data)
         )
+
 
 @pytest.mark.parametrize("invalid_customer_repository, expecting_error_message", [
     (None, "repository must be of type CustomerRepository, not NoneType."),
