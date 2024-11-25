@@ -3,9 +3,75 @@ from app.services import colors_service
 from app.resources.color_resource import ColorReturnResource
 from app.exceptions.database_errors import UnableToFindIdError
 
+
+def assert_valid_color(color: ColorReturnResource, expected_color: dict):
+    assert isinstance(color, ColorReturnResource) \
+        , f"Color is not of type ColorReturnResource, but {type(color).__name__}."
+
+    expected_color_id = expected_color.get('id')
+    actual_color_id = color.id
+    expected_color_name = expected_color.get('name')
+    actual_color_name = color.name
+    expected_color_price = expected_color.get('price')
+    actual_color_price = color.price
+    expected_color_red_value = expected_color.get('red_value')
+    actual_color_red_value = color.red_value
+    expected_color_green_value = expected_color.get('green_value')
+    actual_color_green_value = color.green_value
+    expected_color_blue_value = expected_color.get('blue_value')
+    actual_color_blue_value = color.blue_value
+
+    assert actual_color_id == expected_color_id \
+        , (f"Actual Color ID: {actual_color_id} does not match "
+           f"expected Color ID: {expected_color_id}.")
+
+    assert actual_color_name == expected_color_name \
+        , (f"Actual Color name: {actual_color_name} does not match "
+           f"expected Color name: {expected_color_name}.")
+
+    assert actual_color_price == expected_color_price \
+        , (f"Actual Color price: {actual_color_price} does not match "
+           f"expected Color price: {expected_color_price}.")
+
+    assert actual_color_red_value == expected_color_red_value \
+        , (f"Actual Color red_value: {actual_color_red_value} does not match "
+           f"expected Color red_value: {expected_color_red_value}.")
+
+    assert actual_color_green_value == expected_color_green_value \
+        , (f"Actual Color green_value: {actual_color_green_value} does not match "
+           f"expected Color green_value: {expected_color_green_value}.")
+
+    assert actual_color_blue_value == expected_color_blue_value \
+        , (f"Actual Color blue_value {actual_color_blue_value} does not match "
+           f"expected Color blue_value: {expected_color_blue_value}.")
+
+
+def assert_valid_colors(actual_colors: list, expected_colors: list):
+    assert isinstance(actual_colors, list) and all(isinstance(color, ColorReturnResource) for color in actual_colors) \
+        , f"Colors are not a list of ColorReturnResource objects, but {type(actual_colors).__name__}."
+
+    actual_amount_of_colors = len(actual_colors)
+    expected_amount_of_colors = len(expected_colors)
+
+    assert actual_amount_of_colors == expected_amount_of_colors, \
+        (f"Expected {expected_amount_of_colors} colors, "
+         f"but got {actual_amount_of_colors} actual colors.")
+
+    for expected_color in expected_colors:
+        expected_color_id = expected_color[0]
+        expected_color_data = expected_color[1]
+
+        actual_color = next((color for color in actual_colors if color.id == expected_color_id), None)
+        assert actual_color is not None, \
+            f"Color with ID: {expected_color_id} not found."
+
+        assert_valid_color(actual_color, expected_color_data)
+
+
 valid_colors = [
     ("e2164054-4cb8-49d5-a0da-eca5b36a0b3b",
      {
+         "id": "e2164054-4cb8-49d5-a0da-eca5b36a0b3b",
          "name": "black",
          "price": 0.0,
          "red_value": 0,
@@ -14,6 +80,7 @@ valid_colors = [
      }),
     ("7bb35b1d-37ff-43c2-988a-cf85c5b6d690",
      {
+         "id": "7bb35b1d-37ff-43c2-988a-cf85c5b6d690",
          "name": "white",
          "price": 399.95,
          "red_value": 255,
@@ -22,6 +89,7 @@ valid_colors = [
      }),
     ("74251648-a7b1-492a-ab2a-f2248c58da00",
      {
+         "id": "74251648-a7b1-492a-ab2a-f2248c58da00",
          "name": "red",
          "price": 199.95,
          "red_value": 255,
@@ -30,6 +98,7 @@ valid_colors = [
      }),
     ("5e755eb3-0099-4cdd-b064-d8bd95968109",
      {
+         "id": "5e755eb3-0099-4cdd-b064-d8bd95968109",
          "name": "blue",
          "price": 99.95,
          "red_value": 0,
@@ -38,6 +107,7 @@ valid_colors = [
      }),
     ("14382aba-6fe6-405d-a5e2-0b8cfd1f9582",
      {
+         "id": "14382aba-6fe6-405d-a5e2-0b8cfd1f9582",
          "name": "silver",
          "price": 299.95,
          "red_value": 192,
@@ -45,6 +115,7 @@ valid_colors = [
          "blue_value": 192
      }),
 ]
+
 
 # VALID TESTS FOR get_color_by_id
 
@@ -54,27 +125,7 @@ def test_get_color_by_id_with_valid_partitions(mySQLColorRepository, valid_color
         repository=mySQLColorRepository,
         color_id=valid_color_id
     )
-
-    assert isinstance(color, ColorReturnResource)\
-        , f"Color is not of type ColorReturnResource, but {type(color).__name__}"
-
-    assert color.id == valid_color_id\
-        , f"Color ID {color.id} does not match {valid_color_id}"
-
-    assert color.name == expected_color['name']\
-        , f"Color name {color.name} does not match {expected_color['name']}"
-
-    assert color.price == expected_color['price']\
-        , f"Color price {color.price} does not match {expected_color['price']}"
-
-    assert color.red_value == expected_color['red_value']\
-        , f"Color red value {color.red_value} does not match {expected_color['red_value']}"
-
-    assert color.green_value == expected_color['green_value']\
-        , f"Color green value {color.green_value} does not match {expected_color['green_value']}"
-
-    assert color.blue_value == expected_color['blue_value']\
-        , f"Color blue value {color.blue_value} does not match {expected_color['blue_value']}"
+    assert_valid_color(color, expected_color)
 
 
 # INVALID TESTS FOR get_color_by_id
@@ -93,6 +144,7 @@ def test_get_color_by_id_with_invalid_color_id_partitions(
             repository=mySQLColorRepository,
             color_id=invalid_color_id
         )
+
 
 @pytest.mark.parametrize("invalid_color_repository, expecting_error_message", [
     (None, "repository must be of type ColorRepository, not NoneType."),
@@ -145,38 +197,10 @@ def test_get_color_by_id_with_invalid_repository_types_partitions(
 
 @pytest.mark.parametrize("valid_color_id, expected_color", valid_colors)
 def test_get_all_colors_with_valid_partitions(mySQLColorRepository, valid_color_id, expected_color):
-    expected_color_name = expected_color.get('name')
-    expected_color_price = expected_color.get('price')
-    expected_color_red_value = expected_color.get('red_value')
-    expected_color_green_value = expected_color.get('green_value')
-    expected_color_blue_value = expected_color.get('blue_value')
-
 
     colors = colors_service.get_all(repository=mySQLColorRepository)
 
-    assert isinstance(colors, list) and all(isinstance(color, ColorReturnResource) for color in colors)\
-        , f"Colors are not a list of ColorReturnResource objects, but {type(colors).__name__}"
-
-    assert len(colors) == 5, \
-        f"There should be 5 colors, not '{len(colors)}'"
-
-    assert any(color.id == valid_color_id for color in colors) == True, \
-        f"Color ID {valid_color_id} not found"
-
-    assert next((color.name for color in colors if color.id == valid_color_id), None) == expected_color_name\
-        , f"Color name {expected_color_name} not found"
-
-    assert next((color.price for color in colors if color.id == valid_color_id), None) == expected_color_price\
-        , f"Color price {expected_color_price} not found"
-
-    assert next((color.red_value for color in colors if color.id == valid_color_id), None) == expected_color_red_value\
-        , f"Color red value {expected_color_red_value} not found"
-
-    assert next((color.green_value for color in colors if color.id == valid_color_id), None) == expected_color_green_value\
-        , f"Color green value {expected_color_green_value} not found"
-
-    assert next((color.blue_value for color in colors if color.id == valid_color_id), None) == expected_color_blue_value\
-        , f"Color blue value {expected_color_blue_value} not found"
+    assert_valid_colors(colors, valid_colors)
 
 
 @pytest.mark.parametrize("valid_colors_limit, expecting_color_amount", [
@@ -198,7 +222,7 @@ def test_get_all_colors_with_valid_colors_limit_values_partitions(
         colors_limit=valid_colors_limit
     )
 
-    assert isinstance(colors, list) and all(isinstance(color, ColorReturnResource) for color in colors)\
+    assert isinstance(colors, list) and all(isinstance(color, ColorReturnResource) for color in colors) \
         , f"Colors are not a list of ColorReturnResource objects, but {type(colors).__name__}"
 
     assert len(colors) == expecting_color_amount \
