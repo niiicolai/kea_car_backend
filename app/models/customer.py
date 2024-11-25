@@ -3,6 +3,7 @@ from uuid import uuid4
 from typing import Optional
 from sqlalchemy import Column, String
 from sqlalchemy.orm import Mapped, relationship
+from pydantic import BaseModel, ConfigDict, Field
 
 # Internal library imports
 from db import Base
@@ -33,3 +34,44 @@ class CustomerMySQLEntity(Base):
             last_name=self.last_name,
             address=self.address,
         )
+
+class CustomerMongoEntity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
+    email: str
+    phone_number: Optional[str]
+    first_name: str
+    last_name: str
+    address: Optional[str]
+
+    model_config = ConfigDict(from_attributes=True)
+
+    def as_resource(self) -> CustomerReturnResource:
+        return CustomerReturnResource(
+            id=self.id,
+            email=self.email,
+            phone_number=self.phone_number,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            address=self.address,
+        )
+
+class CustomerNeo4jEntity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    email: str
+    phone_number: Optional[str]
+    first_name: str
+    last_name: str
+    address: Optional[str]
+
+    model_config = ConfigDict(from_attributes=True)
+
+    def as_resource(self) -> CustomerReturnResource:
+        return CustomerReturnResource(
+            id=self.id,
+            email=self.email,
+            phone_number=self.phone_number,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            address=self.address,
+        )
+

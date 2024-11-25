@@ -18,12 +18,14 @@ from app.controllers.mongodb import (
     accessories_controller as mongodb_accessories_controller,
     brands_controller as mongodb_brands_controller,
     colors_controller as mongodb_colors_controller,
+    customers_controller as mongodb_customers_controller,
     models_controller as mongodb_models_controller
 )
 from app.controllers.neo4j import (
     accessories_controller as neo4j_accessories_controller,
     brands_controller as neo4j_brands_controller,
     colors_controller as neo4j_colors_controller,
+    customers_controller as neo4j_customers_controller,
     models_controller as neo4j_models_controller
 )
 
@@ -55,10 +57,12 @@ app.include_router(mysql_car_purchase_controller.router, prefix="/mysql", tags=[
 app.include_router(mongodb_accessories_controller.router, prefix="/mongodb", tags=["MongoDB - Accessories"])
 app.include_router(mongodb_brands_controller.router, prefix="/mongodb", tags=["MongoDB - Brands"])
 app.include_router(mongodb_colors_controller.router, prefix="/mongodb", tags=["MongoDB - Colors"])
+app.include_router(mongodb_customers_controller.router, prefix="/mongodb", tags=["MongoDB - Customers"])
 app.include_router(mongodb_models_controller.router, prefix="/mongodb", tags=["MongoDB - Models"])
 
 # Including the Neo4j Router endpoints
 app.include_router(neo4j_accessories_controller.router, prefix="/neo4j", tags=["Neo4j - Accessories"])
 app.include_router(neo4j_brands_controller.router, prefix="/neo4j", tags=["Neo4j - Brands"])
 app.include_router(neo4j_colors_controller.router, prefix="/neo4j", tags=["Neo4j - Colors"])
+app.include_router(neo4j_customers_controller.router, prefix="/neo4j", tags=["Neo4j - Customers"])
 app.include_router(neo4j_models_controller.router, prefix="/neo4j", tags=["Neo4j - Models"])

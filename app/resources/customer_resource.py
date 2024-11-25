@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
@@ -18,7 +18,7 @@ class CustomerBaseResource(BaseModel):
     first_name: str = Field(
         default=...,
         description="First name of the customer.",
-        examples=["'Henrik"]
+        examples=["Henrik"]
     )
 
     last_name: str = Field(
@@ -164,7 +164,7 @@ class CustomerUpdateResource(CustomerCreateOrUpdateResource):
         examples=["Randomgade nr. 10 4. tv."]
     )
 
-    def get_updated_fields(self) -> dict:
+    def get_updated_fields(self) -> dict[str, Any]:
         return self.model_dump(exclude_unset=True)
 
 
