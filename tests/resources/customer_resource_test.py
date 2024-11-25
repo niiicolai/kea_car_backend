@@ -3,6 +3,7 @@ from pydantic import ValidationError
 from app.resources.customer_resource import CustomerCreateResource, CustomerUpdateResource
 
 
+# VALID and INVALID test data for CustomerCreateResource and CustomerUpdateResource
 
 valid_email_test_data = [
     ("henrik@gmail.com", "henrik@gmail.com"),
