@@ -2,6 +2,8 @@ import main # Import main to ensure all classes are loaded
 import pytest
 import random
 import string
+from uuid import uuid4
+from datetime import date, timedelta
 
 from db import get_db
 from app.repositories.color_repositories import MySQLColorRepository
@@ -31,6 +33,26 @@ def valid_customer_data() -> dict:
             "first_name": first_name,
             "last_name": last_name,
             "address": address
+        }
+        
+@pytest.fixture(scope="function")
+def valid_car_data() -> dict[str, any]:
+    purchase_deadline = date.today() + timedelta(days=1)
+    model_id = uuid4()
+    color_id = uuid4()
+    customer_id = uuid4()
+    sales_person_id = uuid4()
+    accessories = [uuid4() for _ in range(random.randint(0, 5))]
+    insurances = [uuid4() for _ in range(random.randint(0, 5))]
+    return \
+        {
+            "purchase_deadline": purchase_deadline,
+            "models_id": model_id,
+            "colors_id": color_id,
+            "customers_id": customer_id,
+            "sales_people_id": sales_person_id,
+            "accessory_ids": accessories,
+            "insurance_ids": insurances
         }
 
 

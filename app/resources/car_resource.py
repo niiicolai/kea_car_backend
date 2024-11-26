@@ -88,9 +88,13 @@ class CarCreateResource(CarBaseResource):
     def validate_purchase_deadline(cls, purchase_deadline: Optional[date]) -> date:
         if purchase_deadline is not None:
             current_date = date.today()
-            if purchase_deadline < current_date:
+            if purchase_deadline <= current_date:
                 raise ValueError(f"The given purchase deadline '{purchase_deadline.strftime('%d-%m-%Y')}' "
-                                 f"must be before the current date '{current_date.strftime('%d-%m-%Y')}'.")
+                                 f"must be after the current date '{current_date.strftime('%d-%m-%Y')}'.")
+            date_of_exceeted_deadline = current_date + timedelta(days=DAYS_TO_DEADLINE+1)
+            if purchase_deadline >= date_of_exceeted_deadline:
+                raise ValueError(f"The given purchase deadline '{purchase_deadline.strftime('%d-%m-%Y')}' "
+                                 f"must be within {DAYS_TO_DEADLINE} days from the current date '{current_date.strftime('%d-%m-%Y')}'.")
         else:
             purchase_deadline = calculate_purchase_deadline()
         return purchase_deadline
