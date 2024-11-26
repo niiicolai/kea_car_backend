@@ -68,7 +68,7 @@ def get_cars_with_purchase(
     if not isinstance(repository, CarPurchaseRepository):
         raise TypeError(f"repository must be of type CarPurchaseRepository, "
                         f"not {type(repository).__name__}.")
-    if not (isinstance(cars_purchase_limit, int) or cars_purchase_limit is None):
+    if isinstance(cars_purchase_limit, bool) or not (isinstance(cars_purchase_limit, int) or cars_purchase_limit is None):
         raise TypeError(f"cars_purchase_limit must be of type int or None, "
                         f"not {type(cars_purchase_limit).__name__}.")
 

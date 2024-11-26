@@ -50,7 +50,7 @@ def get_all(
     if not (isinstance(is_past_purchase_deadline, bool) or is_past_purchase_deadline is None):
         raise TypeError(f"is_past_purchase_deadline must be of type bool or None, "
                         f"not {type(is_past_purchase_deadline).__name__}.")
-    if not (isinstance(cars_limit, int) or cars_limit is None):
+    if isinstance(cars_limit, bool) or not (isinstance(cars_limit, int) or cars_limit is None):
         raise TypeError(f"cars_limit must be of type int or None, "
                         f"not {type(cars_limit).__name__}.")
 

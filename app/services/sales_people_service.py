@@ -21,7 +21,7 @@ def get_all(
     if not isinstance(repository, SalesPersonRepository):
         raise TypeError(f"repository must be of type SalesPersonRepository, "
                         f"not {type(repository).__name__}.")
-    if not (isinstance(sales_people_limit, int) or sales_people_limit is None):
+    if isinstance(sales_people_limit, bool) or not (isinstance(sales_people_limit, int) or sales_people_limit is None):
         raise TypeError(f"sales_people_limit must be of type int or None, "
                         f"not {type(sales_people_limit).__name__}.")
 

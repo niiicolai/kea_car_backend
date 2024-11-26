@@ -14,7 +14,7 @@ def get_all(
     if not isinstance(repository, AccessoryRepository):
         raise TypeError(f"repository must be of type AccessoryRepository, "
                         f"not {type(repository).__name__}.")
-    if not (isinstance(accessory_limit, int) or accessory_limit is None):
+    if isinstance(accessory_limit, bool) or not (isinstance(accessory_limit, int) or accessory_limit is None):
         raise TypeError(f"accessory_limit must be of type int or None, "
                         f"not {type(accessory_limit).__name__}.")
 
