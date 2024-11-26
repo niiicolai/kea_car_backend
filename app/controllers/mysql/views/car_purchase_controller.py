@@ -158,4 +158,3 @@ async def get_sales_person(
             car_id=str(car_id)
         )
     )
-

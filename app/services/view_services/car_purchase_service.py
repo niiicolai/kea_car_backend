@@ -89,4 +89,3 @@ def get_car_with_purchase_by_id(
     if car_purchase_resource is None:
         raise UnableToFindIdError("Car", car_id)
     return car_purchase_resource
-

@@ -74,4 +74,3 @@ class CustomerNeo4jEntity(BaseModel):
             last_name=self.last_name,
             address=self.address,
         )
-

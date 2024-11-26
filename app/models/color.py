@@ -78,4 +78,3 @@ class ColorNeo4jEntity(BaseModel):
             green_value=self.green_value,
             blue_value=self.blue_value,
         )
-

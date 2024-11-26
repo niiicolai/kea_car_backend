@@ -90,5 +90,3 @@ class Neo4jColorRepository(ColorRepository):
         if record is not None:
             return ColorNeo4jEntity(**record["color"]).as_resource()
         return None
-
-

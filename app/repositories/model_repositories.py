@@ -151,4 +151,3 @@ class Neo4jModelRepository(ModelRepository):
             model = ModelNeo4jEntity(**record["model"], brand=brand, colors=colors)
             return model.as_resource()
         return None
-

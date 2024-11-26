@@ -119,4 +119,3 @@ def get_sales_person_token(token: str) -> TokenPayload:
 
 async def get_current_sales_person_token(token: str = Depends(oauth2)):
     return get_sales_person_token(token)
-
