@@ -1,6 +1,6 @@
 # External Library imports
 from abc import ABC, abstractmethod
-from typing import Optional, List, cast, LiteralString
+from typing import Optional, List, cast
 from sqlalchemy.orm import Session
 from pymongo.database import Database
 from neo4j import Session as Neo4jSession, Query
