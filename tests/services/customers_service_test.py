@@ -34,12 +34,12 @@ def prepare_customer_data(
         customer_id = customer_data.pop('id')
     if isinstance(customer_resource, CustomerReturnResource) and customer_resource is not None:
         customer_id = customer_resource.id
-    updated_customer_fields = list(customer_data.keys())
+    customer_fields = list(customer_data.keys())
 
-    return customer_data, updated_customer_fields, customer_id
+    return customer_data, customer_fields, customer_id
 
 
-customer_henrik_with_one_purchased_cars = {
+customer_henrik = {
     "id": "0ac1d668-55aa-46a1-898a-8fa61457facb",
     "email": "henrik@gmail.com",
     "phone_number": "10203040",
@@ -51,7 +51,7 @@ customer_henrik_with_one_purchased_cars = {
     "car_ids": ["bdfca7c4-e0ad-4618-8766-9bb355371c81"]
 }
 
-customer_oliver_with_zero_cars = {
+customer_oliver = {
     "id": "bbbb06bc-268d-4f88-8b8e-3da4df118328",
     "email": "oli@oli.dk",
     "phone_number": "12345678",
@@ -61,7 +61,7 @@ customer_oliver_with_zero_cars = {
     "amount_of_cars": 0,
 }
 
-customer_tom_with_zero_cars = {
+customer_tom = {
     "id": "daf830ad-be98-4f95-8fa8-3dc7efa540fe",
     "email": "tom@gmail.com",
     "phone_number": "12345678",
@@ -71,7 +71,7 @@ customer_tom_with_zero_cars = {
     "amount_of_cars": 0
 }
 
-customer_james_with_three_none_purchased_cars = {
+customer_james = {
     "id": "f159bdaf-bc83-46c3-8a3f-f6b5c93ebbdc",
     "email": "james@gmail.com",
     "phone_number": "12345678",
@@ -86,7 +86,7 @@ customer_james_with_three_none_purchased_cars = {
          "a5503fbb-c388-4789-a10c-d7ae7bdf7408"]
 }
 
-customer_test_with_zero_cars = {
+customer_test = {
     "id": "fc40f99e-13f0-460d-b79d-f75206acdd07",
     "email": "test@test.dk",
     "phone_number": "12345678",
@@ -100,11 +100,11 @@ customer_test_with_zero_cars = {
 # VALID TESTS FOR get_customer_by_id
 
 @pytest.mark.parametrize("expected_customer", [
-    customer_henrik_with_one_purchased_cars,
-    customer_oliver_with_zero_cars,
-    customer_tom_with_zero_cars,
-    customer_james_with_three_none_purchased_cars,
-    customer_test_with_zero_cars,
+    customer_henrik,
+    customer_oliver,
+    customer_tom,
+    customer_james,
+    customer_test,
 ])
 def test_get_customer_by_id_with_valid_partitions(
         mySQLCustomerRepository, expected_customer
@@ -157,7 +157,7 @@ def test_get_customer_by_id_with_invalid_repository_type_partitions(invalid_cust
     with pytest.raises(TypeError, match=expecting_error_message):
         customers_service.get_by_id(
             repository=invalid_customer_repository,
-            customer_id=customer_test_with_zero_cars.get('id')
+            customer_id=customer_test.get('id')
         )
 
 
@@ -170,7 +170,7 @@ def test_get_customer_by_id_with_invalid_repository_types_partitions(
                        ):
         customers_service.get_by_id(
             repository=mySQLColorRepository,
-            customer_id=customer_test_with_zero_cars.get('id')
+            customer_id=customer_test.get('id')
         )
 
     with pytest.raises(TypeError,
@@ -179,7 +179,7 @@ def test_get_customer_by_id_with_invalid_repository_types_partitions(
                        ):
         customers_service.get_by_id(
             repository=mySQLCarRepository,
-            customer_id=customer_test_with_zero_cars.get('id')
+            customer_id=customer_test.get('id')
         )
 
     with pytest.raises(TypeError,
@@ -188,7 +188,7 @@ def test_get_customer_by_id_with_invalid_repository_types_partitions(
                        ):
         customers_service.get_by_id(
             repository=mySQLPurchaseRepository,
-            customer_id=customer_test_with_zero_cars.get('id')
+            customer_id=customer_test.get('id')
         )
 
 
@@ -197,11 +197,11 @@ def test_get_customer_by_id_with_invalid_repository_types_partitions(
 
 def test_get_all_customers_with_valid_partitions(mySQLCustomerRepository):
     expected_customers = [
-        customer_henrik_with_one_purchased_cars,
-        customer_oliver_with_zero_cars,
-        customer_tom_with_zero_cars,
-        customer_james_with_three_none_purchased_cars,
-        customer_test_with_zero_cars,
+        customer_henrik,
+        customer_oliver,
+        customer_tom,
+        customer_james,
+        customer_test,
     ]
 
     customers = customers_service.get_all(repository=mySQLCustomerRepository)
@@ -251,27 +251,27 @@ def test_get_all_customers_with_valid_customers_limit_values_partitions(
 
 
 @pytest.mark.parametrize("valid_email_filter, expecting_customers", [
-    (None, [customer_henrik_with_one_purchased_cars,
-            customer_oliver_with_zero_cars,
-            customer_tom_with_zero_cars,
-            customer_james_with_three_none_purchased_cars,
-            customer_test_with_zero_cars]),
-    ("", [customer_henrik_with_one_purchased_cars,
-          customer_oliver_with_zero_cars,
-          customer_tom_with_zero_cars,
-          customer_james_with_three_none_purchased_cars,
-          customer_test_with_zero_cars]),
-    ("@", [customer_henrik_with_one_purchased_cars,
-           customer_oliver_with_zero_cars,
-           customer_tom_with_zero_cars,
-           customer_james_with_three_none_purchased_cars,
-           customer_test_with_zero_cars]),
-    ("henrik", [customer_henrik_with_one_purchased_cars]),
-    ("gmail", [customer_henrik_with_one_purchased_cars,
-               customer_tom_with_zero_cars,
-               customer_james_with_three_none_purchased_cars]),
-    (".dk", [customer_oliver_with_zero_cars,
-             customer_test_with_zero_cars]),
+    (None, [customer_henrik,
+            customer_oliver,
+            customer_tom,
+            customer_james,
+            customer_test]),
+    ("", [customer_henrik,
+          customer_oliver,
+          customer_tom,
+          customer_james,
+          customer_test]),
+    ("@", [customer_henrik,
+           customer_oliver,
+           customer_tom,
+           customer_james,
+           customer_test]),
+    ("henrik", [customer_henrik]),
+    ("gmail", [customer_henrik,
+               customer_tom,
+               customer_james]),
+    (".dk", [customer_oliver,
+             customer_test]),
     (" ", []),
     ("unknown-email", []),
 ])
@@ -499,10 +499,10 @@ def test_create_customer_with_valid_partitions(mySQLCustomerRepository, valid_cu
     (CustomerUpdateResource(), TypeError, f"customer_create_data must be of type CustomerCreateResource, "
                                           f"not {type(CustomerUpdateResource()).__name__}."),
     ({}, TypeError, "customer_create_data must be of type CustomerCreateResource, not dict."),
-    ({"email": customer_test_with_zero_cars.get('email')}, AlreadyTakenFieldValueError,
-     f"email: {customer_test_with_zero_cars.get('email')} is already taken."),
-    ({"email": customer_henrik_with_one_purchased_cars.get('email')}, AlreadyTakenFieldValueError,
-     f"email: {customer_henrik_with_one_purchased_cars.get('email')} is already taken."),
+    ({"email": customer_test.get('email')}, AlreadyTakenFieldValueError,
+     f"email: {customer_test.get('email')} is already taken."),
+    ({"email": customer_henrik.get('email')}, AlreadyTakenFieldValueError,
+     f"email: {customer_henrik.get('email')} is already taken."),
 ])
 def test_create_customer_with_invalid_customer_create_data_partitions(
         mySQLCustomerRepository, valid_customer_data, invalid_customer_create_data, expected_error,
@@ -587,11 +587,11 @@ def test_create_customer_with_invalid_repository_types_partitions(
 # VALID TESTS FOR update_customer
 
 @pytest.mark.parametrize("customer_to_update", [
-    customer_henrik_with_one_purchased_cars,
-    customer_oliver_with_zero_cars,
-    customer_tom_with_zero_cars,
-    customer_james_with_three_none_purchased_cars,
-    customer_test_with_zero_cars,
+    customer_henrik,
+    customer_oliver,
+    customer_tom,
+    customer_james,
+    customer_test,
 ])
 def test_update_customer_with_valid_partitions(
         mySQLCustomerRepository, valid_customer_data, customer_to_update
@@ -628,11 +628,11 @@ def test_update_customer_with_valid_partitions(
 
 
 @pytest.mark.parametrize("customer_to_update", [
-    customer_henrik_with_one_purchased_cars,
-    customer_oliver_with_zero_cars,
-    customer_tom_with_zero_cars,
-    customer_james_with_three_none_purchased_cars,
-    customer_test_with_zero_cars,
+    customer_henrik,
+    customer_oliver,
+    customer_tom,
+    customer_james,
+    customer_test,
 ])
 def test_update_customer_email_to_their_own_email_with_valid_partitions(
         mySQLCustomerRepository, customer_to_update
@@ -669,8 +669,8 @@ def test_update_customer_email_to_their_own_email_with_valid_partitions(
     (True, TypeError, "customer_update_data must be of type CustomerUpdateResource, not bool."),
     ("customer_data", TypeError, "customer_update_data must be of type CustomerUpdateResource, not str."),
     ({}, TypeError, "customer_update_data must be of type CustomerUpdateResource, not dict."),
-    (CustomerUpdateResource(email=customer_test_with_zero_cars.get('email')), AlreadyTakenFieldValueError,
-     f"email: {customer_test_with_zero_cars.get('email')} is already taken."),
+    (CustomerUpdateResource(email=customer_test.get('email')), AlreadyTakenFieldValueError,
+     f"email: {customer_test.get('email')} is already taken."),
 ])
 def test_update_customer_with_invalid_customer_update_data_partitions(
         mySQLCustomerRepository,
@@ -678,7 +678,7 @@ def test_update_customer_with_invalid_customer_update_data_partitions(
         expected_error,
         expecting_error_message,
 ):
-    valid_customer_id = customer_oliver_with_zero_cars.get('id')
+    valid_customer_id = customer_oliver.get('id')
     with pytest.raises(expected_error, match=expecting_error_message):
         customers_service.update(
             repository=mySQLCustomerRepository,
@@ -713,7 +713,7 @@ def test_update_customer_with_invalid_customer_id_partitions(
 def test_update_customer_with_invalid_repository_type_partitions(
         mySQLCustomerRepository, valid_customer_data, invalid_customer_repository, expecting_error_message
 ):
-    valid_customer_id = customer_oliver_with_zero_cars.get('id')
+    valid_customer_id = customer_oliver.get('id')
     valid_customer_update_data = CustomerUpdateResource(**valid_customer_data)
     with pytest.raises(TypeError, match=expecting_error_message):
         customers_service.update(
@@ -726,7 +726,7 @@ def test_update_customer_with_invalid_repository_type_partitions(
 def test_update_customer_with_invalid_repository_types_partitions(
         mySQLColorRepository, mySQLCarRepository, mySQLPurchaseRepository, valid_customer_data
 ):
-    valid_customer_id = customer_oliver_with_zero_cars.get('id')
+    valid_customer_id = customer_oliver.get('id')
     valid_customer_update_data = CustomerUpdateResource(**valid_customer_data)
     with pytest.raises(TypeError,
                        match=f"repository must be of type CustomerRepository, "
