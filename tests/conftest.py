@@ -19,7 +19,7 @@ from app.repositories.sales_person_repositories import MySQLSalesPersonRepositor
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_once():
-    restore("scripts/mysql_for_test.sql")
+    restore("scripts/mysql_for_test.sql", restore_test_db=True)
 
 @pytest.fixture(scope="function")
 def valid_customer_data() -> dict:
