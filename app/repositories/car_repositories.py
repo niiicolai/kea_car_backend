@@ -160,11 +160,7 @@ class MySQLCarRepository(CarRepository):
         cars: List[CarReturnResource] = []
         for car_result in cars_result:
             car_id: str = car_result[0]
-            if not isinstance(car_id, str):
-                raise SQLAlchemyError(f"The car_id '{car_id}' was not a string but a '{type(car_id).__name__}'.")
             car = self.session.get(CarMySQLEntity, car_id)
-            if car is None:
-                raise SQLAlchemyError(f"The car with id: '{car_id}' did not exist in the database.")
             car = cast(CarMySQLEntity, car)
             is_car_purchased: bool = (self.session.query(PurchaseMySQLEntity)
                                       .filter_by(cars_id=car.id).first() is not None)
