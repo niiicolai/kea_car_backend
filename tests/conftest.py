@@ -4,6 +4,7 @@ import random
 import string
 from uuid import uuid4
 from datetime import date, timedelta
+from scripts.restore_mysql import restore
 
 from db import get_db
 from app.repositories.color_repositories import MySQLColorRepository
@@ -15,6 +16,10 @@ from app.repositories.insurance_repository import MySQLInsuranceRepository
 from app.repositories.model_repositories import MySQLModelRepository
 from app.repositories.purchase_repositories import MySQLPurchaseRepository
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_once():
+    restore("scripts/mysql.sql")
 
 @pytest.fixture(scope="function")
 def valid_customer_data() -> dict:
