@@ -36,8 +36,6 @@ def calculate_total_price_for_car(
         total_price += accessory_resource.price
     for insurance_resource in insurance_resources:
         total_price += insurance_resource.price
-    if total_price < 0:
-        total_price = 0.0
 
     # Round total_price to 2 decimal places before returning
     total_price = round(total_price, 2)
