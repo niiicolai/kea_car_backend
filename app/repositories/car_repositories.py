@@ -136,6 +136,7 @@ class MySQLCarRepository(CarRepository):
         # Define parameters
         customer_id = customer.id if customer else None
         sales_person_id = sales_person.id if sales_person else None
+        limit = None if limit is not None and limit <= 0 else limit
 
         cars_result = self.session.execute(
             text("""
