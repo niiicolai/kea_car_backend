@@ -12,6 +12,15 @@ from app.resources.purchase_resource import (
 )
 
 # VALID TESTS FOR get_purchase_by_id
+@pytest.mark.parametrize("options", [
+    ({"limit": 1}),
+])
+def test_get_all_with_valid_partitions_and_boundaries(mySQLPurchaseRepository, options):
+    purchases = purchases_service.get_all(mySQLPurchaseRepository, options["limit"])
+    
+    assert isinstance(purchases, list) and all(isinstance(purchase, PurchaseReturnResource) for purchase in purchases) \
+        , f"Purchases are not a list of PurchaseReturnResource objects, but {type(purchases).__name__}"
+    assert len(purchases) <= options["limit"], f"Number of purchases is greater than the limit of {options['limit']}"    
 
 # INVALID TESTS FOR get_purchase_by_id
 
