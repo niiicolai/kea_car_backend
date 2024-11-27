@@ -8,24 +8,17 @@ import argparse
 load_dotenv()
 
 host = os.getenv('DB_HOST')
-database = os.getenv('DB_NAME')
-test_database = os.getenv('TEST_DB_NAME')
 username = os.getenv('DB_USER')
 password = os.getenv('DB_PASSWORD')
 port = os.getenv('DB_PORT')
 
-def restore(filepath: str, restore_test_db: bool = False):
-    if host is None or database is None or username is None or password is None:
-        return logging.error("DB_HOST, DB_NAME, DB_USER, or DB_PASSWORD is not set in the .env file")
+def restore(filepath: str):
+    if host is None or username is None or password is None:
+        return logging.error("DB_HOST, DB_USER, or DB_PASSWORD is not set in the .env file")
     if filepath is None:
         raise ValueError("filepath is required")
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"File not found: {filepath}")
-
-    database_name = database
-
-    if restore_test_db and test_database is not None:
-        database_name = test_database
         
     print(f"MYSQL_RESTORE: {datetime.now()}: Starting MySQL restore")
     try:
@@ -38,8 +31,6 @@ def restore(filepath: str, restore_test_db: bool = False):
         
         if port: mysql_command.append(f'--port={port}')
         else: mysql_command.append(f'--port=3306')
-        
-        mysql_command.append(database_name)
         
         # Run the restore command
         with open(filepath, 'r') as dump_file:
