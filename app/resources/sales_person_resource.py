@@ -51,24 +51,56 @@ class SalesPersonCreateResource(SalesPersonBaseResource):
 
     @field_validator('first_name')
     def validate_first_name(cls, first_name: str) -> str:
-        first_name = first_name.strip()
+        minimum_length_of_first_name = 2
+        maximum_length_of_first_name = 50
+        first_name = first_name.strip().capitalize()
         if len(first_name) == 0:
             raise ValueError(f"The given first name {first_name} is an empty string.")
+        if len(first_name) < minimum_length_of_first_name:
+            raise ValueError(f"The given first name {first_name} is too short, "
+                             f"it must be at least {minimum_length_of_first_name} characters long.")
+        if len(first_name) > maximum_length_of_first_name:
+            raise ValueError(f"The given first name {first_name} is too long, "
+                             f"it can only be maximum {maximum_length_of_first_name} characters long.")
+        if ' ' in first_name:
+            raise ValueError(f"The given first name {first_name} contains whitespace.")
+        if not first_name.isalpha():
+            raise ValueError(f"The given first name {first_name} can only contain alphabetic characters.")
         return first_name
 
     @field_validator('last_name')
     def validate_last_name(cls, last_name: str) -> str:
-        last_name = last_name.strip()
+        minimum_length_of_last_name = 2
+        maximum_length_of_last_name = 50
+        last_name = last_name.strip().capitalize()
         if len(last_name) == 0:
             raise ValueError(f"The given last name {last_name} is an empty string.")
+        if len(last_name) < minimum_length_of_last_name:
+            raise ValueError(f"The given last name {last_name} is too short, "
+                             f"it must be at least {minimum_length_of_last_name} characters long.")
+        if len(last_name) > maximum_length_of_last_name:
+            raise ValueError(f"The given last name {last_name} is too long, "
+                             f"it can only be maximum {maximum_length_of_last_name} characters long.")
+        if ' ' in last_name:
+            raise ValueError(f"The given last name {last_name} contains whitespace.")
+        if not last_name.isalpha():
+            raise ValueError(f"The given last name {last_name} can only contain alphabetic characters.")
         return last_name
 
     @field_validator('password')
     def validate_password(cls, password: str) -> str:
+        minimum_length_of_password = 7
+        maximum_length_of_password = 30
         if len(password) == 0:
             raise ValueError(f"The given password {password} is an empty string.")
         if ' ' in password:
             raise ValueError(f"The given password {password} contains whitespaces.")
+        if len(password) > 30:
+            raise ValueError(f"The given password {password} is too long, "
+                             f"it can only be maximum {maximum_length_of_password} characters long.")
+        if len(password) < minimum_length_of_password:
+            raise ValueError(f"The given password {password} is too short, "
+                             f"it must be at least {minimum_length_of_password} characters long.")
         return password
 
 

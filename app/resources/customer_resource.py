@@ -93,17 +93,17 @@ class CustomerCreateOrUpdateResource(CustomerBaseResource):
 
     @field_validator('last_name')
     def validate_last_name(cls, last_name: str) -> str:
-        minimum_length_of_first_name = 2
-        maximum_length_of_first_name = 45
+        minimum_length_of_last_name = 2
+        maximum_length_of_last_name = 45
         last_name = last_name.strip().capitalize()
         if len(last_name) == 0:
             raise ValueError(f"The given last name {last_name} is an empty string.")
-        if len(last_name) < minimum_length_of_first_name:
+        if len(last_name) < minimum_length_of_last_name:
             raise ValueError(f"The given last name {last_name} is too short, "
-                             f"it must be at least {minimum_length_of_first_name} characters long.")
-        if len(last_name) > maximum_length_of_first_name:
+                             f"it must be at least {minimum_length_of_last_name} characters long.")
+        if len(last_name) > maximum_length_of_last_name:
             raise ValueError(f"The given last name {last_name} is too long, "
-                             f"it can only be maximum {maximum_length_of_first_name} characters long.")
+                             f"it can only be maximum {maximum_length_of_last_name} characters long.")
         if ' ' in last_name:
             raise ValueError(f"The given last name {last_name} contains whitespace.")
         if not last_name.isalpha():

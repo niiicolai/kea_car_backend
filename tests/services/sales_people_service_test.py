@@ -173,8 +173,8 @@ def test_login_with_invalid_repository(repository, errorType, errorMessage):
     (SalesPersonCreateResource(
         email="test2@localhost.something", 
         password="12345678",
-        first_name="Test2",
-        last_name="Tester2",
+        first_name="Testtwo",
+        last_name="Testertwo",
     )),
 ])
 def test_create_with_valid_partitions_and_boundaries(mySQLSalesPersonRepository, salesPersonCreateResource):
@@ -199,8 +199,8 @@ def test_create_with_valid_partitions_and_boundaries(mySQLSalesPersonRepository,
     (SalesPersonCreateResource(
         email="james@gmail.com", 
         password="12345678",
-        first_name="Test3",
-        last_name="Tester3",
+        first_name="Testthree",
+        last_name="Testerthree",
     ), AlreadyTakenFieldValueError, 'Sales Person with email: james@gmail.com is already taken.'),
 ])
 def test_create_with_invalid_partitions_and_boundaries(mySQLSalesPersonRepository, salesPersonCreateResource, errorType, errorMessage):

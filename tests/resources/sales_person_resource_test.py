@@ -5,7 +5,7 @@ from app.resources.sales_person_resource import SalesPersonLoginResource, SalesP
 
 # VALID test data for SalesPersonCreateResource
 @pytest.mark.parametrize("props", [
-    ({"email": "local@localhost.something", "password": "password", "first_name": "local", "last_name": "local"}),
+    ({"email": "local@localhost.something", "password": "password", "first_name": "Local", "last_name": "Local"}),
 ])
 def test_SalesPersonCreateResource_valid_partitions_and_boundaries(props):
     resource = SalesPersonCreateResource(**props)
@@ -18,30 +18,30 @@ def test_SalesPersonCreateResource_valid_partitions_and_boundaries(props):
 
 # INVALID test data for SalesPersonCreateResource
 @pytest.mark.parametrize("props, errorType, errorMessage", [
-    ({"password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
-    ({"email": None, "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
-    ({"email": [], "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
-    ({"email": {}, "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
-    ({"email": 0, "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
-    ({"email": "test@localhost.something", "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
-    ({"email": "test@localhost.something", "password": None, "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
-    ({"email": "test@localhost.something", "password": [], "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
-    ({"email": "test@localhost.something", "password": {}, "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
-    ({"email": "test@localhost.something", "password": " ", "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
-    ({"email": "test@localhost.something", "password": "", "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
-    ({"email": "test@localhost.something", "password": 0, "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
-    ({"email": "test@localhost.something", "password": "password", "last_name": "local"}, ValidationError, r"first_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": None, "last_name": "local"}, ValidationError, r"first_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": [], "last_name": "local"}, ValidationError, r"first_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": {}, "last_name": "local"}, ValidationError, r"first_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": 0, "last_name": "local"}, ValidationError, r"first_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": " ", "last_name": "local"}, ValidationError, r"first_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": "local"}, ValidationError, r"last_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": "local", "last_name": None}, ValidationError, r"last_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": "local", "last_name": []}, ValidationError, r"last_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": "local", "last_name": {}}, ValidationError, r"last_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": "local", "last_name": 0}, ValidationError, r"last_name"),
-    ({"email": "test@localhost.something", "password": "password", "first_name": "local", "last_name": " "}, ValidationError, r"last_name"),
+    ({"password": "password", "first_name": "Local", "last_name": "Local"}, ValidationError, r"email"),
+    ({"email": None, "password": "password", "first_name": "Local", "last_name": "Local"}, ValidationError, r"email"),
+    ({"email": [], "password": "password", "first_name": "Local", "last_name": "Local"}, ValidationError, r"email"),
+    ({"email": {}, "password": "password", "first_name": "Local", "last_name": "Local"}, ValidationError, r"email"),
+    ({"email": 0, "password": "password", "first_name": "Local", "last_name": "Local"}, ValidationError, r"email"),
+    ({"email": "test@localhost.something", "first_name": "Local", "last_name": "local"}, ValidationError, r"password"),
+    ({"email": "test@localhost.something", "password": None, "first_name": "Local", "last_name": "Local"}, ValidationError, r"password"),
+    ({"email": "test@localhost.something", "password": [], "first_name": "Local", "last_name": "Local"}, ValidationError, r"password"),
+    ({"email": "test@localhost.something", "password": {}, "first_name": "Local", "last_name": "Local"}, ValidationError, r"password"),
+    ({"email": "test@localhost.something", "password": " ", "first_name": "Local", "last_name": "Local"}, ValidationError, r"password"),
+    ({"email": "test@localhost.something", "password": "", "first_name": "Local", "last_name": "Local"}, ValidationError, r"password"),
+    ({"email": "test@localhost.something", "password": 0, "first_name": "Local", "last_name": "Local"}, ValidationError, r"password"),
+    ({"email": "test@localhost.something", "password": "password", "last_name": "Local"}, ValidationError, r"first_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": None, "last_name": "Local"}, ValidationError, r"first_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": [], "last_name": "Local"}, ValidationError, r"first_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": {}, "last_name": "Local"}, ValidationError, r"first_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": 0, "last_name": "Local"}, ValidationError, r"first_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": " ", "last_name": "Local"}, ValidationError, r"first_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": "Local"}, ValidationError, r"last_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": "Local", "last_name": None}, ValidationError, r"last_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": "Local", "last_name": []}, ValidationError, r"last_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": "Local", "last_name": {}}, ValidationError, r"last_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": "Local", "last_name": 0}, ValidationError, r"last_name"),
+    ({"email": "test@localhost.something", "password": "password", "first_name": "Local", "last_name": " "}, ValidationError, r"last_name"),
 ])
 def test_SalesPersonCreateResource_with_invalid_partitions_and_boundaries(props, errorType, errorMessage):
     with pytest.raises(errorType, match=errorMessage):
@@ -51,7 +51,7 @@ def test_SalesPersonCreateResource_with_invalid_partitions_and_boundaries(props,
 def test_SalesPersonCreateResource_with_email_too_long():
     email = "12345678901234_this_is_an_invalid_email_address@example-with-a-much-too-long-subdomain-and-suffix.com"
     with pytest.raises(ValueError, match="The given email .* is .* characters too long, it can only be maximum 100 characters and not .*"):
-        SalesPersonCreateResource(email=email, password="password", first_name="local", last_name="local")
+        SalesPersonCreateResource(email=email, password="password", first_name="Local", last_name="Local")
         
 
 # VALID TESTS FOR SalesPersonLoginResource

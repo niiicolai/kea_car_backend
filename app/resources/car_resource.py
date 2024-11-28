@@ -74,8 +74,13 @@ class CarCreateResource(CarBaseResource):
 
     @field_validator('accessory_ids')
     def validate_accessory_ids(cls, accessory_ids: List[UUID4]) -> List[UUID4]:
+        maximum_amount_of_accessories = 10
         if len(accessory_ids) != len(set(accessory_ids)):
             raise ValueError('accessories must be unique.')
+        actual_amount_of_accessories = len(accessory_ids)
+        if actual_amount_of_accessories > maximum_amount_of_accessories:
+            raise ValueError(f"Too many accessories by {maximum_amount_of_accessories - actual_amount_of_accessories}, "
+                             f"the maximum amount of accessories is {maximum_amount_of_accessories}.")
         return accessory_ids
 
     @field_validator('insurance_ids')
