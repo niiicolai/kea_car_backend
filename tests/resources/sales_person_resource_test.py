@@ -23,7 +23,7 @@ def test_SalesPersonCreateResource_valid_partitions_and_boundaries(props):
     ({"email": [], "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
     ({"email": {}, "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
     ({"email": 0, "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
-    ({"email": "uP2aJoTnyXoM84iwqR5GItRpSioTgELv5I3Y3jSsRbhXq99zdlq2CER92KdhkRyfH2cFHjvDu84ahlXKoWVAhvUd9zJjfabWBuBN2@toooo.long", "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
+    ({"email": "uP2aJoTnyXoM84iwqR5GItRpSioTgELv5I3Y3jSsRbhXq99zdlq2CER92KdhkRyfH2cFHjvDu84ahlXKoWVAhvUd9zJjfabWBuBN2@toooo.long", "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"too long"),
     ({"email": "test@localhost.something", "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
     ({"email": "test@localhost.something", "password": None, "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
     ({"email": "test@localhost.something", "password": [], "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
