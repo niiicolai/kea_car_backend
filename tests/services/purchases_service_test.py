@@ -1,5 +1,7 @@
 import pytest
 import datetime
+from typing import Optional
+from pydantic import field_validator
 from app.services import purchases_service
 from app.exceptions.database_errors import (
     PurchaseDeadlineHasPastError,
@@ -11,6 +13,19 @@ from app.resources.purchase_resource import (
     PurchaseCreateResource,
     PurchaseReturnResource
 )
+
+"""
+The purchases_service.create method expects a PurchaseCreateResource object.
+The PurchaseCreateResource object has a date_of_purchase field that should not be in the future.
+But the purchases_service.create method has a check if the date_of_purchase is past the purchase deadline.
+That's why we need the CreateResourceWithNoFutureDateRestriction class.
+To be able to test the purchases_service.create method with a date_of_purchase past the purchase deadline,
+"""
+class CreateResourceWithNoFutureDateRestriction(PurchaseCreateResource):
+    # disable the date_of_purchase field validator
+    @field_validator("date_of_purchase")
+    def validate_date_of_purchase(cls, date_of_purchase: Optional[datetime.date]) -> datetime.date:
+        return date_of_purchase
 
 
 # VALID TESTS FOR get_all
@@ -45,6 +60,20 @@ def test_get_all_with_invalid_partitions_and_boundaries(mySQLPurchaseRepository,
         purchases_service.get_all(mySQLPurchaseRepository, options["limit"])
 
 
+@pytest.mark.parametrize("repository, errorType, errorMessage", [
+    ({}, TypeError, "repository must be of type PurchaseRepository, not dict."),
+    ([], TypeError, "repository must be of type PurchaseRepository, not list."),
+    (True, TypeError, "repository must be of type PurchaseRepository, not bool."),
+    (False, TypeError, "repository must be of type PurchaseRepository, not bool."),
+    (None, TypeError, "repository must be of type PurchaseRepository, not None."),
+    (1, TypeError, "repository must be of type PurchaseRepository, not int."),
+    ("", TypeError, "repository must be of type PurchaseRepository, not str."),
+])
+def test_get_all_with_invalid_repository(repository, errorType, errorMessage):
+    with pytest.raises(errorType, match=errorMessage):
+        purchases_service.get_all(repository, None)
+
+
 # VALID TESTS FOR get_by_id
 @pytest.mark.parametrize("id, expected", [
     ("bdfca7c4-e0ad-4618-8766-9bb355371c81", {
@@ -77,6 +106,20 @@ def test_get_by_id_with_invalid_partitions_and_boundaries(mySQLPurchaseRepositor
         purchases_service.get_by_id(mySQLPurchaseRepository, id)
 
 
+@pytest.mark.parametrize("repository, errorType, errorMessage", [
+    ({}, TypeError, "repository must be of type PurchaseRepository, not dict."),
+    ([], TypeError, "repository must be of type PurchaseRepository, not list."),
+    (True, TypeError, "repository must be of type PurchaseRepository, not bool."),
+    (False, TypeError, "repository must be of type PurchaseRepository, not bool."),
+    (None, TypeError, "repository must be of type PurchaseRepository, not None."),
+    (1, TypeError, "repository must be of type PurchaseRepository, not int."),
+    ("", TypeError, "repository must be of type PurchaseRepository, not str."),
+])
+def test_get_by_id_with_invalid_repository(repository, errorType, errorMessage):
+    with pytest.raises(errorType, match=errorMessage):
+        purchases_service.get_by_id(repository, "bdfca7c4-e0ad-4618-8766-9bb355371c81")
+        
+
 # VALID TESTS FOR get_by_car_id
 @pytest.mark.parametrize("id, expected", [
     ("d4c7f1f8-4451-43bc-a827-63216a2ddece", {
@@ -97,16 +140,46 @@ def test_get_by_car_id_with_valid_partitions_and_boundaries(mySQLPurchaseReposit
 # INVALID TESTS FOR get_by_car_id
 @pytest.mark.parametrize("id, errorType, errorMessage", [
     ("", UnableToFindIdError, "Car with ID:  does not exist."),
-    ("fake_id", UnableToFindIdError, "Car with ID: fake_id does not exist."),
     (None, TypeError, "car_id must be of type str, not None."),
     ({}, TypeError, "car_id must be of type str, not dict."),
     ([], TypeError, "car_id must be of type str, not list."),
     (True, TypeError, "car_id must be of type str, not bool."),
     (False, TypeError, "car_id must be of type str, not bool."),
+    ("fake_id", UnableToFindIdError, "Car with ID: fake_id does not exist."),
+    ("0be86135-c58f-43b6-a369-a3c5445b9948", UnableToFindEntityError, "Purchase with cars_id: 0be86135-c58f-43b6-a369-a3c5445b9948 does not exist."),
 ])
 def test_get_by_car_id_with_invalid_partitions_and_boundaries(mySQLPurchaseRepository, mySQLCarRepository, id, errorType, errorMessage):
     with pytest.raises(errorType, match=errorMessage):
         purchases_service.get_by_car_id(mySQLPurchaseRepository, mySQLCarRepository, id)
+
+
+@pytest.mark.parametrize("purchaseRepository, errorType, errorMessage", [
+    ({}, TypeError, "repository must be of type PurchaseRepository, not dict."),
+    ([], TypeError, "repository must be of type PurchaseRepository, not list."),
+    (True, TypeError, "repository must be of type PurchaseRepository, not bool."),
+    (False, TypeError, "repository must be of type PurchaseRepository, not bool."),
+    (None, TypeError, "repository must be of type PurchaseRepository, not None."),
+    (1, TypeError, "repository must be of type PurchaseRepository, not int."),
+    ("", TypeError, "repository must be of type PurchaseRepository, not str."),
+])
+def test_get_by_car_id_with_invalid_purchase_repository(mySQLCarRepository, purchaseRepository, errorType, errorMessage):
+    with pytest.raises(errorType, match=errorMessage):
+        purchases_service.get_by_car_id(purchaseRepository, mySQLCarRepository, "d4c7f1f8-4451-43bc-a827-63216a2ddece")
+        
+        
+@pytest.mark.parametrize("carRepository, errorType, errorMessage", [
+    ({}, TypeError, "car_repository must be of type CarRepository, not dict."),
+    ([], TypeError, "car_repository must be of type CarRepository, not list."),
+    (True, TypeError, "car_repository must be of type CarRepository, not bool."),
+    (False, TypeError, "car_repository must be of type CarRepository, not bool."),
+    (None, TypeError, "car_repository must be of type CarRepository, not None."),
+    (1, TypeError, "car_repository must be of type CarRepository, not int."),
+    ("", TypeError, "car_repository must be of type CarRepository, not str."),
+])
+def test_get_by_car_id_with_invalid_car_repository(mySQLPurchaseRepository, carRepository, errorType, errorMessage):
+    with pytest.raises(errorType, match=errorMessage):
+        purchases_service.get_by_car_id(mySQLPurchaseRepository, carRepository, "d4c7f1f8-4451-43bc-a827-63216a2ddece")
+
 
 # VALID TESTS FOR create
 @pytest.mark.parametrize("purchaseCreateResource", [
@@ -129,8 +202,52 @@ def test_create_with_valid_partitions_and_boundaries(mySQLPurchaseRepository, my
     (True, TypeError, "purchase_create_data must be of type PurchaseCreateResource, not bool."),
     (False, TypeError, "purchase_create_data must be of type PurchaseCreateResource, not bool."),
     (False, TypeError, "purchase_create_data must be of type PurchaseCreateResource, not bool."),
+    (
+        PurchaseCreateResource(cars_id="b64dd009-862c-4697-84f1-54f21864dea1", date_of_purchase=None), 
+        UnableToFindIdError, "Car with ID: b64dd009-862c-4697-84f1-54f21864dea1 does not exist."
+    ),
+    (
+        PurchaseCreateResource(cars_id="d4c7f1f8-4451-43bc-a827-63216a2ddece", date_of_purchase=None), 
+        AlreadyTakenFieldValueError, "Purchase with cars_id: d4c7f1f8-4451-43bc-a827-63216a2ddece is already taken."
+    ),
+    (
+        CreateResourceWithNoFutureDateRestriction(
+            cars_id="0be86135-c58f-43b6-a369-a3c5445b9948", 
+            date_of_purchase='2024-12-08'
+        ), 
+        PurchaseDeadlineHasPastError, 
+        "Car with ID: 0be86135-c58f-43b6-a369-a3c5445b9948 has a Purchase Deadline: 07-12-2024 that has past the date of purchase: 08-12-2024."
+    ),
 ])
 def test_create_with_invalid_partitions_and_boundaries(mySQLPurchaseRepository, mySQLCarRepository, purchaseCreateResource, errorType, errorMessage):
     with pytest.raises(errorType, match=errorMessage):
         purchases_service.create(mySQLPurchaseRepository, mySQLCarRepository, purchaseCreateResource)
+
+
+@pytest.mark.parametrize("purchaseRepository, errorType, errorMessage", [
+    ({}, TypeError, "repository must be of type PurchaseRepository, not dict."),
+    ([], TypeError, "repository must be of type PurchaseRepository, not list."),
+    (True, TypeError, "repository must be of type PurchaseRepository, not bool."),
+    (False, TypeError, "repository must be of type PurchaseRepository, not bool."),
+    (None, TypeError, "repository must be of type PurchaseRepository, not None."),
+    (1, TypeError, "repository must be of type PurchaseRepository, not int."),
+    ("", TypeError, "repository must be of type PurchaseRepository, not str."),
+])
+def test_create_with_invalid_purchase_repository(mySQLCarRepository, purchaseRepository, errorType, errorMessage):
+    with pytest.raises(errorType, match=errorMessage):
+        purchases_service.create(purchaseRepository, mySQLCarRepository, PurchaseCreateResource(cars_id="0be86135-c58f-43b6-a369-a3c5445b9948", date_of_purchase=None))
+        
+
+@pytest.mark.parametrize("carRepository, errorType, errorMessage", [
+    ({}, TypeError, "car_repository must be of type CarRepository, not dict."),
+    ([], TypeError, "car_repository must be of type CarRepository, not list."),
+    (True, TypeError, "car_repository must be of type CarRepository, not bool."),
+    (False, TypeError, "car_repository must be of type CarRepository, not bool."),
+    (None, TypeError, "car_repository must be of type CarRepository, not None."),
+    (1, TypeError, "car_repository must be of type CarRepository, not int."),
+    ("", TypeError, "car_repository must be of type CarRepository, not str."),
+])
+def test_create_with_invalid_car_repository(mySQLPurchaseRepository, carRepository, errorType, errorMessage):
+    with pytest.raises(errorType, match=errorMessage):
+        purchases_service.create(mySQLPurchaseRepository, carRepository, PurchaseCreateResource(cars_id="0be86135-c58f-43b6-a369-a3c5445b9948", date_of_purchase=None))
 
