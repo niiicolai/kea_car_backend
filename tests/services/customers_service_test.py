@@ -20,7 +20,6 @@ def prepare_customer_data(
         customer_data: dict,
         customer_resource: Optional[CustomerReturnResource] = None
 ) -> tuple[dict, list, str]:
-
     customer_data = customer_data.copy()
     customer_keys = customer_data.keys()
     if 'amount_of_cars' in customer_keys:
@@ -59,6 +58,7 @@ customer_oliver = {
     "last_name": "Jorgensen",
     "address": "asdasd123",
     "amount_of_cars": 0,
+    "amount_of_purchased_cars": 0
 }
 
 customer_tom = {
@@ -68,7 +68,8 @@ customer_tom = {
     "first_name": "Tom",
     "last_name": "Tomsen",
     "address": "Test 21",
-    "amount_of_cars": 0
+    "amount_of_cars": 0,
+    "amount_of_purchased_cars": 0
 }
 
 customer_james = {
@@ -93,7 +94,8 @@ customer_test = {
     "first_name": "Test",
     "last_name": "Teste",
     "address": "Test 21",
-    "amount_of_cars": 0
+    "amount_of_cars": 0,
+    "amount_of_purchased_cars": 0
 }
 
 
@@ -488,7 +490,6 @@ def test_create_customer_with_valid_partitions(mySQLCustomerRepository, valid_cu
              f"the expected data: {expected_customer_data.get(customer_field)}")
 
 
-
 # INVALID TESTS FOR create_customer
 
 @pytest.mark.parametrize("invalid_customer_create_data, expected_error, expecting_error_message", [
@@ -758,6 +759,128 @@ def test_update_customer_with_invalid_repository_types_partitions(
             customer_update_data=valid_customer_update_data
         )
 
+
 # VALID TESTS FOR delete_customer
 
+@pytest.mark.parametrize("valid_customer",
+                         [customer_henrik, customer_oliver, customer_tom, customer_james, customer_test])
+def test_delete_customer_with_valid_partitions(
+        mySQLCustomerRepository, mySQLCarRepository, mySQLPurchaseRepository, valid_customer
+):
+    valid_customer_id = valid_customer.get('id')
+
+    customers_service.delete(
+        repository=mySQLCustomerRepository,
+        customer_id=valid_customer_id
+    )
+
+    expected_amount_of_customers_after_deletion = amount_of_expected_customers - 1
+    actual_amount_of_customers_after_deletion = len(mySQLCustomerRepository.get_all())
+
+    assert actual_amount_of_customers_after_deletion == expected_amount_of_customers_after_deletion, \
+        (f"Amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
+         f"the expected amount of customers after deletion {expected_amount_of_customers_after_deletion}")
+
+    assert mySQLCustomerRepository.get_by_id(valid_customer_id) is None, \
+        f"Customer with ID {valid_customer_id} was not deleted."
+
+    expected_amount_of_cars_after_deletion = amount_of_expected_cars - valid_customer.get('amount_of_cars')
+    actual_amount_of_cars_after_deletion = len(mySQLCarRepository.get_all())
+
+    assert actual_amount_of_cars_after_deletion == expected_amount_of_cars_after_deletion, \
+        (f"Amount of cars after deletion {actual_amount_of_cars_after_deletion} does not match "
+         f"the expected amount of cars after deletion {expected_amount_of_cars_after_deletion}")
+
+    expected_amount_of_purchases_after_deletion = amount_of_expected_purchases - valid_customer.get(
+        'amount_of_purchased_cars')
+    actual_amount_of_purchases_after_deletion = len(mySQLPurchaseRepository.get_all())
+
+    assert actual_amount_of_purchases_after_deletion == expected_amount_of_purchases_after_deletion, \
+        (f"Amount of purchases after deletion {actual_amount_of_purchases_after_deletion} does not match "
+         f"the expected amount of purchases after deletion {expected_amount_of_purchases_after_deletion}")
+
+    deleted_customers_car_ids = valid_customer.get('car_ids', [])
+
+    for car_id in deleted_customers_car_ids:
+        assert mySQLCarRepository.get_by_id(car_id) is None, \
+            f"Car with ID {car_id} was not deleted."
+
+
 # INVALID TESTS FOR delete_customer
+
+@pytest.mark.parametrize("invalid_customer_id, expected_error, expecting_error_message", [
+    (None, TypeError, "customer_id must be of type str, not NoneType."),
+    (1, TypeError, "customer_id must be of type str, not int."),
+    (True, TypeError, "customer_id must be of type str, not bool."),
+    ("unknown-id", UnableToFindIdError, "Customer with ID: unknown-id does not exist."),
+])
+def test_delete_customer_with_invalid_customer_id_partitions(
+        mySQLCustomerRepository, invalid_customer_id, expected_error, expecting_error_message
+):
+    with pytest.raises(expected_error, match=expecting_error_message):
+        customers_service.delete(
+            repository=mySQLCustomerRepository,
+            customer_id=invalid_customer_id
+        )
+
+    actual_amount_of_customers_after_deletion = len(mySQLCustomerRepository.get_all())
+    assert actual_amount_of_customers_after_deletion == amount_of_expected_customers, \
+        (f"Amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
+         f"the expected amount of customers after deletion {amount_of_expected_customers}")
+
+
+@pytest.mark.parametrize("invalid_customer_repository, expecting_error_message", [
+    (None, "repository must be of type CustomerRepository, not NoneType."),
+    (1, "repository must be of type CustomerRepository, not int."),
+    (True, "repository must be of type CustomerRepository, not bool."),
+    ("repository", "repository must be of type CustomerRepository, not str."),
+])
+def test_delete_customer_with_invalid_customer_repository_type_partitions(
+        mySQLCustomerRepository, invalid_customer_repository, expecting_error_message
+):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        customers_service.delete(
+            repository=invalid_customer_repository,
+            customer_id=customer_test.get('id')
+        )
+
+    actual_amount_of_customers_after_deletion = len(mySQLCustomerRepository.get_all())
+    assert actual_amount_of_customers_after_deletion == amount_of_expected_customers, \
+        (f"Amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
+         f"the expected amount of customers after deletion {amount_of_expected_customers}")
+
+
+def test_delete_customer_with_invalid_customer_repository_types_partitions(
+        mySQLCustomerRepository, mySQLAccessoryRepository, mySQLBrandRepository, mySQLInsuranceRepository
+):
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLAccessoryRepository).__name__}."
+                       ):
+        customers_service.delete(
+            repository=mySQLAccessoryRepository,
+            customer_id=customer_test.get('id')
+        )
+
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLBrandRepository).__name__}."
+                       ):
+        customers_service.delete(
+            repository=mySQLBrandRepository,
+            customer_id=customer_test.get('id')
+        )
+
+    with pytest.raises(TypeError,
+                       match=f"repository must be of type CustomerRepository, "
+                             f"not {type(mySQLInsuranceRepository).__name__}."
+                       ):
+        customers_service.delete(
+            repository=mySQLInsuranceRepository,
+            customer_id=customer_test.get('id')
+        )
+
+    actual_amount_of_customers_after_deletion = len(mySQLCustomerRepository.get_all())
+    assert actual_amount_of_customers_after_deletion == amount_of_expected_customers, \
+        (f"Amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
+         f"the expected amount of customers after deletion {amount_of_expected_customers}")

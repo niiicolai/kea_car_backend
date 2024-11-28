@@ -1,6 +1,6 @@
 import pytest
 from app.services import models_service
-from app.resources.model_resource import ModelReturnResource, BrandReturnResource
+from app.resources.model_resource import ModelReturnResource, BrandReturnResource, ColorReturnResource
 from app.exceptions.database_errors import UnableToFindIdError
 
 
@@ -12,7 +12,12 @@ from app.exceptions.database_errors import UnableToFindIdError
          "brands_id": "fff14a06-dc2a-447d-a707-9c03fe00c7a0",
          "name": "A4",
          "price": 10000.95,
-         "image_url": "https://keacar.ams3.cdn.digitaloceanspaces.com/a4.png"
+         "image_url": "https://keacar.ams3.cdn.digitaloceanspaces.com/a4.png",
+         "color_ids": [
+             "74251648-a7b1-492a-ab2a-f2248c58da00",
+             "7bb35b1d-37ff-43c2-988a-cf85c5b6d690",
+             "e2164054-4cb8-49d5-a0da-eca5b36a0b3b"
+         ]
      }
      ),
     ("1de1b6d3-da97-440b-ba3b-1c865e1de47f",
@@ -20,7 +25,11 @@ from app.exceptions.database_errors import UnableToFindIdError
          "brands_id": "8bb880b8-e336-4039-ad86-2f758539e454",
          "name": "Mustang",
          "price": 10990.95,
-         "image_url": "https://keacar.ams3.cdn.digitaloceanspaces.com/mustang.png"
+         "image_url": "https://keacar.ams3.cdn.digitaloceanspaces.com/mustang.png",
+         "color_ids": [
+             "7bb35b1d-37ff-43c2-988a-cf85c5b6d690",
+             "e2164054-4cb8-49d5-a0da-eca5b36a0b3b"
+         ]
      }
      ),
     ("41e96e21-7e57-45aa-8462-35fe83565866",
@@ -28,7 +37,11 @@ from app.exceptions.database_errors import UnableToFindIdError
          "brands_id": "fadeb491-9cde-4534-b855-b1ada31e2b47",
          "name": "Kodiaq",
          "price": 19999.95,
-         "image_url": "https://keacar.ams3.cdn.digitaloceanspaces.com/kodiaq.png"
+         "image_url": "https://keacar.ams3.cdn.digitaloceanspaces.com/kodiaq.png",
+         "color_ids": [
+             "7bb35b1d-37ff-43c2-988a-cf85c5b6d690",
+             "e2164054-4cb8-49d5-a0da-eca5b36a0b3b"
+         ]
      }
      ),
 ])
@@ -50,21 +63,32 @@ def test_get_model_by_id_with_valid_partitions(
         (f"Model brand is not of type BrandReturnResource, "
          f"but {type(model.brand).__name__}")
 
-    assert model.brand.id == expected_model["brands_id"], \
+    assert model.brand.id == expected_model.get('brands_id'), \
         (f"Model brand ID {model.brands_id} does not match "
-         f"{expected_model['brands_id']}")
+         f"{expected_model.get('brands_id')}")
 
-    assert model.name == expected_model["name"], \
+    assert model.name == expected_model.get('name'), \
         (f"Model name {model.name} does not match "
-         f"{expected_model['name']}")
+         f"{expected_model.get('name')}")
 
-    assert model.price == expected_model["price"], \
+    assert model.price == expected_model.get('price'), \
         (f"Model price {model.price} does not match "
-         f"{expected_model['price']}")
+         f"{expected_model.get('price')}")
 
-    assert model.image_url == expected_model["image_url"], \
+    assert model.image_url == expected_model.get('image_url'), \
         (f"Model image URL {model.image_url} does not match "
-         f"{expected_model['image_url']}")
+         f"{expected_model.get('image_url')}")
+
+    assert isinstance(model.colors, list) and all(isinstance(color, ColorReturnResource) for color in model.colors) \
+        , f"Model colors are not a list of ColorReturnResource objects, but {type(model.colors).__name__}"
+
+    assert len(model.colors) == len(expected_model.get('color_ids')), \
+        (f"Model colors length {len(model.colors)} does not match "
+         f"the expected amount of colors {len(expected_model.get('color_ids'))}")
+
+    assert all(color.id in expected_model.get('color_ids') for color in model.colors), \
+        (f"Model colors IDs {', '.join(color.id for color in model.colors)} "
+         f"do not match the expected color IDs {', '.join(expected_model.get('color_ids'))}")
 
 
 # INVALID TESTS FOR get_model_by_id

@@ -22,14 +22,15 @@ invalid_purchase_deadline_data = [
 ]
 
 generated_UUID = uuid4()
+string_UUID = "e620ec3c-625d-4bde-9b77-f7449b6352d5"
 valid_accessories_ids_data = [
     ("", []),
     ([], []),
     ([generated_UUID], [generated_UUID]),
-    (["e620ec3c-625d-4bde-9b77-f7449b6352d5"],[UUID4("e620ec3c-625d-4bde-9b77-f7449b6352d5")])
+    ([string_UUID],[UUID4(string_UUID)])
 ]
 invalid_accessories_ids_data = [
-    (["e620ec3c-625d-4bde-9b77-f7449b6352d5","e620ec3c-625d-4bde-9b77-f7449b6352d5","e620ec3c-625d-4bde-9b77-f7449b6352d5"], "accessories must be unique."),
+    ([string_UUID,string_UUID,string_UUID], "accessories must be unique."),
     (generated_UUID, "Input should be a valid list"),
 ]
 
@@ -43,6 +44,19 @@ invalid_insurance_ids_data = [
     (["8456043d-5fb0-49bf-ac2c-51567a32cc87","8456043d-5fb0-49bf-ac2c-51567a32cc87","8456043d-5fb0-49bf-ac2c-51567a32cc87"], "insurances must be unique."),
     (generated_UUID, "Input should be a valid list"),
 ]
+
+valid_UUID_data = [
+    (generated_UUID, generated_UUID),
+    (string_UUID, UUID4(string_UUID)),
+]
+
+invalid_UUID_data = [
+    ("", "Field required"),
+    ("asjdansdjas", "Input should be a valid UUID"),
+    (123, "UUID input should be a string"),
+    (None, "UUID input should be a string"),
+]
+
 
 # VALID TESTS FOR CarCreateResource
 def test_create_car_resource_works_with_valid_car_data(valid_car_data):
@@ -136,6 +150,74 @@ def test_create_car_resource_works_with_valid_insurance_ids_data(
     assert car_create_data.insurance_ids == expected_outcome \
         , (f"Insurance IDs: {car_create_data.insurance_ids} do not match "
         f"expected insurance IDs: {expected_outcome}")
+        
+@pytest.mark.parametrize("valid_models_id, expected_outcome", valid_UUID_data)
+def test_create_car_resource_works_with_valid_models_id_data(
+        valid_car_data, valid_models_id, expected_outcome
+):
+    valid_car_data = valid_car_data.copy()
+    valid_car_data.pop("models_id")
+    
+    
+    car_create_data = CarCreateResource(
+        models_id=valid_models_id
+        , **valid_car_data
+    )
+        
+    assert car_create_data.models_id == expected_outcome \
+        , (f"Model ID: {car_create_data.models_id} does not match "
+        f"expected model ID: {expected_outcome}")
+        
+@pytest.mark.parametrize("valid_colors_id, expected_outcome", valid_UUID_data)
+def test_create_car_resource_works_with_valid_colors_id_data(
+        valid_car_data, valid_colors_id, expected_outcome
+):
+    valid_car_data = valid_car_data.copy()
+    valid_car_data.pop("colors_id")
+    
+    
+    car_create_data = CarCreateResource(
+        colors_id=valid_colors_id
+        , **valid_car_data
+    )
+        
+    assert car_create_data.colors_id == expected_outcome \
+        , (f"Color ID: {car_create_data.colors_id} does not match "
+        f"expected color ID: {expected_outcome}")
+        
+@pytest.mark.parametrize("valid_customers_id, expected_outcome", valid_UUID_data)
+def test_create_car_resource_works_with_valid_customers_id_data(
+        valid_car_data, valid_customers_id, expected_outcome
+):
+    valid_car_data = valid_car_data.copy()
+    valid_car_data.pop("customers_id")
+    
+    
+    car_create_data = CarCreateResource(
+        customers_id=valid_customers_id
+        , **valid_car_data
+    )
+        
+    assert car_create_data.customers_id == expected_outcome \
+        , (f"Customer ID: {car_create_data.customers_id} does not match "
+        f"expected customer ID: {expected_outcome}")
+        
+@pytest.mark.parametrize("valid_sales_people_id, expected_outcome", valid_UUID_data)
+def test_create_car_resource_works_with_valid_sales_people_id_data(
+        valid_car_data, valid_sales_people_id, expected_outcome
+):
+    valid_car_data = valid_car_data.copy()
+    valid_car_data.pop("sales_people_id")
+    
+    
+    car_create_data = CarCreateResource(
+        sales_people_id=valid_sales_people_id
+        , **valid_car_data
+    )
+        
+    assert car_create_data.sales_people_id == expected_outcome \
+        , (f"Sales Person ID: {car_create_data.sales_people_id} does not match "
+        f"expected sales person ID: {expected_outcome}")
 
 # INVALID TESTS FOR CarCreateResource
 
@@ -178,4 +260,75 @@ def test_create_car_resource_doesnt_work_with_invalid_insurance_ids_data(
             , **valid_car_data
         )
         
-  
+@pytest.mark.parametrize("invalid_models_id, expected_error_message", invalid_UUID_data)
+def test_create_car_resource_doesnt_work_with_invalid_models_id_data(
+        valid_car_data, invalid_models_id, expected_error_message
+):
+    valid_car_data = valid_car_data.copy()
+    valid_car_data.pop("models_id")
+    if invalid_models_id == "":
+        with pytest.raises(ValidationError, match=f"models_id\n  {expected_error_message}"):
+            CarCreateResource(
+                **valid_car_data
+            )
+    else:
+        with pytest.raises(ValidationError, match=expected_error_message):
+            CarCreateResource(
+                models_id=invalid_models_id
+                , **valid_car_data
+            )
+
+@pytest.mark.parametrize("invalid_colors_id, expected_error_message", invalid_UUID_data)
+def test_create_car_resource_doesnt_work_with_invalid_colors_id_data(
+        valid_car_data, invalid_colors_id, expected_error_message
+):
+    valid_car_data = valid_car_data.copy()
+    valid_car_data.pop("colors_id")
+    if invalid_colors_id == "":
+        with pytest.raises(ValidationError, match=f"colors_id\n  {expected_error_message}"):
+            CarCreateResource(
+                **valid_car_data
+            )
+    else:
+        with pytest.raises(ValidationError, match=expected_error_message):
+            CarCreateResource(
+                colors_id=invalid_colors_id
+                , **valid_car_data
+            )
+
+@pytest.mark.parametrize("invalid_customers_id, expected_error_message", invalid_UUID_data)
+def test_create_car_resource_doesnt_work_with_invalid_customers_id_data(
+        valid_car_data, invalid_customers_id, expected_error_message
+):
+    valid_car_data = valid_car_data.copy()
+    valid_car_data.pop("customers_id")
+    if invalid_customers_id == "":
+        with pytest.raises(ValidationError, match=f"customers_id\n  {expected_error_message}"):
+            CarCreateResource(
+                **valid_car_data
+            )
+    else:
+        with pytest.raises(ValidationError, match=expected_error_message):
+            CarCreateResource(
+                customers_id=invalid_customers_id
+                , **valid_car_data
+            )
+
+@pytest.mark.parametrize("invalid_sales_people_id, expected_error_message", invalid_UUID_data)
+def test_create_car_resource_doesnt_work_with_invalid_sales_people_id_data(
+        valid_car_data, invalid_sales_people_id, expected_error_message
+):
+    valid_car_data = valid_car_data.copy()
+    valid_car_data.pop("sales_people_id")
+    if invalid_sales_people_id == "":
+        with pytest.raises(ValidationError, match=f"sales_people_id\n  {expected_error_message}"):
+            CarCreateResource(
+                **valid_car_data
+            )
+    else:
+        with pytest.raises(ValidationError, match=expected_error_message):
+            CarCreateResource(
+                sales_people_id=invalid_sales_people_id
+                , **valid_car_data
+            )
+

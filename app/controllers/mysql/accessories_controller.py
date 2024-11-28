@@ -18,7 +18,6 @@ router: APIRouter = APIRouter()
 def get_db():
     with get_db_session() as session:
         yield session
-        session.commit()
 
 
 @router.get(

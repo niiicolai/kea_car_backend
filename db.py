@@ -45,6 +45,8 @@ def get_db(is_test_db=False) -> Session:
     session = session_local(bind=engine)
     try:
         yield session
+        if not is_test_db:
+            session.commit()
     finally:
         session.close()
 

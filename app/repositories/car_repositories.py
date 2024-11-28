@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy import text, exists
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
 
 # Internal library imports
 from app.models.purchase import PurchaseMySQLEntity
@@ -36,8 +35,6 @@ def calculate_total_price_for_car(
         total_price += accessory_resource.price
     for insurance_resource in insurance_resources:
         total_price += insurance_resource.price
-    if total_price < 0:
-        total_price = 0.0
 
     # Round total_price to 2 decimal places before returning
     total_price = round(total_price, 2)
@@ -136,6 +133,7 @@ class MySQLCarRepository(CarRepository):
         # Define parameters
         customer_id = customer.id if customer else None
         sales_person_id = sales_person.id if sales_person else None
+        limit = None if limit is not None and limit <= 0 else limit
 
         cars_result = self.session.execute(
             text("""
@@ -161,11 +159,7 @@ class MySQLCarRepository(CarRepository):
         cars: List[CarReturnResource] = []
         for car_result in cars_result:
             car_id: str = car_result[0]
-            if not isinstance(car_id, str):
-                raise SQLAlchemyError(f"The car_id '{car_id}' was not a string but a '{type(car_id).__name__}'.")
             car = self.session.get(CarMySQLEntity, car_id)
-            if car is None:
-                raise SQLAlchemyError(f"The car with id: '{car_id}' did not exist in the database.")
             car = cast(CarMySQLEntity, car)
             is_car_purchased: bool = (self.session.query(PurchaseMySQLEntity)
                                       .filter_by(cars_id=car.id).first() is not None)

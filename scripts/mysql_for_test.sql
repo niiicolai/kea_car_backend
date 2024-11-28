@@ -1,8 +1,8 @@
-CREATE DATABASE IF NOT EXISTS `kea_car_test` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `kea_car_test`;
+CREATE DATABASE IF NOT EXISTS `kea_cars_test` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `kea_cars_test`;
 -- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
--- Host: kea-cars.mysql.database.azure.com    Database: kea_car_test
+-- Host: kea-cars.mysql.database.azure.com    Database: kea_cars_test
 -- ------------------------------------------------------
 -- Server version	8.0.37-azure
 
