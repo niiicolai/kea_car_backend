@@ -23,7 +23,6 @@ def test_SalesPersonCreateResource_valid_partitions_and_boundaries(props):
     ({"email": [], "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
     ({"email": {}, "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
     ({"email": 0, "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"email"),
-    ({"email": "uP2aJoTnyXoM84iwqR5GItRpSioTgELv5I3Y3jSsRbhXq99zdlq2CER92KdhkRyfH2cFHjvDu84ahlXKoWVAhvUd9zJjfabWBuBN2@toooo.long", "password": "password", "first_name": "local", "last_name": "local"}, ValidationError, r"too long"),
     ({"email": "test@localhost.something", "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
     ({"email": "test@localhost.something", "password": None, "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
     ({"email": "test@localhost.something", "password": [], "first_name": "local", "last_name": "local"}, ValidationError, r"password"),
@@ -47,6 +46,12 @@ def test_SalesPersonCreateResource_valid_partitions_and_boundaries(props):
 def test_SalesPersonCreateResource_with_invalid_partitions_and_boundaries(props, errorType, errorMessage):
     with pytest.raises(errorType, match=errorMessage):
         SalesPersonCreateResource(**props)
+        
+        
+def test_SalesPersonCreateResource_with_email_too_long():
+    email = "12345678901234_this_is_an_invalid_email_address@example-with-a-much-too-long-subdomain-and-suffix.com"
+    with pytest.raises(ValueError, match="The given email .* is .* characters too long, it can only be maximum 100 characters and not .*"):
+        SalesPersonCreateResource(email=email, password="password", first_name="local", last_name="local")
         
 
 # VALID TESTS FOR SalesPersonLoginResource
