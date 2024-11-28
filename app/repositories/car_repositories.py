@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy import text, exists
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
 
 # Internal library imports
 from app.models.purchase import PurchaseMySQLEntity

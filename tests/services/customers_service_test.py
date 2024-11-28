@@ -10,7 +10,6 @@ from app.resources.customer_resource import (
     CustomerUpdateResource,
     CustomerReturnResource
 )
-from tests.services.cars_service_test import expected_amount_of_cars
 
 amount_of_expected_customers = 5
 amount_of_expected_cars = 4

@@ -15,14 +15,41 @@ from app.resources.car_resource import (
     InsuranceReturnResource, 
     CustomerReturnResource, 
     SalesPersonReturnResource
-    
-    
-    
-    
-    
     )
+
+
+def create_car_resource(invalid_model_id=None,
+                        invalid_color_id=None,
+                        invalid_customer_id=None,
+                        invalid_sales_person_id=None,
+                        invalid_accessory_ids=None,
+                        invalid_insurance_ids=None) -> CarCreateResource:
+    valid_car_data = valid_car_test_data[0]
+    valid_model_id = invalid_model_id if invalid_model_id is not None else valid_car_data.get("model").get("id")
+    valid_color_id = invalid_color_id if invalid_color_id is not None else valid_car_data.get("color").get("id")
+    valid_customer_id = invalid_customer_id if invalid_customer_id is not None else valid_car_data.get("customer").get("id")
+    valid_sales_person_id = invalid_sales_person_id if invalid_sales_person_id is not None else valid_car_data.get("sales_person").get("id")
+    valid_accessory_ids = [invalid_accessory_ids] if invalid_accessory_ids is not None else [accessory.get("id") for accessory in valid_car_data.get("accessories")]
+    valid_insurance_ids = [invalid_insurance_ids] if invalid_insurance_ids is not None else [insurance.get("id") for insurance in valid_car_data.get("insurances")]
+    
+    return CarCreateResource(models_id=valid_model_id,
+                                                  colors_id=valid_color_id,
+                                                  customers_id=valid_customer_id,
+                                                  sales_people_id=valid_sales_person_id,
+                                                  accessory_ids=valid_accessory_ids,
+                                                  insurance_ids=valid_insurance_ids)
+    
+
 # Valid car data
+
 expected_amount_of_cars = 4
+invalid_customer_id_data = "0be86135-c58f-43b6-a369-a3c5445b9948"
+invalid_sales_person_id_data = "0be86135-c58f-43b6-a369-a3c5445b9948"
+invalid_model_id_data = "0be86135-c58f-43b6-a369-a3c5445b9948"
+invalid_color_id_data = "0be86135-c58f-43b6-a369-a3c5445b9948"
+invalid_color_model_id = "14382aba-6fe6-405d-a5e2-0b8cfd1f9582"
+invalid_accessory_id_data = "0be86135-c58f-43b6-a369-a3c5445b9948"
+invalid_insurance_id_data = "0be86135-c58f-43b6-a369-a3c5445b9948"
 valid_car_test_data = [
     {
         "id": "0be86135-c58f-43b6-a369-a3c5445b9948",
@@ -317,8 +344,6 @@ def test_get_all_cars_valid_is_purchased(mySQLCarRepository, mySQLCustomerReposi
             f"The car is_purchased {car.is_purchased} is not the same as the expected is_purchased {valid_is_purchased}"
         )
         
-#TODO: Add test for is_past_purchase_deadline
-        
 @pytest.mark.parametrize("valid_cars_limit, expecting_car_amount", [
     (-1, 4),
     (None, 4),
@@ -347,10 +372,456 @@ def test_get_all_cars_with_valid_cars_limit_values_partitions(
           
 # INVALID TESTS FOR get_all_cars
 
+@pytest.mark.parametrize("invalid_cars_limit, expecting_error_message", [
+    ("1", "cars_limit must be of type int or None, not str."),
+    (1.0, "cars_limit must be of type int or None, not float."),
+    (True, "cars_limit must be of type int or None, not bool."),
+])
+def test_get_all_cars_with_invalid_cars_limit_values_partitions(
+        mySQLCarRepository, mySQLCustomerRepository, mySQLSalesPersonRepository, invalid_cars_limit, expecting_error_message
+):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.get_all(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            cars_limit=invalid_cars_limit
+        )
+
+@pytest.mark.parametrize("invalid_is_purchased, expecting_error_message", [
+    ("1", "is_purchased must be of type bool or None, not str."),
+    (1, "is_purchased must be of type bool or None, not int."),
+    (1.0, "is_purchased must be of type bool or None, not float."),
+    ("True", "is_purchased must be of type bool or None, not str.")
+])
+def test_get_all_cars_with_invalid_is_purchased_values_partitions(
+        mySQLCarRepository, mySQLCustomerRepository, mySQLSalesPersonRepository, invalid_is_purchased, expecting_error_message
+):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.get_all(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            is_purchased=invalid_is_purchased
+        )
+
+@pytest.mark.parametrize("invalid_customer_id, expected_error, expecting_error_message", [
+    (1, TypeError, "customer_id must be of type str or None, not int."),
+    (True, TypeError, "customer_id must be of type str or None, not bool."),
+    ("unknown-id", UnableToFindIdError, "Customer with ID: unknown-id does not exist."),
+])
+def test_get_all_cars_with_invalid_customer_id_partitions(
+        mySQLCarRepository, mySQLCustomerRepository, mySQLSalesPersonRepository, invalid_customer_id, expected_error, expecting_error_message
+):
+    with pytest.raises(expected_error, match=expecting_error_message):
+        cars_service.get_all(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            customer_id=invalid_customer_id
+        )
+
+
+@pytest.mark.parametrize("invalid_sales_person_id, expected_error, expecting_error_message", [
+    (1, TypeError, "sales_person_id must be of type str or None, not int."),
+    (True, TypeError, "sales_person_id must be of type str or None, not bool."),
+    ("unknown-id", UnableToFindIdError, "Sales Person with ID: unknown-id does not exist."),
+])
+def test_get_all_cars_with_invalid_sales_person_id_partitions(
+        mySQLCarRepository, mySQLCustomerRepository, mySQLSalesPersonRepository, invalid_sales_person_id, expected_error, expecting_error_message
+):
+    with pytest.raises(expected_error, match=expecting_error_message):
+        cars_service.get_all(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            sales_person_id=invalid_sales_person_id
+        )
+
+
+@pytest.mark.parametrize("invalid_car_repository, expecting_error_message", [
+    (None, "car_repository must be of type CarRepository, not NoneType."),
+    (1, "car_repository must be of type CarRepository, not int."),
+    (True, "car_repository must be of type CarRepository, not bool."),
+    ("repository", "car_repository must be of type CarRepository, not str."),
+])
+def test_get_all_cars_with_invalid_car_repository_type_partitions(
+        mySQLCustomerRepository, mySQLSalesPersonRepository, invalid_car_repository, expecting_error_message
+):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.get_all(
+            car_repository=invalid_car_repository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository
+        )
+
+
+@pytest.mark.parametrize("invalid_customer_repository, expecting_error_message", [
+    (None, "customer_repository must be of type CustomerRepository, not NoneType."),
+    (1, "customer_repository must be of type CustomerRepository, not int."),
+    (True, "customer_repository must be of type CustomerRepository, not bool."),
+    ("repository", "customer_repository must be of type CustomerRepository, not str."),
+])
+def test_get_all_cars_with_invalid_customer_repository_type_partitions(
+        mySQLCarRepository, mySQLSalesPersonRepository, invalid_customer_repository, expecting_error_message
+):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.get_all(
+            car_repository=mySQLCarRepository,
+            customer_repository=invalid_customer_repository,
+            sales_person_repository=mySQLSalesPersonRepository
+        )
+
+
+@pytest.mark.parametrize("invalid_sales_person_repository, expecting_error_message", [
+    (None, "sales_person_repository must be of type SalesPersonRepository, not NoneType."),
+    (1, "sales_person_repository must be of type SalesPersonRepository, not int."),
+    (True, "sales_person_repository must be of type SalesPersonRepository, not bool."),
+    ("repository", "sales_person_repository must be of type SalesPersonRepository, not str."),
+])
+def test_get_all_cars_with_invalid_sales_person_repository_type_partitions(
+        mySQLCarRepository, mySQLCustomerRepository, invalid_sales_person_repository, expecting_error_message
+):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.get_all(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=invalid_sales_person_repository
+        )
+
+
+def test_get_all_cars_with_invalid_repository_types_partitions(
+        mySQLCarRepository, mySQLCustomerRepository, mySQLSalesPersonRepository
+):
+    with pytest.raises(TypeError,
+                       match=f"car_repository must be of type CarRepository, not {type(mySQLCustomerRepository).__name__}."):
+        cars_service.get_all(
+            car_repository=mySQLCustomerRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository
+        )
+    with pytest.raises(TypeError,
+                       match=f"customer_repository must be of type CustomerRepository, not {type(mySQLSalesPersonRepository).__name__}."):
+        cars_service.get_all(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLSalesPersonRepository,
+            sales_person_repository=mySQLSalesPersonRepository
+        )
+    with pytest.raises(TypeError,
+                       match=f"sales_person_repository must be of type SalesPersonRepository, not {type(mySQLCarRepository).__name__}."):
+        cars_service.get_all(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLCarRepository
+        )
 
 # VALID TESTS FOR create_car
 
+@pytest.mark.parametrize("valid_car_data", valid_car_test_data)
+def test_create_car_with_valid_partitions(
+        mySQLCarRepository,
+        mySQLCustomerRepository,
+        mySQLSalesPersonRepository,
+        mySQLModelRepository,
+        mySQLColorRepository,
+        mySQLAccessoryRepository,
+        mySQLInsuranceRepository,
+        valid_car_data
+        ):
+         
+    amount_of_cars_before_creation = expected_amount_of_cars
+    expected_amount_of_cars_after_creation = amount_of_cars_before_creation + 1
+    
+    valid_car_create_resource = create_car_resource()
+    
+    
+    created_car = cars_service.create(
+        car_repository=mySQLCarRepository,
+        customer_repository=mySQLCustomerRepository,
+        sales_person_repository=mySQLSalesPersonRepository,
+        model_repository=mySQLModelRepository,
+        color_repository=mySQLColorRepository,
+        accessory_repository=mySQLAccessoryRepository,
+        insurance_repository=mySQLInsuranceRepository,
+        car_create_data=valid_car_create_resource
+    )
+    
+    assert isinstance(created_car, CarReturnResource), \
+        (f"Car is not of type CarReturnResource, "
+         f"but {type(created_car).__name__}")
+
+    expected_car_id = created_car.id
+    assert mySQLCarRepository.get_by_id(expected_car_id) is not None, \
+        f"Car with ID {expected_car_id} was not created."
+
+    actual_amount_of_cars_after_creation = len(mySQLCarRepository.get_all())
+    assert actual_amount_of_cars_after_creation == expected_amount_of_cars_after_creation, \
+        (f"Amount of cars after creation {actual_amount_of_cars_after_creation} does not match "
+         f"the expected amount of cars after creation {expected_amount_of_cars_after_creation}")
+
+    
+    assert created_car.total_price == valid_car_data.get("total_price"), \
+        (f"Created car's total price {created_car.total_price} does not match the expected total price "
+         f"{valid_car_data.get('total_price')}")
+   
+
 # INVALID TESTS FOR create_car
+@pytest.mark.parametrize("invalid_car_repository, expecting_error_message", [
+    (None, "car_repository must be of type CarRepository, not NoneType."),
+    (1, "car_repository must be of type CarRepository, not int."),
+    (True, "car_repository must be of type CarRepository, not bool."),
+    ("car_repository", "car_repository must be of type CarRepository, not str."),
+])
+def test_create_car_with_invalid_car_repository(
+        mySQLCustomerRepository,
+        mySQLSalesPersonRepository,
+        mySQLModelRepository,
+        mySQLColorRepository,
+        mySQLAccessoryRepository,
+        mySQLInsuranceRepository,
+        invalid_car_repository,
+        expecting_error_message
+):
+
+    valid_car_create_resource = create_car_resource()
+    
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.create(
+            car_repository=invalid_car_repository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            model_repository=mySQLModelRepository,
+            color_repository=mySQLColorRepository,
+            accessory_repository=mySQLAccessoryRepository,
+            insurance_repository=mySQLInsuranceRepository,
+            car_create_data=valid_car_create_resource
+        )
+        
+@pytest.mark.parametrize("invalid_customer_repository, expecting_error_message", [
+    (None, "customer_repository must be of type CustomerRepository, not NoneType."),
+    (1, "customer_repository must be of type CustomerRepository, not int."),
+    (True, "customer_repository must be of type CustomerRepository, not bool."),
+    ("customer_repository", "customer_repository must be of type CustomerRepository, not str."),
+])
+def test_create_car_with_invalid_customer_repository(
+        mySQLCarRepository,
+        mySQLSalesPersonRepository,
+        mySQLModelRepository,
+        mySQLColorRepository,
+        mySQLAccessoryRepository,
+        mySQLInsuranceRepository,
+        invalid_customer_repository,
+        expecting_error_message
+):
+    valid_car_create_resource = create_car_resource()
+    
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.create(
+            car_repository=mySQLCarRepository,
+            customer_repository=invalid_customer_repository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            model_repository=mySQLModelRepository,
+            color_repository=mySQLColorRepository,
+            accessory_repository=mySQLAccessoryRepository,
+            insurance_repository=mySQLInsuranceRepository,
+            car_create_data=valid_car_create_resource
+        )
+        
+@pytest.mark.parametrize("invalid_sales_person_repository, expecting_error_message", [
+    (None, "sales_person_repository must be of type SalesPersonRepository, not NoneType."),
+    (1, "sales_person_repository must be of type SalesPersonRepository, not int."),
+    (True, "sales_person_repository must be of type SalesPersonRepository, not bool."),
+    ("sales_person_repository", "sales_person_repository must be of type SalesPersonRepository, not str."),
+])
+def test_create_car_with_invalid_sales_person_repository(
+        mySQLCarRepository,
+        mySQLCustomerRepository,
+        mySQLModelRepository,
+        mySQLColorRepository,
+        mySQLAccessoryRepository,
+        mySQLInsuranceRepository,
+        invalid_sales_person_repository,
+        expecting_error_message
+):
+    valid_car_create_resource = create_car_resource()
+    
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.create(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=invalid_sales_person_repository,
+            model_repository=mySQLModelRepository,
+            color_repository=mySQLColorRepository,
+            accessory_repository=mySQLAccessoryRepository,
+            insurance_repository=mySQLInsuranceRepository,
+            car_create_data=valid_car_create_resource
+        )
+        
+@pytest.mark.parametrize("invalid_model_repository, expecting_error_message", [
+    (None, "model_repository must be of type ModelRepository, not NoneType."),
+    (1, "model_repository must be of type ModelRepository, not int."),
+    (True, "model_repository must be of type ModelRepository, not bool."),
+    ("model_repository", "model_repository must be of type ModelRepository, not str."),
+])
+def test_create_car_with_invalid_model_repository(
+        mySQLCarRepository,
+        mySQLCustomerRepository,
+        mySQLSalesPersonRepository,
+        mySQLColorRepository,
+        mySQLAccessoryRepository,
+        mySQLInsuranceRepository,
+        invalid_model_repository,
+        expecting_error_message
+):
+    valid_car_create_resource = create_car_resource()
+    
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.create(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            model_repository=invalid_model_repository,
+            color_repository=mySQLColorRepository,
+            accessory_repository=mySQLAccessoryRepository,
+            insurance_repository=mySQLInsuranceRepository,
+            car_create_data=valid_car_create_resource
+        )
+        
+@pytest.mark.parametrize("invalid_color_repository, expecting_error_message", [
+    (None, "color_repository must be of type ColorRepository, not NoneType."),
+    (1, "color_repository must be of type ColorRepository, not int."),
+    (True, "color_repository must be of type ColorRepository, not bool."),
+    ("color_repository", "color_repository must be of type ColorRepository, not str."),
+])
+def test_create_car_with_invalid_color_repository(
+        mySQLCarRepository,
+        mySQLCustomerRepository,
+        mySQLSalesPersonRepository,
+        mySQLModelRepository,
+        mySQLAccessoryRepository,
+        mySQLInsuranceRepository,
+        invalid_color_repository,
+        expecting_error_message
+):
+    valid_car_create_resource = create_car_resource()
+    
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.create(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            model_repository=mySQLModelRepository,
+            color_repository=invalid_color_repository,
+            accessory_repository=mySQLAccessoryRepository,
+            insurance_repository=mySQLInsuranceRepository,
+            car_create_data=valid_car_create_resource
+        )
+        
+@pytest.mark.parametrize("invalid_accessory_repository, expecting_error_message", [
+    (None, "accessory_repository must be of type AccessoryRepository, not NoneType."),
+    (1, "accessory_repository must be of type AccessoryRepository, not int."),
+    (True, "accessory_repository must be of type AccessoryRepository, not bool."),
+    ("accessory_repository", "accessory_repository must be of type AccessoryRepository, not str."),
+])
+def test_create_car_with_invalid_accessory_repository(
+        mySQLCarRepository,
+        mySQLCustomerRepository,
+        mySQLSalesPersonRepository,
+        mySQLColorRepository,
+        mySQLModelRepository,
+        mySQLInsuranceRepository,
+        invalid_accessory_repository,
+        expecting_error_message
+):
+    valid_car_create_resource = create_car_resource()
+    
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.create(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            model_repository=mySQLModelRepository,
+            color_repository=mySQLColorRepository,
+            accessory_repository=invalid_accessory_repository,
+            insurance_repository=mySQLInsuranceRepository,
+            car_create_data=valid_car_create_resource
+        )
+        
+@pytest.mark.parametrize("invalid_insurance_repository, expecting_error_message", [
+    (None, "insurance_repository must be of type InsuranceRepository, not NoneType."),
+    (1, "insurance_repository must be of type InsuranceRepository, not int."),
+    (True, "insurance_repository must be of type InsuranceRepository, not bool."),
+    ("insurance_repository", "insurance_repository must be of type InsuranceRepository, not str."),
+])
+def test_create_car_with_invalid_insurance_repository(
+        mySQLCarRepository,
+        mySQLCustomerRepository,
+        mySQLSalesPersonRepository,
+        mySQLColorRepository,
+        mySQLModelRepository,
+        mySQLAccessoryRepository,
+        invalid_insurance_repository,
+        expecting_error_message
+):
+    valid_car_create_resource = create_car_resource()
+    
+    with pytest.raises(TypeError, match=expecting_error_message):
+        cars_service.create(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            model_repository=mySQLModelRepository,
+            color_repository=mySQLColorRepository,
+            accessory_repository=mySQLAccessoryRepository,
+            insurance_repository=invalid_insurance_repository,
+            car_create_data=valid_car_create_resource
+        )
+
+@pytest.mark.parametrize("invalid_car_create_data, expecting_error, expecting_error_message", [ 
+    (None, TypeError, "car_create_data must be of type CarCreateResource, not NoneType."),
+    (1, TypeError, "car_create_data must be of type CarCreateResource, not int."),
+    (True, TypeError, "car_create_data must be of type CarCreateResource, not bool."),
+    ("car_create_data", TypeError, "car_create_data must be of type CarCreateResource, not str."),
+    (create_car_resource(invalid_model_id=invalid_model_id_data), UnableToFindIdError,
+     f"Model with ID: {invalid_model_id_data} does not exist."),
+    (create_car_resource(invalid_color_id=invalid_color_id_data), UnableToFindIdError, 
+     f"Color with ID: {invalid_color_id_data} does not exist."),
+    (create_car_resource(invalid_customer_id=invalid_customer_id_data), UnableToFindIdError,
+     f"Customer with ID: {invalid_customer_id_data} does not exist."),
+    (create_car_resource(invalid_sales_person_id=invalid_sales_person_id_data), UnableToFindIdError,
+     f"Sales Person with ID: {invalid_sales_person_id_data} does not exist."),
+    (create_car_resource(invalid_accessory_ids=invalid_accessory_id_data), UnableToFindIdError,
+     f"Accessory with ID: {invalid_accessory_id_data} does not exist."),
+    (create_car_resource(invalid_insurance_ids=invalid_insurance_id_data), UnableToFindIdError, 
+     f"Insurance with ID: {invalid_insurance_id_data} does not exist."),
+    (create_car_resource(invalid_color_id=invalid_color_model_id),
+     TheColorIsNotAvailableInModelToGiveToCarError, "does not have the color: silver")
+     
+])      
+def test_create_car_with_invalid_car_create_data_partitions(
+    mySQLCarRepository,
+    mySQLCustomerRepository,
+    mySQLSalesPersonRepository,
+    mySQLColorRepository,
+    mySQLModelRepository,
+    mySQLAccessoryRepository,
+    mySQLInsuranceRepository,
+    invalid_car_create_data,
+    expecting_error,
+    expecting_error_message
+):
+
+    with pytest.raises(expecting_error, match=expecting_error_message):
+        cars_service.create(
+            car_repository=mySQLCarRepository,
+            customer_repository=mySQLCustomerRepository,
+            sales_person_repository=mySQLSalesPersonRepository,
+            model_repository=mySQLModelRepository,
+            color_repository=mySQLColorRepository,
+            accessory_repository=mySQLAccessoryRepository,
+            insurance_repository=mySQLInsuranceRepository,
+            car_create_data=invalid_car_create_data
+        )
 
 # VALID TESTS FOR delete_car
 
