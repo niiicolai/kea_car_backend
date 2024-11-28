@@ -25,6 +25,7 @@ def test_PurchaseCreateResource_valid_partitions_and_boundaries(props):
     ({ "cars_id": [] }, ValidationError, r"cars_id"),
     ({ "cars_id": 1 }, ValidationError, r"cars_id"),
     ({ "date_of_purchase": "2024-04-04" }, ValidationError, r"date_of_purchase"),
+    ({ "date_of_purchase": datetime.date.today() + datetime.timedelta(days=1) }, ValidationError, r"date_of_purchase"),
     ({ "date_of_purchase": None }, ValidationError, r"date_of_purchase"),
     ({ "date_of_purchase": True }, ValidationError, r"date_of_purchase"),
     ({ "date_of_purchase": False }, ValidationError, r"date_of_purchase"),
