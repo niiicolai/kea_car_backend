@@ -895,4 +895,141 @@ def test_create_car_with_invalid_car_create_data_partitions(
 
 # VALID TESTS FOR delete_car
 
+@pytest.mark.parametrize("valid_car", valid_car_test_data)
+def test_delete_car_with_valid_partitions(
+    mySQLCarRepository, mySQLPurchaseRepository, valid_car
+):
+    valid_car_id = valid_car.get("id")
+    delete_purchase_too = valid_car.get("is_purchased", False)
+
+
+    amount_of_expected_cars = len(mySQLCarRepository.get_all())
+    amount_of_expected_purchases = len(mySQLPurchaseRepository.get_all())
+
+
+    cars_service.delete(
+        car_repository=mySQLCarRepository,
+        purchase_repository=mySQLPurchaseRepository,
+        car_id=valid_car_id,
+        delete_purchase_too=delete_purchase_too
+    )
+
+
+    expected_amount_of_cars_after_deletion = amount_of_expected_cars - 1
+    actual_amount_of_cars_after_deletion = len(mySQLCarRepository.get_all())
+
+    assert actual_amount_of_cars_after_deletion == expected_amount_of_cars_after_deletion, \
+        (f"Amount of cars after deletion {actual_amount_of_cars_after_deletion} does not match "
+         f"the expected amount of cars after deletion {expected_amount_of_cars_after_deletion}")
+
+    assert mySQLCarRepository.get_by_id(valid_car_id) is None, \
+        f"Car with ID {valid_car_id} was not deleted."
+
+    if delete_purchase_too:
+        expected_amount_of_purchases_after_deletion = amount_of_expected_purchases - 1
+        actual_amount_of_purchases_after_deletion = len(mySQLPurchaseRepository.get_all())
+
+        assert actual_amount_of_purchases_after_deletion == expected_amount_of_purchases_after_deletion, \
+            (f"Amount of purchases after deletion {actual_amount_of_purchases_after_deletion} does not match "
+             f"the expected amount of purchases after deletion {expected_amount_of_purchases_after_deletion}")
+
+
 # INVALID TESTS FOR delete_car
+
+@pytest.mark.parametrize("invalid_car_id, expected_error, expected_error_message", [
+    (None, TypeError, "car_id must be of type str, not NoneType."),
+    (1, TypeError, "car_id must be of type str, not int."),
+    (True, TypeError, "car_id must be of type str, not bool."),
+    ("unknown-id", UnableToFindIdError, "Car with ID: unknown-id does not exist."),
+])
+def test_delete_car_with_invalid_car_id(
+    mySQLCarRepository, mySQLPurchaseRepository, invalid_car_id, expected_error, expected_error_message
+):
+    with pytest.raises(expected_error, match=expected_error_message):
+        cars_service.delete(
+            car_repository=mySQLCarRepository,
+            purchase_repository=mySQLPurchaseRepository,
+            car_id=invalid_car_id,
+            delete_purchase_too=False
+        )
+
+@pytest.mark.parametrize("invalid_delete_purchase_too, expected_error_message", [
+    (None, "delete_purchase_too must be of type bool, not NoneType."),
+    (1, "delete_purchase_too must be of type bool, not int."),
+    ("True", "delete_purchase_too must be of type bool, not str."),
+])
+def test_delete_car_with_invalid_delete_purchase_too(
+    mySQLCarRepository, mySQLPurchaseRepository, invalid_delete_purchase_too, expected_error_message
+):
+    with pytest.raises(TypeError, match=expected_error_message):
+        cars_service.delete(
+            car_repository=mySQLCarRepository,
+            purchase_repository=mySQLPurchaseRepository,
+            car_id=valid_car_test_data[0]["id"],
+            delete_purchase_too=invalid_delete_purchase_too
+        )
+
+@pytest.mark.parametrize("invalid_car_repository, expected_error_message", [
+    (None, "car_repository must be of type CarRepository, not NoneType."),
+    (1, "car_repository must be of type CarRepository, not int."),
+    (True, "car_repository must be of type CarRepository, not bool."),
+    ("repo", "car_repository must be of type CarRepository, not str."),
+])
+def test_delete_car_with_invalid_car_repository(
+    mySQLPurchaseRepository, invalid_car_repository, expected_error_message
+):
+    with pytest.raises(TypeError, match=expected_error_message):
+        cars_service.delete(
+            car_repository=invalid_car_repository,
+            purchase_repository=mySQLPurchaseRepository,
+            car_id=valid_car_test_data[0]["id"],
+            delete_purchase_too=False
+        )
+
+@pytest.mark.parametrize("invalid_purchase_repository, expected_error_message", [
+    (None, "purchase_repository must be of type PurchaseRepository, not NoneType."),
+    (1, "purchase_repository must be of type PurchaseRepository, not int."),
+    (True, "purchase_repository must be of type PurchaseRepository, not bool."),
+    ("repo", "purchase_repository must be of type PurchaseRepository, not str."),
+])
+def test_delete_car_with_invalid_purchase_repository(
+    mySQLCarRepository, invalid_purchase_repository, expected_error_message
+):
+    with pytest.raises(TypeError, match=expected_error_message):
+        cars_service.delete(
+            car_repository=mySQLCarRepository,
+            purchase_repository=invalid_purchase_repository,
+            car_id=valid_car_test_data[0]["id"],
+            delete_purchase_too=False
+        )
+
+def test_delete_car_without_deleting_purchase(
+    mySQLCarRepository, mySQLPurchaseRepository
+):
+    # Test data and expected outcomes
+    car_id_with_purchase = valid_car_test_data[1]["id"]
+    delete_purchase_too = False
+    expected_error = UnableToDeleteCarWithoutDeletingPurchaseTooError
+    expected_error_message = f"The car with ID: '{car_id_with_purchase}' must delete its purchase too."
+
+    # Initialize the expected counts for cars and purchases
+    amount_of_expected_cars = len(mySQLCarRepository.get_all())
+    amount_of_expected_purchases = len(mySQLPurchaseRepository.get_all())
+
+    # Attempt to delete and expect the specific exception
+    with pytest.raises(expected_error, match=expected_error_message):
+        cars_service.delete(
+            car_repository=mySQLCarRepository,
+            purchase_repository=mySQLPurchaseRepository,
+            car_id=car_id_with_purchase,
+            delete_purchase_too=delete_purchase_too
+        )
+
+    # Validate no changes were made to the car or purchase counts
+    assert len(mySQLCarRepository.get_all()) == amount_of_expected_cars, (
+        "The number of cars changed despite an exception being raised."
+    )
+    assert len(mySQLPurchaseRepository.get_all()) == amount_of_expected_purchases, (
+        "The number of purchases changed despite an exception being raised."
+    )
+
