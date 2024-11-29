@@ -1006,17 +1006,15 @@ def test_delete_car_with_invalid_purchase_repository(
 def test_delete_car_without_deleting_purchase(
     mySQLCarRepository, mySQLPurchaseRepository
 ):
-    # Test data and expected outcomes
+    
     car_id_with_purchase = valid_car_test_data[1]["id"]
     delete_purchase_too = False
     expected_error = UnableToDeleteCarWithoutDeletingPurchaseTooError
     expected_error_message = f"The car with ID: '{car_id_with_purchase}' must delete its purchase too."
 
-    # Initialize the expected counts for cars and purchases
     amount_of_expected_cars = len(mySQLCarRepository.get_all())
     amount_of_expected_purchases = len(mySQLPurchaseRepository.get_all())
 
-    # Attempt to delete and expect the specific exception
     with pytest.raises(expected_error, match=expected_error_message):
         cars_service.delete(
             car_repository=mySQLCarRepository,
@@ -1025,7 +1023,6 @@ def test_delete_car_without_deleting_purchase(
             delete_purchase_too=delete_purchase_too
         )
 
-    # Validate no changes were made to the car or purchase counts
     assert len(mySQLCarRepository.get_all()) == amount_of_expected_cars, (
         "The number of cars changed despite an exception being raised."
     )
