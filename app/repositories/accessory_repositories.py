@@ -71,10 +71,10 @@ class Neo4jAccessoryRepository(AccessoryRepository):
         self.neo4j_session = neo4j_session
 
     def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:
-        query = Query("MATCH (accessory:Accessory) RETURN a")
+        query = Query("MATCH (a:Accessory) RETURN a")
         parameters = {}
         if limit is not None and isinstance(limit, int) and limit > 0:
-            query = Query("MATCH (accessory:Accessory) RETURN accessory LIMIT $limit")
+            query = Query("MATCH (a:Accessory) RETURN a LIMIT $limit")
             parameters["limit"] = limit
         result = self.neo4j_session.run(query, parameters)
         accessories = [AccessoryNeo4jEntity(**record["accessory"]).as_resource() for record in result]
@@ -82,10 +82,10 @@ class Neo4jAccessoryRepository(AccessoryRepository):
 
     def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:
         result = self.neo4j_session.run(
-            "MATCH (accessory:Accessory {id: $id}) RETURN accessory",
+            "MATCH (a:Accessory {id: $id}) RETURN a",
             id=accessory_id
         )
         record = result.single()
         if record is not None:
-            return AccessoryNeo4jEntity(**record["accessory"]).as_resource()
+            return AccessoryNeo4jEntity(**record["a"]).as_resource()
         return None

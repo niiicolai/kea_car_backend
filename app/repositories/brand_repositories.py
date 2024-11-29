@@ -73,21 +73,21 @@ class Neo4jBrandRepository(BrandRepository):
         self.neo4j_session = neo4j_session
 
     def get_all(self, limit: Optional[int] = None) -> List[BrandReturnResource]:
-        query = Query("MATCH (brand:Brand) RETURN b")
+        query = Query("MATCH (b:Brand) RETURN b")
         parameters = {}
         if limit is not None and isinstance(limit, int) and limit > 0:
-            query += Query("MATCH (brand:Brand) RETURN brand LIMIT $limit")
+            query += Query("MATCH (b:Brand) RETURN b LIMIT $limit")
             parameters["limit"] = limit
         result = self.neo4j_session.run(query, parameters)
-        brands = [BrandNeo4jEntity(**record["brand"]).as_resource() for record in result]
+        brands = [BrandNeo4jEntity(**record["b"]).as_resource() for record in result]
         return brands
 
     def get_by_id(self, brand_id: str) -> Optional[BrandReturnResource]:
         result = self.neo4j_session.run(
-            "MATCH (brand:Brand {id: $id}) RETURN brand",
+            "MATCH (b:Brand {id: $id}) RETURN b",
             id=brand_id
         )
         record = result.single()
         if record is not None:
-            return BrandNeo4jEntity(**record["brand"]).as_resource()
+            return BrandNeo4jEntity(**record["b"]).as_resource()
         return None

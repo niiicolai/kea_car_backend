@@ -192,6 +192,14 @@ class MongoDBCustomerRepository(CustomerRepository):
             return_document=True
         )
         if updated_customer is not None:
+            self.database.get_collection("cars").update_many(
+                {"customer._id": customer_id},
+                {"$set": {"customer": updated_customer}}
+            )
+            self.database.get_collection("purchases").update_many(
+                {"car.customer._id": customer_id},
+                {"$set": {"car.customer": updated_customer}}
+            )
             return CustomerMongoEntity(**updated_customer).as_resource()
         return None
 

@@ -72,21 +72,21 @@ class Neo4jColorRepository(ColorRepository):
         self.neo4j_session = neo4j_session
 
     def get_all(self, limit: Optional[int] = None) -> List[ColorReturnResource]:
-        query = Query("MATCH (color:Color) RETURN c")
+        query = Query("MATCH (c:Color) RETURN c")
         parameters = {}
         if limit is not None and isinstance(limit, int) and limit > 0:
-            query += Query("MATCH (color:Color) RETURN color LIMIT $limit")
+            query += Query("MATCH (c:Color) RETURN c LIMIT $limit")
             parameters["limit"] = limit
         result = self.neo4j_session.run(query, parameters)
-        colors = [ColorNeo4jEntity(**record["color"]).as_resource() for record in result]
+        colors = [ColorNeo4jEntity(**record["c"]).as_resource() for record in result]
         return colors
 
     def get_by_id(self, color_id: str) -> Optional[ColorReturnResource]:
         result = self.neo4j_session.run(
-            "MATCH (color:Color {id: $id}) RETURN color",
+            "MATCH (c:Color {id: $id}) RETURN c",
             id=color_id
         )
         record = result.single()
         if record is not None:
-            return ColorNeo4jEntity(**record["color"]).as_resource()
+            return ColorNeo4jEntity(**record["c"]).as_resource()
         return None
