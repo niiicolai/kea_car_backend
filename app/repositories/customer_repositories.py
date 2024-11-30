@@ -291,7 +291,7 @@ class Neo4jCustomerRepository(CustomerRepository):
         query = Query("""
         MATCH (customer:Customer {id: $customer_id})
         OPTIONAL MATCH (car:Car)-[:OWNED_BY]->(customer)
-        OPTIONAL MATCH (purchase:Purchase)-[:FOR_CAR]->(car)
+        OPTIONAL MATCH (purchase:Purchase)-[:MADE_FOR]->(car)
         DETACH DELETE customer, car, purchase
         """)
         self.session.run(query, customer_id=customer_resource.id)

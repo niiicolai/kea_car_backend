@@ -109,7 +109,7 @@ class Neo4jModelRepository(ModelRepository):
         query = Query(
             """
             MATCH (model:Model)-[:BELONGS_TO]->(brand:Brand)
-            OPTIONAL MATCH (model)-[:HAS_COLOR]->(color:Color)
+            OPTIONAL MATCH (model)-[:HAS_COLORS]->(color:Color)
             RETURN model, brand, collect(color) AS colors
             """
         )
@@ -118,7 +118,7 @@ class Neo4jModelRepository(ModelRepository):
             query = Query(
                 """
                 MATCH (model:Model)-[:BELONGS_TO]->(brand:Brand {id: $brand_id})
-                OPTIONAL MATCH (model)-[:HAS_COLOR]->(color:Color)
+                OPTIONAL MATCH (model)-[:HAS_COLORS]->(color:Color)
                 RETURN model, brand, collect(color) AS colors
                 """
             )
@@ -139,7 +139,7 @@ class Neo4jModelRepository(ModelRepository):
         query = Query(
             """
             MATCH (model:Model {id: $model_id})-[:BELONGS_TO]->(brand:Brand)
-            OPTIONAL MATCH (model)-[:HAS_COLOR]->(color:Color)
+            OPTIONAL MATCH (model)-[:HAS_COLORS]->(color:Color)
             RETURN model, brand, collect(color) AS colors
             """
         )

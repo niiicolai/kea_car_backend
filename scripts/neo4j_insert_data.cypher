@@ -364,4 +364,4 @@ date_of_purchase: date('2024-11-04')
 })
 WITH p1
 MATCH (car4:Car {id:'d4c7f1f8-4451-43bc-a827-63216a2ddece'})
-CREATE (p1)- [:FOR_CAR] - >(car4);
+CREATE (p1)- [:MADE_FOR] - >(car4);

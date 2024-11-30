@@ -77,7 +77,7 @@ class Neo4jAccessoryRepository(AccessoryRepository):
             query = Query("MATCH (a:Accessory) RETURN a LIMIT $limit")
             parameters["limit"] = limit
         result = self.neo4j_session.run(query, parameters)
-        accessories = [AccessoryNeo4jEntity(**record["accessory"]).as_resource() for record in result]
+        accessories = [AccessoryNeo4jEntity(**record["a"]).as_resource() for record in result]
         return accessories
 
     def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:
