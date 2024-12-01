@@ -31,6 +31,21 @@ def test_get_brand_by_id_valid(mySQLBrandRepository, brand_data):
 def test_get_brand_by_id_invalid_id(mySQLBrandRepository, invalid_id, expected_error, expecting_error_message):
     with pytest.raises(expected_error, match=expecting_error_message):
         brands_service.get_by_id(repository=mySQLBrandRepository, brand_id=invalid_id)
+        
+@pytest.mark.parametrize("invalid_repository, expected_error_message", [
+    (None, "repository must be of type BrandRepository, not NoneType."),
+    (123, "repository must be of type BrandRepository, not int."),
+    (True, "repository must be of type BrandRepository, not bool."),
+    ("repository", "repository must be of type BrandRepository, not str."),
+    (object(), "repository must be of type BrandRepository, not object."),
+])
+def test_get_brand_by_id_with_invalid_repository_type(
+    invalid_repository, expected_error_message
+):
+    valid_brand_id = valid_brand_test_data[0]["id"]
+    with pytest.raises(TypeError, match=expected_error_message):
+        brands_service.get_by_id(repository=invalid_repository, brand_id=valid_brand_id)
+
 
 # VALID TESTS FOR get_all_brands
 def test_get_all_brands_valid(mySQLBrandRepository):
