@@ -42,8 +42,27 @@ def test_get_all_brands_valid(mySQLBrandRepository):
         assert brand.id == expected["id"], f"Expected brand ID {expected['id']}, got {brand.id}"
 
 # INVALID TESTS FOR get_all_brands
-@pytest.mark.parametrize("invalid_repo", [None, 123, "invalid_repo", object()])
-def test_get_all_brands_invalid_repository(invalid_repo):
-    with pytest.raises(TypeError, match="repository must be of type BrandRepository"):
-        brands_service.get_all(repository=invalid_repo)
+@pytest.mark.parametrize("invalid_repository, expected_error_message", [
+    (None, "repository must be of type BrandRepository, not NoneType."),
+    (123, "repository must be of type BrandRepository, not int."),
+    (True, "repository must be of type BrandRepository, not bool."),
+    ("repository", "repository must be of type BrandRepository, not str."),
+    (object(), "repository must be of type BrandRepository, not object."),
+])
+def test_get_all_brands_with_invalid_repository_type(
+        invalid_repository, expected_error_message
+):
+    with pytest.raises(TypeError, match=expected_error_message):
+        brands_service.get_all(repository=invalid_repository)
+
+
+@pytest.mark.parametrize("invalid_brands_limit, expected_error_message", [
+    ("10", "brands_limit must be of type int or None, not str."),
+    (1.5, "brands_limit must be of type int or None, not float."),
+    (True, "brands_limit must be of type int or None, not bool."),
+    (object(), "brands_limit must be of type int or None, not object."),
+])
+def test_get_all_brands_invalid_brands_limit(mySQLBrandRepository, invalid_brands_limit, expected_error_message):
+    with pytest.raises(TypeError, match=expected_error_message):
+        brands_service.get_all(repository=mySQLBrandRepository, brands_limit=invalid_brands_limit)
 
