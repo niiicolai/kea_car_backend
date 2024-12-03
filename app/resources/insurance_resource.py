@@ -9,7 +9,7 @@ class InsuranceBaseResource(BaseModel):
     )
     price: float = Field(
         default=...,
-        description="Price of the insurance.",
+        description="Price of the insurance in dollars.",
         examples=[9.95]
     )
     

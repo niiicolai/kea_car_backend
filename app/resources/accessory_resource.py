@@ -8,7 +8,7 @@ class AccessoryBaseResource(BaseModel):
     )
     price: float = Field(
         default=...,
-        description="Price of the accessory in kroner.",
+        description="Price of the accessory in dollars.",
         examples=[99.95]
     )
     

@@ -8,7 +8,7 @@ class ColorBaseResource(BaseModel):
     )
     price: float = Field(
         default=...,
-        description="Price of the color in kroner.",
+        description="Price of the color in dollars.",
         examples=[99.95]
     )
     red_value: int = Field(

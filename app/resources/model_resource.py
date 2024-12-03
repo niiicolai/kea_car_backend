@@ -15,7 +15,7 @@ class ModelBaseResource(BaseModel):
     )
     price: float = Field(
         default=...,
-        description="Price of the model in kroner.",
+        description="Price of the model in dollars.",
         examples=[10090.95]
     )
     image_url: str = Field(
