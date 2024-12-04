@@ -19,6 +19,7 @@ from app.controllers.mongodb import (
     brands_controller as mongodb_brands_controller,
     colors_controller as mongodb_colors_controller,
     customers_controller as mongodb_customers_controller,
+    insurances_controller as mongodb_insurances_controller,
     models_controller as mongodb_models_controller
 )
 from app.controllers.neo4j import (
@@ -26,6 +27,7 @@ from app.controllers.neo4j import (
     brands_controller as neo4j_brands_controller,
     colors_controller as neo4j_colors_controller,
     customers_controller as neo4j_customers_controller,
+    insurances_controller as neo4j_insurances_controller,
     models_controller as neo4j_models_controller
 )
 
@@ -58,6 +60,7 @@ app.include_router(mongodb_accessories_controller.router, prefix="/mongodb", tag
 app.include_router(mongodb_brands_controller.router, prefix="/mongodb", tags=["MongoDB - Brands"])
 app.include_router(mongodb_colors_controller.router, prefix="/mongodb", tags=["MongoDB - Colors"])
 app.include_router(mongodb_customers_controller.router, prefix="/mongodb", tags=["MongoDB - Customers"])
+app.include_router(mongodb_insurances_controller.router, prefix="/mongodb", tags=["MongoDB - Insurances"])
 app.include_router(mongodb_models_controller.router, prefix="/mongodb", tags=["MongoDB - Models"])
 
 # Including the Neo4j Router endpoints
@@ -65,4 +68,5 @@ app.include_router(neo4j_accessories_controller.router, prefix="/neo4j", tags=["
 app.include_router(neo4j_brands_controller.router, prefix="/neo4j", tags=["Neo4j - Brands"])
 app.include_router(neo4j_colors_controller.router, prefix="/neo4j", tags=["Neo4j - Colors"])
 app.include_router(neo4j_customers_controller.router, prefix="/neo4j", tags=["Neo4j - Customers"])
+app.include_router(neo4j_insurances_controller.router, prefix="/neo4j", tags=["Neo4j - Insurances"])
 app.include_router(neo4j_models_controller.router, prefix="/neo4j", tags=["Neo4j - Models"])

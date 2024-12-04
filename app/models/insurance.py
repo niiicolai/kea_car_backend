@@ -2,6 +2,7 @@
 from uuid import uuid4
 from sqlalchemy.orm import Mapped, relationship
 from sqlalchemy import Table, Column, ForeignKey, String, Double
+from pydantic import BaseModel, ConfigDict, Field
 
 # Internal library imports
 from db import Base
@@ -30,3 +31,34 @@ class InsuranceMySQLEntity(Base):
             name=self.name,
             price=self.price
         )
+
+class InsuranceMongoEntity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
+    name: str
+    price: float
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+    def as_resource(self) -> InsuranceReturnResource:
+        return InsuranceReturnResource(
+            id=self.id,
+            name=self.name,
+            price=self.price
+        )
+
+
+class InsuranceNeo4jEntity(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid4()))
+    name: str
+    price: float
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
+    def as_resource(self) -> InsuranceReturnResource:
+        return InsuranceReturnResource(
+            id=self.id,
+            name=self.name,
+            price=self.price
+        ) 
