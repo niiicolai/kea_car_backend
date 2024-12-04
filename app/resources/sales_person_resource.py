@@ -95,7 +95,7 @@ class SalesPersonCreateResource(SalesPersonBaseResource):
             raise ValueError(f"The given password {password} is an empty string.")
         if ' ' in password:
             raise ValueError(f"The given password {password} contains whitespaces.")
-        if len(password) > 30:
+        if len(password) > maximum_length_of_password:
             raise ValueError(f"The given password {password} is too long, "
                              f"it can only be maximum {maximum_length_of_password} characters long.")
         if len(password) < minimum_length_of_password:
