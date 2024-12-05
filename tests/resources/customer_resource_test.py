@@ -2,119 +2,158 @@ import pytest
 from pydantic import ValidationError
 from app.resources.customer_resource import CustomerCreateResource, CustomerUpdateResource
 
-
 # VALID and INVALID test data for CustomerCreateResource and CustomerUpdateResource
 
 valid_email_test_data = [
-    ("henrik@gmail.com", "henrik@gmail.com"),
-    ("henrik@gmail.co.uk", "henrik@gmail.co.uk"),
-    ("123henrik@gmail.com", "123henrik@gmail.com"),
+    ("henrik@gmail.com", "No Change"),
+    ("henrik@gmail.co.uk", "No Change"),
+    ("123henrik@gmail.com", "No Change"),
     (" henrik@gmail.com ", "henrik@gmail.com"),
-    ("a@b.c", "a@b.c"),
+    ("ab@cd.ef", "No Change"),  # Valid lower limit
+    ("ab@cd.efg", "No Change"),  # Valid lower limit
+    ("this_is_a_valid_email_address_part@example-with-a-much-longer-subdomain-and-suffix.co",
+     "No Change"),  # Valid upper limit
     ("this_is_a_valid_email_address_part@example-with-a-much-longer-subdomain-and-suffix.com",
-     "this_is_a_valid_email_address_part@example-with-a-much-longer-subdomain-and-suffix.com"),
+     "No Change"),  # Valid upper limit
 ]
 
 invalid_email_test_data = [
     (None, "Input should be a valid string"),
     ("henrikgmail.com", "is not a valid email address"),
     ("henrik@", "is not a valid email address"),
-    ("", "is not a valid email address"),
     ("henrik@g mail.com", "is not a valid email address"),
     ("henrik.gmail@com", "is not a valid email address"),
-    (123, "Input should be a valid string"),
-    ("12345678901234_this_is_an_invalid_email_address@example-with-a-much-too-long-subdomain-and-suffix.com", "too long")
+    (12345678, "Input should be a valid string"),
+    (True, "Input should be a valid string"),
+    ("ab@cd.e", "too short"),  # Invalid lower limit
+    ("12345678901234_this_is_an_invalid_email_address@example-with-a-much-too-long-subdomain-and-suffix.com",
+     "too long")  # Invalid upper limit
 ]
 
 valid_phone_number_test_data = [
-    ("10203040", "10203040"),
+    ("10203040", "No Change"),
     (" 10203040 ", "10203040"),
-    (None, None),
-    ("01234567", "01234567"),
-    ("+4510203040", "+4510203040"),
-    ("123456789012345678901234567890", "123456789012345678901234567890"),
+    (None, "No Change"),
+    ("01234567", "No Change"),
+    ("+4510203040", "No Change"),
+    ("", None),
+    (" ", None),
+    ("12345678", "No Change"),  # Valid lower limit
+    ("123456789", "No Change"),  # Valid lower limit
+    ("123456789012345678901234567890", "No Change"),  # Valid upper limit
+    ("+45123456789012345678901234567", "No Change"),  # Valid upper limit
 ]
 
 invalid_phone_number_test_data = [
-    ("", "empty string"),
-    (" ", "empty string"),
     ("1A2B3C4D", "can only contain digits"),
     ("1@20304?", "can only contain digits"),
     ("102 3040", "contains whitespace"),
     ("45+10203040", "can only contain digits after the +"),
-    ("+45@03040", "can only contain digits"),
-    ("1234567", "is too short"),
-    ("1234567890123456789012345678901", "is too long"),
-    (10203040, "Input should be a valid string")
+    ("+45+10203040", "can only contain digits after the +"),
+    ("+4510@03040", "can only contain digits"),
+    ("+451020304", "is too short"),
+    (10203040, "Input should be a valid string"),
+    ("1234567", "is too short"),  # Invalid lower limit
+    ("+451234567890123456789012345678", "is too long"),  # Invalid upper limit
+
 ]
 
 valid_first_name_test_data = [
-    ("Henrik", "Henrik"),
+    ("Henrik", "No Change"),
+    ("Henrik Henry", "No Change"),
     ("hEnRiK", "Henrik"),
+    ("hEnRiK hEnRy", "Henrik Henry"),
+    ("Henrik-Henry", "No Change"),
+    ("hEnRik-hEnRy", "Henrik-Henry"),
     (" Henrik ", "Henrik"),
+    (" Henrik-Henry ", "Henrik-Henry"),
+    (" Henrik-Henry ", "Henrik-Henry"),
     ("henrik", "Henrik"),
-    ("He", "He"),
-    ("Maximilianaelizabethannamarialucreciavictoria", "Maximilianaelizabethannamarialucreciavictoria"),
+    ("henrik henry", "Henrik Henry"),
+    ("henrik-henry", "Henrik-Henry"),
+    ("H", "No Change"),  # Valid lower limit
+    ("He", "No Change"),  # Valid lower limit
+    ("Maximilian Elizabeth Anna-Maria Lucre-Victor",  # Valid upper limit
+     "No Change"),
+    ("Maximilian Elizabeth Anna-Maria Lucre-Victori",  # Valid upper limit
+     "No Change"),
 ]
 
 invalid_first_name_test_data = [
     (None, "Input should be a valid string"),
-    ("", "is an empty string"),
     ("Henr1k", "can only contain alphabetic characters"),
     ("H@nrik", "can only contain alphabetic characters"),
-    ("Hen rik", "contains whitespace"),
+    ("Henrik  Henry", "contains extra whitespaces"),
+    ("-Henrik-Henry", "starts or ends with a hyphen"),
+    ("Henrik-Henry-", "starts or ends with a hyphen"),
+    ("-Henrik-Henry-", "starts or ends with a hyphen"),
+    ("Henrik - Henry", "contains whitespace before or after a hyphen"),
     (True, "Input should be a valid string"),
-    ("H", "is too short"),
-    ("Maximilianaelizabethannamarialucreciavictorias", "is too long"),
+    (1234, "Input should be a valid string"),
+    ("", "is too short"),  # Invalid lower limit
+    ("Maximilian Elizabeth Anna-Maria Lucre-Victoria", "is too long"),  # Invalid upper limit
 ]
 
 valid_last_name_test_data = [
-    ("Henriksen", "Henriksen"),
-    ("hEnRiKsEn", "Henriksen"),
+    ("Henriksen", "No Change"),
     (" Henriksen ", "Henriksen"),
     ("henriksen", "Henriksen"),
-    ("He", "He"),
-    ("Featherstonehaughworthingtonsmythenbishopsons", "Featherstonehaughworthingtonsmythenbishopsons"),
+    ("hEnRiKsEn", "Henriksen"),
+    ("Henderson-Henriksen", "No Change"),
+    ("hEnDeRsOn-hEnRiKsEn", "Henderson-Henriksen"),
+    ("henderson-henriksen", "Henderson-Henriksen"),
+    ("H", "No Change"),  # Valid lower limit
+    ("He", "No Change"),  # Valid lower limit
+    ("Featherstonehaughworthingtonsmythenbishopson", "No Change"),  # Valid upper limit
+    ("Featherstonehaughworthingtonsmythenbishopsons", "No Change"),  # Valid upper limit
 ]
 
 invalid_last_name_test_data = [
     (None, "Input should be a valid string"),
-    ("", "is an empty string"),
+    ("Henderson Henriksen", "contains whitespace"),
+    ("-Henriksen", "starts or ends with a hyphen"),
+    ("Henriksen-", "starts or ends with a hyphen"),
     ("Henr1ksen", "can only contain alphabetic characters"),
     ("H@nriksen", "can only contain alphabetic characters"),
-    ("Hen riksen", "contains whitespace"),
-    (False, "Input should be a valid string"),
-    ("H", "is too short"),
-    ("Featherstonehaughworthingtonsmythenbishopsonss", "is too long"),
+    (True, "Input should be a valid string"),
+    (1234, "Input should be a valid string"),
+    ("", "is too short"),  # Invalid lower limit
+    ("Featherstonehaughworthingtonsmythenbishopsonss", "is too long"),  # Invalid upper limit
 ]
 
 valid_address_test_data = [
-    ("Randomgade nr. 10 4. tv.", "Randomgade nr. 10 4. tv."),
+    ("Randomgade nr. 10 4. tv.", "No Change"),
     (" Randomgade nr. 10 4. tv. ", "Randomgade nr. 10 4. tv."),
-    (None, None),
-    ("Rando", "Rando"),
+    ("", None),
+    (" ", None),
+    (None, "No Change"),
+    ("Rando", "No Change"),  # Valid lower limit
+    ("Random", "No Change"),  # Valid lower limit
+    ("1234567 Long Street Name That Goes On Forever And Ever, Apartment 6789, "
+     "Some Really Long City Name That Never Ends, A Particularly Long State "
+     "Name With Extra Letters, 99999-1234, Country With A Very Long Name That "
+     "Might Just Fit In Perfectly Here As Well",
+     "No Change"),  # Valid upper limit
     ("12345678 Long Street Name That Goes On Forever And Ever, Apartment 6789, "
      "Some Really Long City Name That Never Ends, A Particularly Long State "
      "Name With Extra Letters, 99999-1234, Country With A Very Long Name That "
      "Might Just Fit In Perfectly Here As Well",
-     "12345678 Long Street Name That Goes On Forever And Ever, Apartment 6789, "
-     "Some Really Long City Name That Never Ends, A Particularly Long State "
-     "Name With Extra Letters, 99999-1234, Country With A Very Long Name That "
-     "Might Just Fit In Perfectly Here As Well"),
+     "No Change"),  # Valid upper limit
 ]
 
 invalid_address_test_data = [
-    ("", "empty string"),
-    (" ", "empty string"),
     ("Randomgade  nr. 10 4. tv.", "contains extra whitespace"),
     ("Randomgade   nr. 10 4. tv.", "contains extra whitespace"),
+    (True, "Input should be a valid string"),
     (12345, "Input should be a valid string"),
-    ("Rand", "is too short"),
+    ("Rand", "is too short"),  # Invalid lower limit
     ("123456789 Long Avenue Name That Extends For A Very Long Distance, "
-    "Apartment 1010101, The Very Long City Name Which Seems Nearly Endless, "
-    "Another Extended State Name, 678901-1234567, Country That Has An Extremely "
-    "Lengthy Name That Goes On And On Without End", "is too long"),
+     "Apartment 1010101, The Very Long City Name Which Seems Nearly Endless, "
+     "Another Extended State Name, 678901-1234567, Country That Has An Extremely "
+     "Lengthy Name That Goes On And On Without End",
+     "is too long"),  # Invalid upper limit
 ]
+
 
 # VALID TESTS FOR CustomerCreateResource
 
@@ -158,9 +197,10 @@ def test_create_customer_resource_works_with_valid_email_data(
         last_name=valid_customer_data.get("last_name"),
         address=valid_customer_data.get("address")
     )
-    assert customer_create_data.email == expected_outcome \
+    expected_email = valid_email if expected_outcome == "No Change" else expected_outcome
+    assert customer_create_data.email == expected_email \
         , (f"Email: {customer_create_data.email} "
-           f"does not match expected email: {expected_outcome}")
+           f"does not match expected email: {expected_email}")
 
 
 @pytest.mark.parametrize("valid_phone_number, expected_outcome", valid_phone_number_test_data)
@@ -174,9 +214,10 @@ def test_create_customer_resource_works_with_valid_phone_number_data(
         last_name=valid_customer_data.get("last_name"),
         address=valid_customer_data.get("address")
     )
-    assert customer_create_data.phone_number == expected_outcome \
+    expected_phone_number = valid_phone_number if expected_outcome == "No Change" else expected_outcome
+    assert customer_create_data.phone_number == expected_phone_number \
         , (f"Phone number: {customer_create_data.phone_number} "
-           f"does not match expected phone number: {expected_outcome}")
+           f"does not match expected phone number: {expected_phone_number}")
 
 
 @pytest.mark.parametrize("valid_first_name, expected_outcome", valid_first_name_test_data)
@@ -190,9 +231,10 @@ def test_create_customer_resource_works_with_valid_first_name_data(
         last_name=valid_customer_data.get("last_name"),
         address=valid_customer_data.get("address")
     )
-    assert customer_create_data.first_name == expected_outcome \
+    expected_first_name = valid_first_name if expected_outcome == "No Change" else expected_outcome
+    assert customer_create_data.first_name == expected_first_name \
         , (f"First name: {customer_create_data.first_name} does not match "
-           f"expected first name: {expected_outcome}")
+           f"expected first name: {expected_first_name}")
 
 
 @pytest.mark.parametrize("valid_last_name, expected_outcome", valid_last_name_test_data)
@@ -206,9 +248,10 @@ def test_create_customer_resource_works_with_valid_last_name_data(
         last_name=valid_last_name,
         address=valid_customer_data.get("address")
     )
-    assert customer_create_data.last_name == expected_outcome \
+    expected_last_name = valid_last_name if expected_outcome == "No Change" else expected_outcome
+    assert customer_create_data.last_name == expected_last_name \
         , (f"Last name: {customer_create_data.last_name} does not match "
-           f"expected last name: {expected_outcome}")
+           f"expected last name: {expected_last_name}")
 
 
 @pytest.mark.parametrize("valid_address, expected_outcome", valid_address_test_data)
@@ -222,8 +265,9 @@ def test_create_customer_resource_works_with_valid_address_data(
         last_name=valid_customer_data.get("last_name"),
         address=valid_address
     )
-    assert customer_create_data.address == expected_outcome \
-        , f"Address: {customer_create_data.address} does not match expected address: {expected_outcome}"
+    expected_address = valid_address if expected_outcome == "No Change" else expected_outcome
+    assert customer_create_data.address == expected_address \
+        , f"Address: {customer_create_data.address} does not match expected address: {expected_address}"
 
 
 # INVALID TESTS FOR CustomerCreateResource
@@ -358,12 +402,13 @@ def test_update_customer_resource_works_with_valid_email_data(
     customer_update_data = CustomerUpdateResource(
         email=valid_email,
     )
-    assert customer_update_data.email == expected_outcome \
+    expected_email = valid_email if expected_outcome == "No Change" else expected_outcome
+    assert customer_update_data.email == expected_email \
         , (f"Email: {customer_update_data.email} does not match "
-           f"expected email: {expected_outcome}")
+           f"expected email: {expected_email}")
     updated_fields = customer_update_data.get_updated_fields()
-    assert updated_fields["email"] == customer_update_data.email \
-        , (f"Email: {updated_fields['email']} does not match "
+    assert updated_fields.get('email') == customer_update_data.email \
+        , (f"Email: {updated_fields.get('email')} does not match "
            f"updated customers email: {customer_update_data.email}")
     assert len(updated_fields) == 1 \
         , f"Updated fields should only contain email, not {updated_fields}"
@@ -376,9 +421,10 @@ def test_update_customer_resource_works_with_valid_phone_number_data(
     customer_update_data = CustomerUpdateResource(
         phone_number=valid_phone_number,
     )
-    assert customer_update_data.phone_number == expected_outcome \
+    expected_phone_number = valid_phone_number if expected_outcome == "No Change" else expected_outcome
+    assert customer_update_data.phone_number == expected_phone_number \
         , (f"Phone number: {customer_update_data.phone_number} does not match "
-           f"expected phone number: {expected_outcome}")
+           f"expected phone number: {expected_phone_number}")
     updated_fields = customer_update_data.get_updated_fields()
     assert updated_fields["phone_number"] == customer_update_data.phone_number \
         , (f"Phone number: {updated_fields['phone_number']} does not match "
@@ -394,9 +440,10 @@ def test_update_customer_resource_works_with_valid_first_name_data(
     customer_update_data = CustomerUpdateResource(
         first_name=valid_first_name,
     )
-    assert customer_update_data.first_name == expected_outcome \
+    expected_first_name = valid_first_name if expected_outcome == "No Change" else expected_outcome
+    assert customer_update_data.first_name == expected_first_name \
         , (f"First name: {customer_update_data.first_name} does not match "
-           f"expected first name: {expected_outcome}")
+           f"expected first name: {expected_first_name}")
     updated_fields = customer_update_data.get_updated_fields()
     assert updated_fields["first_name"] == customer_update_data.first_name \
         , (f"First name: {updated_fields['first_name']} does not match "
@@ -412,8 +459,9 @@ def test_update_customer_resource_works_with_valid_last_name_data(
     customer_update_data = CustomerUpdateResource(
         last_name=valid_last_name,
     )
-    assert customer_update_data.last_name == expected_outcome \
-        , f"Last name: {customer_update_data.last_name} does not match expected last name: {expected_outcome}"
+    expected_last_name = valid_last_name if expected_outcome == "No Change" else expected_outcome
+    assert customer_update_data.last_name == expected_last_name \
+        , f"Last name: {customer_update_data.last_name} does not match expected last name: {expected_last_name}"
     updated_fields = customer_update_data.get_updated_fields()
     assert updated_fields["last_name"] == customer_update_data.last_name \
         , (f"Last name: {updated_fields['last_name']} does not match "
@@ -429,8 +477,9 @@ def test_update_customer_resource_works_with_valid_address_data(
     customer_update_data = CustomerUpdateResource(
         address=valid_address,
     )
-    assert customer_update_data.address == expected_outcome \
-        , f"Address: {customer_update_data.address} does not match expected address: {expected_outcome}"
+    expected_address = valid_address if expected_outcome == "No Change" else expected_outcome
+    assert customer_update_data.address == expected_address \
+        , f"Address: {customer_update_data.address} does not match expected address: {expected_address}"
     updated_fields = customer_update_data.get_updated_fields()
     assert updated_fields["address"] == customer_update_data.address \
         , f"Address: {updated_fields['address']} does not match updated customers address: {customer_update_data.address}"

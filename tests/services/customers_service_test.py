@@ -47,7 +47,7 @@ customer_henrik = {
     "address": "Randomgade nr. 10 4. tv.",
     "amount_of_cars": 1,
     "amount_of_purchased_cars": 1,
-    "car_ids": ["bdfca7c4-e0ad-4618-8766-9bb355371c81"]
+    "car_ids": ["d4c7f1f8-4451-43bc-a827-63216a2ddece"]
 }
 
 customer_oliver = {

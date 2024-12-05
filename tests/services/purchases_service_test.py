@@ -1,7 +1,4 @@
 import pytest
-import datetime
-from typing import Optional
-from pydantic import field_validator
 from app.services import purchases_service
 from app.exceptions.database_errors import (
     PurchaseDeadlineHasPastError,
@@ -13,19 +10,6 @@ from app.resources.purchase_resource import (
     PurchaseCreateResource,
     PurchaseReturnResource
 )
-
-"""
-The purchases_service.create method expects a PurchaseCreateResource object.
-The PurchaseCreateResource object has a date_of_purchase field that should not be in the future.
-But the purchases_service.create method has a check if the date_of_purchase is past the purchase deadline.
-That's why we need the CreateResourceWithNoFutureDateRestriction class.
-To be able to test the purchases_service.create method with a date_of_purchase past the purchase deadline,
-"""
-class CreateResourceWithNoFutureDateRestriction(PurchaseCreateResource):
-    # disable the date_of_purchase field validator
-    @field_validator("date_of_purchase")
-    def validate_date_of_purchase(cls, date_of_purchase: Optional[datetime.date]) -> datetime.date:
-        return date_of_purchase
 
 
 # VALID TESTS FOR get_all
@@ -182,9 +166,9 @@ def test_get_by_car_id_with_invalid_car_repository(mySQLPurchaseRepository, carR
 
 
 # VALID TESTS FOR create
+
 @pytest.mark.parametrize("purchaseCreateResource", [
-    (PurchaseCreateResource(cars_id="0be86135-c58f-43b6-a369-a3c5445b9948", date_of_purchase=None)),
-    (PurchaseCreateResource(cars_id="a1b1e305-1a89-4b06-86d1-21ac1fa3c8a6", date_of_purchase=datetime.datetime.now().date())),
+    (PurchaseCreateResource(cars_id="a5503fbb-c388-4789-a10c-d7ae7bdf7408")),
 ])
 def test_create_with_valid_partitions_and_boundaries(mySQLPurchaseRepository, mySQLCarRepository, purchaseCreateResource):
     purchase = purchases_service.create(mySQLPurchaseRepository, mySQLCarRepository, purchaseCreateResource)
@@ -207,16 +191,15 @@ def test_create_with_valid_partitions_and_boundaries(mySQLPurchaseRepository, my
         UnableToFindIdError, "Car with ID: b64dd009-862c-4697-84f1-54f21864dea1 does not exist."
     ),
     (
-        PurchaseCreateResource(cars_id="d4c7f1f8-4451-43bc-a827-63216a2ddece", date_of_purchase=None), 
+        PurchaseCreateResource(cars_id="d4c7f1f8-4451-43bc-a827-63216a2ddece", date_of_purchase=None),
         AlreadyTakenFieldValueError, "Purchase with cars_id: d4c7f1f8-4451-43bc-a827-63216a2ddece is already taken."
     ),
     (
-        CreateResourceWithNoFutureDateRestriction(
-            cars_id="0be86135-c58f-43b6-a369-a3c5445b9948", 
-            date_of_purchase='2024-12-08'
+        PurchaseCreateResource(
+            cars_id="a1b1e305-1a89-4b06-86d1-21ac1fa3c8a6"
         ), 
         PurchaseDeadlineHasPastError, 
-        "Car with ID: 0be86135-c58f-43b6-a369-a3c5445b9948 has a Purchase Deadline: 07-12-2024 that has past the date of purchase: 08-12-2024."
+        "Car with ID: a1b1e305-1a89-4b06-86d1-21ac1fa3c8a6 has a Purchase Deadline: 04-12-2024 that has past the date of purchase"
     ),
 ])
 def test_create_with_invalid_partitions_and_boundaries(mySQLPurchaseRepository, mySQLCarRepository, purchaseCreateResource, errorType, errorMessage):

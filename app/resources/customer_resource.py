@@ -41,8 +41,13 @@ class CustomerCreateOrUpdateResource(CustomerBaseResource):
 
     @field_validator('email')
     def validate_email(cls, email: str) -> str:
+        minimum_length_of_email = 8
         maximum_length_of_email = 100
         email_length = len(email)
+        if email_length < minimum_length_of_email:
+            raise ValueError(
+                f"The given email {email} is too short, "
+                f"it must be at least {minimum_length_of_email} characters long.")
         if email_length > maximum_length_of_email:
             raise ValueError(
                 f"The given email {email} is {email_length - maximum_length_of_email} characters too long, "
@@ -53,20 +58,24 @@ class CustomerCreateOrUpdateResource(CustomerBaseResource):
     def validate_phone_number(cls, phone_number: Optional[str]) -> Optional[str]:
         minimum_length_of_phone_number = 8
         maximum_length_of_phone_number = 30
+        maximum_length_of_phone_number_that_starts_with_plus = maximum_length_of_phone_number - 3
         if phone_number is not None:
             phone_number = phone_number.strip()
-            if len(phone_number) == 0:
-                raise ValueError(f"The given phone number {phone_number} is an empty string.")
-            if len(phone_number) < minimum_length_of_phone_number:
+            length_of_phone_number = len(phone_number)
+            if phone_number.startswith('+') and length_of_phone_number <= maximum_length_of_phone_number_that_starts_with_plus:
+                length_of_phone_number -= 3
+            if length_of_phone_number == 0:
+                return None
+            if length_of_phone_number < minimum_length_of_phone_number:
                 raise ValueError(f"The given phone number {phone_number} is too short, "
                                  f"it must be at least {minimum_length_of_phone_number} characters long.")
-            if len(phone_number) > maximum_length_of_phone_number:
+            if length_of_phone_number > maximum_length_of_phone_number:
                 raise ValueError(f"The given phone number {phone_number} is too long, "
                                  f"it can only be maximum {maximum_length_of_phone_number} characters long.")
             if ' ' in phone_number:
                 raise ValueError(f"The given phone number {phone_number} contains whitespace.")
             if '+' in phone_number:
-                if not phone_number.startswith('+'):
+                if not phone_number.startswith('+') or '+' in phone_number[1:]:
                     raise ValueError(f"The given phone number {phone_number} can only contain digits after the +.")
             if not phone_number.isdigit() and not phone_number[1:].isdigit():
                 raise ValueError(f"The given phone number {phone_number} can only contain digits.")
@@ -74,30 +83,30 @@ class CustomerCreateOrUpdateResource(CustomerBaseResource):
 
     @field_validator('first_name')
     def validate_first_name(cls, first_name: str) -> str:
-        minimum_length_of_first_name = 2
+        minimum_length_of_first_name = 1
         maximum_length_of_first_name = 45
-        first_name = first_name.strip().capitalize()
-        if len(first_name) == 0:
-            raise ValueError(f"The given first name {first_name} is an empty string.")
+        first_name = first_name.strip()
         if len(first_name) < minimum_length_of_first_name:
             raise ValueError(f"The given first name {first_name} is too short, "
                              f"it must be at least {minimum_length_of_first_name} characters long.")
         if len(first_name) > maximum_length_of_first_name:
             raise ValueError(f"The given first name {first_name} is too long, "
                              f"it can only be maximum {maximum_length_of_first_name} characters long.")
-        if ' ' in first_name:
-            raise ValueError(f"The given first name {first_name} contains whitespace.")
-        if not first_name.isalpha():
+        if '  ' in first_name:
+            raise ValueError(f"The given first name {first_name} contains extra whitespaces.")
+        if not all(part.isalpha() for part in first_name.replace('-', ' ').split()):
             raise ValueError(f"The given first name {first_name} can only contain alphabetic characters.")
-        return first_name
+        if first_name.startswith('-') or first_name.endswith('-'):
+            raise ValueError(f"The given first name {first_name} starts or ends with a hyphen.")
+        if ' -' in first_name or '- ' in first_name:
+            raise ValueError(f"The given first name {first_name} contains whitespace before or after a hyphen.")
+        return first_name.title()
 
     @field_validator('last_name')
     def validate_last_name(cls, last_name: str) -> str:
-        minimum_length_of_last_name = 2
+        minimum_length_of_last_name = 1
         maximum_length_of_last_name = 45
-        last_name = last_name.strip().capitalize()
-        if len(last_name) == 0:
-            raise ValueError(f"The given last name {last_name} is an empty string.")
+        last_name = last_name.strip()
         if len(last_name) < minimum_length_of_last_name:
             raise ValueError(f"The given last name {last_name} is too short, "
                              f"it must be at least {minimum_length_of_last_name} characters long.")
@@ -106,9 +115,11 @@ class CustomerCreateOrUpdateResource(CustomerBaseResource):
                              f"it can only be maximum {maximum_length_of_last_name} characters long.")
         if ' ' in last_name:
             raise ValueError(f"The given last name {last_name} contains whitespace.")
-        if not last_name.isalpha():
+        if not all(part.isalpha() for part in last_name.replace('-', ' ').split()):
             raise ValueError(f"The given last name {last_name} can only contain alphabetic characters.")
-        return last_name
+        if last_name.startswith('-') or last_name.endswith('-'):
+            raise ValueError(f"The given last name {last_name} starts or ends with a hyphen.")
+        return last_name.title()
 
     @field_validator('address')
     def validate_address(cls, address: Optional[str]) -> Optional[str]:
@@ -117,7 +128,7 @@ class CustomerCreateOrUpdateResource(CustomerBaseResource):
         if address is not None:
             address = address.strip()
             if len(address) == 0:
-                raise ValueError(f"The given address {address} is an empty string.")
+                return None
             if len(address) < minimum_length_of_address:
                 raise ValueError(f"The given address {address} is too short, "
                                  f"it must be at least {minimum_length_of_address} characters long.")
@@ -125,7 +136,7 @@ class CustomerCreateOrUpdateResource(CustomerBaseResource):
                 raise ValueError(f"The given address {address} is too long, "
                                  f"it can only be maximum {maximum_length_of_address} characters long.")
             if '  ' in address:
-                raise ValueError(f"The given address {address} contains extra whitespaces.")
+                raise ValueError(f"The given address {address} contains extra whitespace.")
         return address
 
 
