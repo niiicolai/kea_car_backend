@@ -35,7 +35,7 @@ jobs:
       - name: Create .env file
         run: |
           echo "DB_USER=root" > .env
-          echo "DB_NAME=kea_cars_dev" >> .env
+          echo "DB_NAME=kea_cars_test" >> .env
           echo "DB_HOST=127.0.0.1" >> .env
           echo "DB_PORT=3306" >> .env
           echo "DB_PASSWORD=password" >> .env
