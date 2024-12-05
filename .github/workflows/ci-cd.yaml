@@ -50,7 +50,7 @@ jobs:
 
       - name: Run SQL Script
         run: |
-          mysql -h 127.0.0.1 -u root -p"password" < scripts/mysql.sql
+          mysql -h 127.0.0.1 -u root -p"password" < scripts/mysql_for_test.sql
 
       - name: Run pytests
         run: |
