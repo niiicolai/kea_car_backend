@@ -32,9 +32,14 @@ class PurchaseCreateResource(PurchaseBaseResource):
     @field_validator("date_of_purchase")
     def validate_date_of_purchase(cls, date_of_purchase: Optional[date]) -> date:
         current_date = date.today()
+        minimum_date_of_purchase = date(2023, 1, 1)
         if date_of_purchase is not None:
+            if date_of_purchase < minimum_date_of_purchase:
+                raise ValueError(f"The date: {date_of_purchase.strftime('%d-%m-%Y')} of purchase "
+                                 f"cannot be before {minimum_date_of_purchase.strftime('%d-%m-%Y')}.")
             if date_of_purchase > current_date:
-                raise ValueError(f"The date: {date_of_purchase.strftime('%d-%m-%Y')} of purchase cannot be in the future.")
+                raise ValueError(f"The date: {date_of_purchase.strftime('%d-%m-%Y')} of purchase "
+                                 f"cannot be in the future.")
         else:
             date_of_purchase = current_date
         return date_of_purchase

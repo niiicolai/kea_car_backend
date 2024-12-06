@@ -17,32 +17,48 @@ from app.repositories.model_repositories import MySQLModelRepository
 from app.repositories.purchase_repositories import MySQLPurchaseRepository
 from app.repositories.sales_person_repositories import MySQLSalesPersonRepository
 
+def valid_email_test_data() -> str:
+    domains = ["gmail.com", "hotmail.com", "yahoo.com", "outlook.com"]
+    domain = random.choice(domains)
+    username_length = random.randint(5, 10)
+    username = ''.join(random.choices(string.ascii_lowercase + string.digits, k=username_length))
+    return f"{username}@{domain}"
+
 @pytest.fixture(scope="session", autouse=True)
 def setup_once():
     restore("scripts/mysql_for_test.sql")
 
 @pytest.fixture(scope="function")
 def valid_customer_data() -> dict:
-    domains = ["gmail.com", "hotmail.com", "yahoo.com", "outlook.com"]
-    domain = random.choice(domains)
-    username_length = random.randint(5, 10)
-    username = ''.join(random.choices(string.ascii_lowercase + string.digits, k=username_length))
     phone_number = f"+45{random.randint(10000000, 99999999)}"
-    first_name = ''.join(random.choices(string.ascii_uppercase, k=random.randint(3, 10))).capitalize()
-    last_name = ''.join(random.choices(string.ascii_uppercase, k=random.randint(3, 10))).capitalize()
-    address = ''.join(random.choices(string.ascii_uppercase + string.digits, k=random.randint(10, 30)))
+    first_name = random.choice(["Abc", "Def", "Ghi", "Jkl", "Mno"])
+    last_name = random.choice(["Pqr", "Stu", "Vwx", "Yza", "Bcd"])
+    address = "Randomgade nr. 11 3. th."
     return \
         {
-            "email": f"{username}@{domain}",
+            "email": valid_email_test_data(),
             "phone_number": phone_number,
             "first_name": first_name,
             "last_name": last_name,
             "address": address
         }
+
+@pytest.fixture(scope="function")
+def valid_sales_person_data() -> dict:
+    first_name = "Hans"
+    last_name = "Hansen"
+    password = "Hans123"
+    return \
+        {
+            "email": valid_email_test_data(),
+            "first_name": first_name,
+            "last_name": last_name,
+            "password": password
+        }
         
 @pytest.fixture(scope="function")
 def valid_car_data() -> dict[str, any]:
-    purchase_deadline = date.today() + timedelta(days=1)
+    purchase_deadline = date.today() + timedelta(days=3)
     model_id = uuid4()
     color_id = uuid4()
     customer_id = uuid4()
