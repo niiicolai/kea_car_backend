@@ -1,6 +1,7 @@
 # External Library imports
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
+from app.controllers import weather_controller
 
 from app.controllers.mysql import (
     accessories_controller as mysql_accessories_controller,
@@ -70,3 +71,6 @@ app.include_router(neo4j_colors_controller.router, prefix="/neo4j", tags=["Neo4j
 app.include_router(neo4j_customers_controller.router, prefix="/neo4j", tags=["Neo4j - Customers"])
 app.include_router(neo4j_insurances_controller.router, prefix="/neo4j", tags=["Neo4j - Insurances"])
 app.include_router(neo4j_models_controller.router, prefix="/neo4j", tags=["Neo4j - Models"])
+
+# External Weathers API
+app.include_router(weather_controller.router, tags=["Weather API"])
