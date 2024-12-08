@@ -40,6 +40,7 @@ jobs:
           echo "DB_PORT=3306" >> .env
           echo "DB_PASSWORD=password" >> .env
           echo "SECRET_KEY=secret" >> .env
+          echo "WEATHER_API_KEY=secret" >> .env
 
       - name: Wait for MySQL to be ready
         run: |
