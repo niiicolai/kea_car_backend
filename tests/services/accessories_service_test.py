@@ -4,7 +4,6 @@ import pytest
 from app.services import accessories_service
 from app.exceptions.database_errors import UnableToFindIdError
 from app.resources.accessory_resource import AccessoryReturnResource
-from tests.services.cars_service_test import expected_amount_of_cars
 
 
 # VALID TESTS FOR get_accessory_by_id

@@ -1,5 +1,5 @@
 import pytest
-from pydantic import ValidationError, UUID4
+from pydantic import ValidationError
 from uuid import uuid4, UUID
 from app.resources.car_resource import CarCreateResource, DAYS_TO_DEADLINE
 from datetime import date, timedelta, datetime
@@ -57,8 +57,8 @@ invalid_UUID_data = [
 valid_accessories_ids_data = [
     ("Field Not Set", []),
     ([uuid4(), uuid4(), uuid4()], "No Change"),
-    ([string_UUID], [UUID4(string_UUID)]),
-    ([string_UUID_without_hyphens], [UUID4(string_UUID_without_hyphens)]),
+    ([string_UUID], [UUID(string_UUID)]),
+    ([string_UUID_without_hyphens], [UUID(string_UUID_without_hyphens)]),
     ([], "No Change"),  # Valid lower boundary
     ([generated_UUID], "No Change"),  # Valid lower boundary
     ([uuid4() for _ in range(9)], "No Change"),  # Valid upper boundary
@@ -82,8 +82,8 @@ valid_insurance_ids_data = [
     ([], "No Change"),
     ([generated_UUID], "No Change"),
     ([uuid4(), uuid4(), uuid4()], "No Change"),
-    ([string_UUID], [UUID4(string_UUID)]),
-    ([string_UUID_without_hyphens], [UUID4(string_UUID_without_hyphens)]),
+    ([string_UUID], [UUID(string_UUID)]),
+    ([string_UUID_without_hyphens], [UUID(string_UUID_without_hyphens)]),
     ([valid_lower_boundary_UUID], "No Change"),  # Valid lower boundary
     ([valid_lower_boundary_UUID_plus_one], "No Change"),  # Valid lower boundary
     ([valid_upper_boundary_UUID_minus_one], "No Change"),  # Valid upper boundary
