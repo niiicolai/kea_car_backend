@@ -122,13 +122,13 @@ def test_get_customer_by_id_with_valid_partitions(
          f"but {type(customer).__name__}")
 
     assert customer.id == expected_customer_id, \
-        (f"Customer ID {customer.id} does not match "
-         f"expected customer ID {expected_customer_id}")
+        (f"The actual customer ID '{customer.id}' does not match "
+         f"the expected customer ID '{expected_customer_id}'.")
 
     for field in customer_fields:
         assert getattr(customer, field) == expected_customer_data.get(field), \
-            (f"Customer {field}: {getattr(customer, field)} does not match "
-             f"the expected data: {expected_customer_data.get(field)}")
+            (f"The actual customer {field}: {getattr(customer, field)} does not match "
+             f"the expected {field}: {expected_customer_data.get(field)}")
 
 
 # INVALID TESTS FOR get_customer_by_id
@@ -213,8 +213,8 @@ def test_get_all_customers_with_valid_partitions(mySQLCustomerRepository):
            f"but {type(customers).__name__}")
 
     assert len(customers) == amount_of_expected_customers, \
-        (f"Amount of customers {len(customers)} does not match "
-         f"{amount_of_expected_customers}")
+        (f"The actual amount of customers '{len(customers)}' does not match "
+         f"the expected amount of customers '{amount_of_expected_customers}'")
 
     for customer in customers:
         assert isinstance(customer, CustomerReturnResource), \
@@ -222,7 +222,7 @@ def test_get_all_customers_with_valid_partitions(mySQLCustomerRepository):
              f"but {type(customer).__name__}")
 
         assert customer.id in [expected_customer.get('id') for expected_customer in expected_customers], \
-            f"Customer ID {customer.id} does not match any of the expected IDs."
+            f"The actual customer ID {customer.id} does not match any of the expected IDs."
 
 
 @pytest.mark.parametrize("valid_customers_limit, expecting_customer_amount", [
@@ -247,9 +247,12 @@ def test_get_all_customers_with_valid_customers_limit_values_partitions(
     assert isinstance(customers, list) and all(isinstance(customer, CustomerReturnResource) for customer in customers) \
         , f"Customers are not a list of CustomerReturnResource objects, but {type(customers).__name__}"
 
-    assert len(customers) == expecting_customer_amount \
-        , (f"There should be {expecting_customer_amount} customers, "
-           f"not '{len(customers)}'")
+    actual_amount_of_customers = len(customers)
+
+    assert actual_amount_of_customers == expecting_customer_amount, (
+        f"The actual amount of customers '{actual_amount_of_customers}' does not match "
+        f"the expected amount of customers '{expecting_customer_amount}'."
+    )
 
 
 @pytest.mark.parametrize("valid_email_filter, expecting_customers", [
@@ -288,13 +291,16 @@ def test_get_all_customers_with_valid_email_filter_values_partitions(
     assert isinstance(customers, list) and all(isinstance(customer, CustomerReturnResource) for customer in customers) \
         , f"Customers are not a list of CustomerReturnResource objects, but {type(customers).__name__}"
 
-    assert len(customers) == len(expecting_customers) \
-        , (f"There should be {len(expecting_customers)} customers, "
-           f"not '{len(customers)}'")
+    actual_amount_of_customers = len(customers)
+    expected_amount_of_customers = len(expecting_customers)
+
+    assert actual_amount_of_customers == expected_amount_of_customers \
+        , (f"The actual amount of customers '{actual_amount_of_customers}' does not match "
+           f"the expected amount of customers '{expected_amount_of_customers}'.")
 
     for customer in customers:
         assert customer.id in [expected_customer.get('id') for expected_customer in expecting_customers], \
-            f"Customer ID {customer.id} does not match any of the expected IDs."
+            f"The actual customer ID '{customer.id}' does not match any of the expected IDs."
 
         if valid_email_filter is not None:
             assert valid_email_filter in customer.email, \
@@ -371,9 +377,11 @@ def test_get_all_customers_with_valid_email_filter_and_customers_limit_values_pa
     assert isinstance(customers, list) and all(isinstance(customer, CustomerReturnResource) for customer in customers) \
         , f"Customers are not a list of CustomerReturnResource objects, but {type(customers).__name__}"
 
-    assert len(customers) == expecting_customer_amount \
-        , (f"There should be {expecting_customer_amount} customers, "
-           f"not '{len(customers)}'")
+    actual_amount_of_customers = len(customers)
+
+    assert actual_amount_of_customers == expecting_customer_amount \
+        , (f"The actual amount of customers {actual_amount_of_customers} does not match "
+           f"the expected amount of customers '{expecting_customer_amount}'.")
 
     for customer in customers:
         if valid_email_filter is not None:
@@ -481,13 +489,13 @@ def test_create_customer_with_valid_partitions(mySQLCustomerRepository, valid_cu
         f"Customer with ID {expected_customer_id} was not created."
 
     assert actual_amount_of_customers_after_creation == expected_amount_of_customers_after_creation, \
-        (f"Amount of customers after creation {actual_amount_of_customers_after_creation} does not match "
+        (f"Actual amount of customers after creation {actual_amount_of_customers_after_creation} does not match "
          f"the expected amount of customers after creation {expected_amount_of_customers_after_creation}")
 
     for customer_field in customer_fields:
         assert getattr(created_customer, customer_field) == expected_customer_data.get(customer_field), \
-            (f"Customer {customer_field}: {getattr(created_customer, customer_field)} does not match "
-             f"the expected data: {expected_customer_data.get(customer_field)}")
+            (f"The actual customer {customer_field}: {getattr(created_customer, customer_field)} does not match "
+             f"the expected {customer_field}: {expected_customer_data.get(customer_field)}")
 
 
 # INVALID TESTS FOR create_customer
@@ -522,8 +530,8 @@ def test_create_customer_with_invalid_customer_create_data_partitions(
 
     actual_amount_of_customers_after_creation = len(mySQLCustomerRepository.get_all())
     assert actual_amount_of_customers_after_creation == expected_amount_of_customers_after_creation, \
-        (f"Amount of customers after creation {actual_amount_of_customers_after_creation} does not match "
-         f"the expected amount of customers after creation {expected_amount_of_customers_after_creation}")
+        (f"The actual amount of customers after creation '{actual_amount_of_customers_after_creation}' does not match "
+         f"the expected amount of customers after creation '{expected_amount_of_customers_after_creation}'")
 
 
 @pytest.mark.parametrize("invalid_repository, expecting_error_message", [
@@ -544,8 +552,8 @@ def test_create_customer_with_invalid_repository_type_partitions(
 
     actual_amount_of_customers_after_creation = len(mySQLCustomerRepository.get_all())
     assert actual_amount_of_customers_after_creation == expected_amount_of_customers_after_creation, \
-        (f"Amount of customers after creation {actual_amount_of_customers_after_creation} does not match "
-         f"the expected amount of customers after creation {expected_amount_of_customers_after_creation}")
+        (f"The actual amount of customers after creation '{actual_amount_of_customers_after_creation}' does not match "
+         f"the expected amount of customers after creation '{expected_amount_of_customers_after_creation}'")
 
 
 def test_create_customer_with_invalid_repository_types_partitions(
@@ -581,8 +589,8 @@ def test_create_customer_with_invalid_repository_types_partitions(
 
     actual_amount_of_customers_after_creation = len(mySQLCustomerRepository.get_all())
     assert actual_amount_of_customers_after_creation == expected_amount_of_customers_after_creation, \
-        (f"Amount of customers after creation {actual_amount_of_customers_after_creation} does not match "
-         f"the expected amount of customers after creation {expected_amount_of_customers_after_creation}")
+        (f"The actual amount of customers after creation '{actual_amount_of_customers_after_creation}' does not match "
+         f"the expected amount of customers after creation '{expected_amount_of_customers_after_creation}'")
 
 
 # VALID TESTS FOR update_customer
@@ -613,19 +621,19 @@ def test_update_customer_with_valid_partitions(
          f"but {type(updated_customer).__name__}")
 
     assert updated_customer.id == customer_to_update_id, \
-        (f"Updated customer ID {updated_customer.id} does not match "
-         f"the expected ID {customer_to_update_id}")
+        (f"The actual updated customer ID '{updated_customer.id}' does not match "
+         f"the expected customer ID '{customer_to_update_id}'")
 
     for updated_customer_field in updated_customer_fields:
         actual_updated_customer_field_data = getattr(updated_customer, updated_customer_field)
         expected_updated_customer_field_data = customer_to_update.get(updated_customer_field)
         not_expected_updated_customer_field_data = valid_customer_data.get(updated_customer_field)
         assert actual_updated_customer_field_data != not_expected_updated_customer_field_data, \
-            (f"Updated customer {updated_customer_field}: {actual_updated_customer_field_data} "
-             f"is still the same as before update {not_expected_updated_customer_field_data}")
+            (f"The actual updated customer {updated_customer_field}: '{actual_updated_customer_field_data}' "
+             f"is still the same as before update '{not_expected_updated_customer_field_data}'")
         assert actual_updated_customer_field_data == expected_updated_customer_field_data, \
-            (f"Updated customer {updated_customer_field}: {actual_updated_customer_field_data} does not match "
-             f"the expected update data {expected_updated_customer_field_data}")
+            (f"The actual updated customer {updated_customer_field}: '{actual_updated_customer_field_data}' does not match "
+             f"the expected update {updated_customer_field}: '{expected_updated_customer_field_data}'")
 
 
 @pytest.mark.parametrize("customer_to_update", [
@@ -654,12 +662,12 @@ def test_update_customer_email_to_their_own_email_with_valid_partitions(
          f"but {type(updated_customer).__name__}")
 
     assert updated_customer.id == customer_to_update_id, \
-        (f"Updated customer ID {updated_customer.id} does not match "
-         f"the expected ID {customer_to_update_id}")
+        (f"The actual updated customer ID '{updated_customer.id}' does not match "
+         f"the expected customer ID '{customer_to_update_id}'")
 
     assert updated_customer.email == customer_to_update.get('email'), \
-        (f"Updated customer email {updated_customer.email} does not match "
-         f"the expected email {customer_to_update.get('email')}")
+        (f"The actual updated customer email '{updated_customer.email}' does not match "
+         f"the expected customer email '{customer_to_update.get('email')}'")
 
 
 # INVALID TESTS FOR update_customer
@@ -778,8 +786,8 @@ def test_delete_customer_with_valid_partitions(
     actual_amount_of_customers_after_deletion = len(mySQLCustomerRepository.get_all())
 
     assert actual_amount_of_customers_after_deletion == expected_amount_of_customers_after_deletion, \
-        (f"Amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
-         f"the expected amount of customers after deletion {expected_amount_of_customers_after_deletion}")
+        (f"The actual amount of customers after deletion '{actual_amount_of_customers_after_deletion}' does not match "
+         f"the expected amount of customers after deletion '{expected_amount_of_customers_after_deletion}'")
 
     assert mySQLCustomerRepository.get_by_id(valid_customer_id) is None, \
         f"Customer with ID {valid_customer_id} was not deleted."
@@ -788,7 +796,7 @@ def test_delete_customer_with_valid_partitions(
     actual_amount_of_cars_after_deletion = len(mySQLCarRepository.get_all())
 
     assert actual_amount_of_cars_after_deletion == expected_amount_of_cars_after_deletion, \
-        (f"Amount of cars after deletion {actual_amount_of_cars_after_deletion} does not match "
+        (f"The actual amount of cars after deletion {actual_amount_of_cars_after_deletion} does not match "
          f"the expected amount of cars after deletion {expected_amount_of_cars_after_deletion}")
 
     expected_amount_of_purchases_after_deletion = amount_of_expected_purchases - valid_customer.get(
@@ -796,7 +804,7 @@ def test_delete_customer_with_valid_partitions(
     actual_amount_of_purchases_after_deletion = len(mySQLPurchaseRepository.get_all())
 
     assert actual_amount_of_purchases_after_deletion == expected_amount_of_purchases_after_deletion, \
-        (f"Amount of purchases after deletion {actual_amount_of_purchases_after_deletion} does not match "
+        (f"The actual amount of purchases after deletion {actual_amount_of_purchases_after_deletion} does not match "
          f"the expected amount of purchases after deletion {expected_amount_of_purchases_after_deletion}")
 
     deleted_customers_car_ids = valid_customer.get('car_ids', [])
@@ -825,7 +833,7 @@ def test_delete_customer_with_invalid_customer_id_partitions(
 
     actual_amount_of_customers_after_deletion = len(mySQLCustomerRepository.get_all())
     assert actual_amount_of_customers_after_deletion == amount_of_expected_customers, \
-        (f"Amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
+        (f"The actual amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
          f"the expected amount of customers after deletion {amount_of_expected_customers}")
 
 
@@ -846,7 +854,7 @@ def test_delete_customer_with_invalid_customer_repository_type_partitions(
 
     actual_amount_of_customers_after_deletion = len(mySQLCustomerRepository.get_all())
     assert actual_amount_of_customers_after_deletion == amount_of_expected_customers, \
-        (f"Amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
+        (f"The actual amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
          f"the expected amount of customers after deletion {amount_of_expected_customers}")
 
 
@@ -882,5 +890,5 @@ def test_delete_customer_with_invalid_customer_repository_types_partitions(
 
     actual_amount_of_customers_after_deletion = len(mySQLCustomerRepository.get_all())
     assert actual_amount_of_customers_after_deletion == amount_of_expected_customers, \
-        (f"Amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
+        (f"The actual amount of customers after deletion {actual_amount_of_customers_after_deletion} does not match "
          f"the expected amount of customers after deletion {amount_of_expected_customers}")

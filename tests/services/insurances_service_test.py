@@ -30,13 +30,16 @@ def test_get_insurance_by_id_with_valid_partitions(
         f"Expected instance of InsuranceReturnResource, but got: {type(insurance).__name__}"
 
     assert insurance.id == valid_insurance_id, \
-        f"Expected insurance id: {valid_insurance_id}, but got: {insurance.id}"
+        (f"The actual insurance id: '{insurance.id}' does not match "
+         f"the expected insurance id: '{valid_insurance_id}'")
 
     assert insurance.name == expected_insurance.get("name"), \
-        f"Expected insurance name: {expected_insurance.get('name')}, but got: {insurance.name}"
+        (f"The actual insurance name: '{insurance.name}' does not match "
+         f"the expected insurance name: '{expected_insurance.get('name')}")
 
     assert insurance.price == expected_insurance.get("price"), \
-        f"Expected insurance price: {expected_insurance.get('price')}, but got: {insurance.price}"
+        f"The actual insurance price: '{insurance.price}' does not match " \
+        f"the expected insurance price: '{expected_insurance.get('price')}'"
 
 # INVALID TESTS FOR get_insurance_by_id
 

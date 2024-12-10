@@ -34,7 +34,7 @@ def create_car_resource(
     valid_customer_id = valid_car_data.get("customer").get("id")
     valid_sales_person_id = valid_car_data.get("sales_person").get("id")
     valid_accessory_ids = [accessory.get("id") for accessory in valid_car_data.get("accessories")]
-    valid_insurance_ids = [insurance.get("id") for insurance in valid_car_data.get( "insurances")]
+    valid_insurance_ids = [insurance.get("id") for insurance in valid_car_data.get("insurances")]
 
     return CarCreateResource(
         models_id=invalid_model_id if invalid_model_id else valid_model_id,
@@ -46,9 +46,29 @@ def create_car_resource(
     )
 
 
+def assert_amount_of_cars_and_purchases_after_action(
+        action: str,
+        actual_amount_of_cars_after_action: int,
+        expected_amount_of_cars_after_action: int,
+        actual_amount_of_purchases_after_action: Optional[int] = None,
+        expected_amount_of_purchases_after_action: Optional[int] = None
+):
+    assert actual_amount_of_cars_after_action == expected_amount_of_cars_after_action, (
+        f"The actual amount of cars after {action} '{actual_amount_of_cars_after_action}' does not match "
+        f"the expected amount of cars after {action} '{expected_amount_of_cars_after_action}'."
+    )
+
+    if actual_amount_of_purchases_after_action is not None and expected_amount_of_purchases_after_action is not None:
+        assert actual_amount_of_purchases_after_action == expected_amount_of_purchases_after_action, (
+            f"The actual amount of purchases after {action} '{actual_amount_of_purchases_after_action}' does not match "
+            f"the expected amount of purchases after {action} '{expected_amount_of_purchases_after_action}'."
+        )
+
+
 # Valid car data
 
 expected_amount_of_cars = 4
+expected_amount_of_purchases = 1
 invalid_customer_id_data = "0be86135-c58f-43b6-a369-a3c5445b9948"
 invalid_sales_person_id_data = "0be86135-c58f-43b6-a369-a3c5445b9948"
 invalid_model_id_data = "0be86135-c58f-43b6-a369-a3c5445b9948"
@@ -144,6 +164,9 @@ valid_car_test_data = [
     },
 ]
 
+car_without_purchase = valid_car_test_data[0]
+car_with_purchase = valid_car_test_data[1]
+
 
 # VALID TESTS FOR get_car_by_id
 @pytest.mark.parametrize("car_data", valid_car_test_data)
@@ -153,17 +176,18 @@ def test_get_car_by_id_valid(mySQLCarRepository, car_data):
     assert isinstance(car, CarReturnResource), "The car is not a CarReturnResource instance"
 
     assert car.id == valid_car_id, (
-        f"The car id {car.id} is not the same as the expected id {valid_car_id}"
+        f"The actual car id {car.id} is not the same as "
+        f"the expected id {valid_car_id}"
     )
 
     assert car.purchase_deadline == car_data.get("purchase_deadline"), (
-        f"The car purchase_deadline {car.purchase_deadline} is not the same as the expected "
-        f"purchase_deadline {car_data.get('purchase_deadline')}"
+        f"The actual car purchase_deadline {car.purchase_deadline} is not the same as "
+        f"the expected purchase_deadline {car_data.get('purchase_deadline')}"
     )
 
     assert car.total_price == car_data.get("total_price"), (
-        f"The car total_price {car.total_price} is not the same as the expected total_price "
-        f"{car_data.get('total_price')}"
+        f"The actual car total_price {car.total_price} is not the same as "
+        f"the expected total_price {car_data.get('total_price')}"
     )
 
     assert isinstance(car.model, ModelReturnResource), (
@@ -171,8 +195,8 @@ def test_get_car_by_id_valid(mySQLCarRepository, car_data):
     )
 
     assert car.model.id == car_data.get("model").get("id"), (
-        f"The car model id {car.model.id} is not the same as the expected model id "
-        f"{car_data.get('model').get('id')}"
+        f"The actual car model id {car.model.id} is not the same as "
+        f"the expected model id {car_data.get('model').get('id')}"
     )
 
     assert isinstance(car.color, ColorReturnResource), (
@@ -180,8 +204,8 @@ def test_get_car_by_id_valid(mySQLCarRepository, car_data):
     )
 
     assert car.color.id == car_data.get("color").get("id"), (
-        f"The car color id {car.color.id} is not the same as the expected color id "
-        f"{car_data.get('color').get('id')}"
+        f"The actual car color id {car.color.id} is not the same as "
+        f"the expected color id {car_data.get('color').get('id')}"
     )
 
     assert (
@@ -221,8 +245,8 @@ def test_get_car_by_id_valid(mySQLCarRepository, car_data):
     )
 
     assert car.customer.id == car_data.get("customer").get("id"), (
-        f"The customer id {car.customer.id} is not the same as the expected customer id "
-        f"{car_data.get('customer').get('id')}"
+        f"The actual customer id {car.customer.id} is not the same as "
+        f"the expected customer id {car_data.get('customer').get('id')}"
     )
 
     assert isinstance(car.sales_person, SalesPersonReturnResource), (
@@ -230,13 +254,13 @@ def test_get_car_by_id_valid(mySQLCarRepository, car_data):
     )
 
     assert car.sales_person.id == car_data.get("sales_person").get("id"), (
-        f"The sales_person id {car.sales_person.id} is not the same as the expected sales_person id "
-        f"{car_data.get('sales_person').get('id')}"
+        f"The actual sales_person id {car.sales_person.id} is not the same as "
+        f"the expected sales_person id {car_data.get('sales_person').get('id')}"
     )
 
     assert car.is_purchased == car_data.get("is_purchased"), (
-        f"The car is_purchased {car.is_purchased} is not the same as the expected is_purchased "
-        f"{car_data.get('is_purchased')}"
+        f"The actual car is_purchased {car.is_purchased} is not the same as the "
+        f"expected is_purchased {car_data.get('is_purchased')}"
     )
 
 
@@ -303,7 +327,8 @@ def test_get_all_cars_valid(mySQLCarRepository, mySQLCustomerRepository, mySQLSa
     for car in cars:
         assert isinstance(car, CarReturnResource), "The car is not a CarReturnResource instance"
     assert len(cars) == expected_amount_of_cars, (
-        f"The amount of cars {len(cars)} is not the same as the expected amount of cars {expected_amount_of_cars}"
+        f"The actual amount of cars {len(cars)} is not the same as "
+        f"the expected amount of cars {expected_amount_of_cars}"
     )
 
 
@@ -322,7 +347,8 @@ def test_get_all_cars_valid_customer_id(mySQLCarRepository, mySQLCustomerReposit
             f"The customer is not a CustomerReturnResource instance, but a {type(car.customer).__name__}"
         )
         assert car.customer.id == valid_customer_id, (
-            f"The customer id {car.customer.id} is not the same as the expected customer id {valid_customer_id}"
+            f"The actual customer id {car.customer.id} is not the same as "
+            f"the expected customer id {valid_customer_id}"
         )
 
 
@@ -341,7 +367,8 @@ def test_get_all_cars_valid_sales_person_id(mySQLCarRepository, mySQLCustomerRep
             f"The sales_person is not a SalesPersonReturnResource instance, but a {type(car.sales_person).__name__}"
         )
         assert car.sales_person.id == valid_sales_person_id, (
-            f"The sales_person id {car.sales_person.id} is not the same as the expected sales_person id {valid_sales_person_id}"
+            f"The actual sales_person id {car.sales_person.id} is not the same as "
+            f"the expected sales_person id {valid_sales_person_id}"
         )
 
 
@@ -357,7 +384,8 @@ def test_get_all_cars_valid_is_purchased(mySQLCarRepository, mySQLCustomerReposi
     for car in cars:
         assert isinstance(car, CarReturnResource), "The car is not a CarReturnResource instance"
         assert car.is_purchased == valid_is_purchased, (
-            f"The car is_purchased {car.is_purchased} is not the same as the expected is_purchased {valid_is_purchased}"
+            f"The actual car is_purchased {car.is_purchased} is not the same as "
+            f"the expected is_purchased {valid_is_purchased}"
         )
 
 
@@ -385,7 +413,8 @@ def test_get_all_cars_with_valid_cars_limit_values_partitions(
         , f"Cars are not a list of CarReturnResource objects, but {type(cars).__name__}"
 
     assert len(cars) == expecting_car_amount \
-        , f"There should be {expecting_car_amount} cars, not '{len(cars)}'"
+        , (f"The actual amount of cars '{len(cars)}' does not match "
+           f"the expected amount of cars '{expecting_car_amount}'.")
 
 
 # INVALID TESTS FOR get_all_cars
@@ -556,9 +585,6 @@ def test_create_car_with_valid_partitions(
         mySQLInsuranceRepository,
         valid_car_data
 ):
-    amount_of_cars_before_creation = expected_amount_of_cars
-    expected_amount_of_cars_after_creation = amount_of_cars_before_creation + 1
-
     valid_car_create_resource = create_car_resource()
 
     created_car = cars_service.create(
@@ -581,13 +607,17 @@ def test_create_car_with_valid_partitions(
         f"Car with ID {expected_car_id} was not created."
 
     actual_amount_of_cars_after_creation = len(mySQLCarRepository.get_all())
-    assert actual_amount_of_cars_after_creation == expected_amount_of_cars_after_creation, \
-        (f"Amount of cars after creation {actual_amount_of_cars_after_creation} does not match "
-         f"the expected amount of cars after creation {expected_amount_of_cars_after_creation}")
+    expected_amount_of_cars_after_creation = expected_amount_of_cars + 1
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "creation",
+        actual_amount_of_cars_after_creation,
+        expected_amount_of_cars_after_creation,
+    )
 
     assert created_car.total_price == valid_car_data.get("total_price"), \
-        (f"Created car's total price {created_car.total_price} does not match the expected total price "
-         f"{valid_car_data.get('total_price')}")
+        (f"Created car's actual total price {created_car.total_price} does not match "
+         f"the expected total price {valid_car_data.get('total_price')}")
 
 
 # INVALID TESTS FOR create_car
@@ -597,7 +627,7 @@ def test_create_car_with_valid_partitions(
     (True, "car_repository must be of type CarRepository, not bool."),
     ("car_repository", "car_repository must be of type CarRepository, not str."),
 ])
-def test_create_car_with_invalid_car_repository(
+def test_create_car_with_invalid_car_repository_partitions(
         mySQLCarRepository,
         mySQLCustomerRepository,
         mySQLSalesPersonRepository,
@@ -623,9 +653,13 @@ def test_create_car_with_invalid_car_repository(
         )
 
     actual_amount_of_cars_after_creation = len(mySQLCarRepository.get_all())
-    assert actual_amount_of_cars_after_creation == expected_amount_of_cars, (
-            f"Amount of cars after creation {actual_amount_of_cars_after_creation} does not match "
-            f"the expected amount of cars after creation {expected_amount_of_cars}")
+    expected_amount_of_cars_after_creation = expected_amount_of_cars
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "creation",
+        actual_amount_of_cars_after_creation,
+        expected_amount_of_cars_after_creation,
+    )
 
 
 @pytest.mark.parametrize("invalid_customer_repository, expecting_error_message", [
@@ -634,7 +668,7 @@ def test_create_car_with_invalid_car_repository(
     (True, "customer_repository must be of type CustomerRepository, not bool."),
     ("customer_repository", "customer_repository must be of type CustomerRepository, not str."),
 ])
-def test_create_car_with_invalid_customer_repository(
+def test_create_car_with_invalid_customer_repository_partitions(
         mySQLCarRepository,
         mySQLSalesPersonRepository,
         mySQLModelRepository,
@@ -659,9 +693,13 @@ def test_create_car_with_invalid_customer_repository(
         )
 
     actual_amount_of_cars_after_creation = len(mySQLCarRepository.get_all())
-    assert actual_amount_of_cars_after_creation == expected_amount_of_cars, (
-            f"Amount of cars after creation {actual_amount_of_cars_after_creation} does not match "
-            f"the expected amount of cars after creation {expected_amount_of_cars}")
+    expected_amount_of_cars_after_creation = expected_amount_of_cars
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "creation",
+        actual_amount_of_cars_after_creation,
+        expected_amount_of_cars_after_creation,
+    )
 
 
 @pytest.mark.parametrize("invalid_sales_person_repository, expecting_error_message", [
@@ -670,7 +708,7 @@ def test_create_car_with_invalid_customer_repository(
     (True, "sales_person_repository must be of type SalesPersonRepository, not bool."),
     ("sales_person_repository", "sales_person_repository must be of type SalesPersonRepository, not str."),
 ])
-def test_create_car_with_invalid_sales_person_repository(
+def test_create_car_with_invalid_sales_person_repository_partitions(
         mySQLCarRepository,
         mySQLCustomerRepository,
         mySQLModelRepository,
@@ -695,9 +733,13 @@ def test_create_car_with_invalid_sales_person_repository(
         )
 
     actual_amount_of_cars_after_creation = len(mySQLCarRepository.get_all())
-    assert actual_amount_of_cars_after_creation == expected_amount_of_cars, (
-            f"Amount of cars after creation {actual_amount_of_cars_after_creation} does not match "
-            f"the expected amount of cars after creation {expected_amount_of_cars}")
+    expected_amount_of_cars_after_creation = expected_amount_of_cars
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "creation",
+        actual_amount_of_cars_after_creation,
+        expected_amount_of_cars_after_creation,
+    )
 
 
 @pytest.mark.parametrize("invalid_model_repository, expecting_error_message", [
@@ -706,7 +748,7 @@ def test_create_car_with_invalid_sales_person_repository(
     (True, "model_repository must be of type ModelRepository, not bool."),
     ("model_repository", "model_repository must be of type ModelRepository, not str."),
 ])
-def test_create_car_with_invalid_model_repository(
+def test_create_car_with_invalid_model_repository_partitions(
         mySQLCarRepository,
         mySQLCustomerRepository,
         mySQLSalesPersonRepository,
@@ -731,9 +773,13 @@ def test_create_car_with_invalid_model_repository(
         )
 
     actual_amount_of_cars_after_creation = len(mySQLCarRepository.get_all())
-    assert actual_amount_of_cars_after_creation == expected_amount_of_cars, (
-            f"Amount of cars after creation {actual_amount_of_cars_after_creation} does not match "
-            f"the expected amount of cars after creation {expected_amount_of_cars}")
+    expected_amount_of_cars_after_creation = expected_amount_of_cars
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "creation",
+        actual_amount_of_cars_after_creation,
+        expected_amount_of_cars_after_creation,
+    )
 
 
 @pytest.mark.parametrize("invalid_color_repository, expecting_error_message", [
@@ -742,7 +788,7 @@ def test_create_car_with_invalid_model_repository(
     (True, "color_repository must be of type ColorRepository, not bool."),
     ("color_repository", "color_repository must be of type ColorRepository, not str."),
 ])
-def test_create_car_with_invalid_color_repository(
+def test_create_car_with_invalid_color_repository_partitions(
         mySQLCarRepository,
         mySQLCustomerRepository,
         mySQLSalesPersonRepository,
@@ -767,9 +813,13 @@ def test_create_car_with_invalid_color_repository(
         )
 
     actual_amount_of_cars_after_creation = len(mySQLCarRepository.get_all())
-    assert actual_amount_of_cars_after_creation == expected_amount_of_cars, (
-            f"Amount of cars after creation {actual_amount_of_cars_after_creation} does not match "
-            f"the expected amount of cars after creation {expected_amount_of_cars}")
+    expected_amount_of_cars_after_creation = expected_amount_of_cars
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "creation",
+        actual_amount_of_cars_after_creation,
+        expected_amount_of_cars_after_creation,
+    )
 
 
 @pytest.mark.parametrize("invalid_accessory_repository, expecting_error_message", [
@@ -778,7 +828,7 @@ def test_create_car_with_invalid_color_repository(
     (True, "accessory_repository must be of type AccessoryRepository, not bool."),
     ("accessory_repository", "accessory_repository must be of type AccessoryRepository, not str."),
 ])
-def test_create_car_with_invalid_accessory_repository(
+def test_create_car_with_invalid_accessory_repository_partitions(
         mySQLCarRepository,
         mySQLCustomerRepository,
         mySQLSalesPersonRepository,
@@ -803,9 +853,13 @@ def test_create_car_with_invalid_accessory_repository(
         )
 
     actual_amount_of_cars_after_creation = len(mySQLCarRepository.get_all())
-    assert actual_amount_of_cars_after_creation == expected_amount_of_cars, (
-            f"Amount of cars after creation {actual_amount_of_cars_after_creation} does not match "
-            f"the expected amount of cars after creation {expected_amount_of_cars}")
+    expected_amount_of_cars_after_creation = expected_amount_of_cars
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "creation",
+        actual_amount_of_cars_after_creation,
+        expected_amount_of_cars_after_creation,
+    )
 
 
 @pytest.mark.parametrize("invalid_insurance_repository, expecting_error_message", [
@@ -814,7 +868,7 @@ def test_create_car_with_invalid_accessory_repository(
     (True, "insurance_repository must be of type InsuranceRepository, not bool."),
     ("insurance_repository", "insurance_repository must be of type InsuranceRepository, not str."),
 ])
-def test_create_car_with_invalid_insurance_repository(
+def test_create_car_with_invalid_insurance_repository_partitions(
         mySQLCarRepository,
         mySQLCustomerRepository,
         mySQLSalesPersonRepository,
@@ -838,9 +892,13 @@ def test_create_car_with_invalid_insurance_repository(
             car_create_data=valid_car_create_resource
         )
     actual_amount_of_cars_after_creation = len(mySQLCarRepository.get_all())
-    assert actual_amount_of_cars_after_creation == expected_amount_of_cars, (
-            f"Amount of cars after creation {actual_amount_of_cars_after_creation} does not match "
-            f"the expected amount of cars after creation {expected_amount_of_cars}")
+    expected_amount_of_cars_after_creation = expected_amount_of_cars
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "creation",
+        actual_amount_of_cars_after_creation,
+        expected_amount_of_cars_after_creation,
+    )
 
 
 @pytest.mark.parametrize("invalid_car_create_data, expecting_error, expecting_error_message", [
@@ -889,49 +947,53 @@ def test_create_car_with_invalid_car_create_data_partitions(
         )
 
     actual_amount_of_cars_after_creation = len(mySQLCarRepository.get_all())
-    assert actual_amount_of_cars_after_creation == expected_amount_of_cars, (
-            f"Amount of cars after creation {actual_amount_of_cars_after_creation} does not match "
-            f"the expected amount of cars after creation {expected_amount_of_cars}")
+    expected_amount_of_cars_after_creation = expected_amount_of_cars
 
-# VALID TESTS FOR delete_car
-
-@pytest.mark.parametrize("valid_car", valid_car_test_data)
-def test_delete_car_with_valid_partitions(
-    mySQLCarRepository, mySQLPurchaseRepository, valid_car
-):
-    valid_car_id = valid_car.get("id")
-    delete_purchase_too = valid_car.get("is_purchased", False)
-
-
-    amount_of_expected_cars = len(mySQLCarRepository.get_all())
-    amount_of_expected_purchases = len(mySQLPurchaseRepository.get_all())
-
-
-    cars_service.delete(
-        car_repository=mySQLCarRepository,
-        purchase_repository=mySQLPurchaseRepository,
-        car_id=valid_car_id,
-        delete_purchase_too=delete_purchase_too
+    assert_amount_of_cars_and_purchases_after_action(
+        "creation",
+        actual_amount_of_cars_after_creation,
+        expected_amount_of_cars_after_creation,
     )
 
 
-    expected_amount_of_cars_after_deletion = amount_of_expected_cars - 1
+# VALID TESTS FOR delete_car
+
+
+@pytest.mark.parametrize("valid_car_to_delete, valid_delete_purchase_too", [
+    # Rule 1 - Car without purchase and not deleting purchase too: deletes the car, but does not delete any purchase
+    (car_without_purchase, False),
+    # Rule 2 - Car without purchase and deleting purchase too: deletes the car purchase, but does not delete any purchase
+    (car_without_purchase, True),
+    # Rule 3 - Car with purchase and deleting purchase too: deletes the car, but also deletes the purchase
+    (car_with_purchase, True),
+])
+def test_delete_car_with_valid_partitions(
+        mySQLCarRepository, mySQLPurchaseRepository, valid_car_to_delete, valid_delete_purchase_too
+):
+    cars_service.delete(
+        car_repository=mySQLCarRepository,
+        purchase_repository=mySQLPurchaseRepository,
+        car_id=valid_car_to_delete.get("id"),
+        delete_purchase_too=valid_delete_purchase_too
+    )
+
     actual_amount_of_cars_after_deletion = len(mySQLCarRepository.get_all())
+    expected_amount_of_cars_after_deletion = expected_amount_of_cars - 1
+    actual_amount_of_purchases_after_deletion = len(mySQLPurchaseRepository.get_all())
+    expected_amount_of_purchases_after_deletion = expected_amount_of_purchases - 1 \
+        if valid_car_to_delete.get("is_purchased") \
+        else expected_amount_of_purchases
 
-    assert actual_amount_of_cars_after_deletion == expected_amount_of_cars_after_deletion, \
-        (f"Amount of cars after deletion {actual_amount_of_cars_after_deletion} does not match "
-         f"the expected amount of cars after deletion {expected_amount_of_cars_after_deletion}")
+    assert_amount_of_cars_and_purchases_after_action(
+        "deletion",
+        actual_amount_of_cars_after_deletion,
+        expected_amount_of_cars_after_deletion,
+        actual_amount_of_purchases_after_deletion,
+        expected_amount_of_purchases_after_deletion
+    )
 
-    assert mySQLCarRepository.get_by_id(valid_car_id) is None, \
-        f"Car with ID {valid_car_id} was not deleted."
-
-    if delete_purchase_too:
-        expected_amount_of_purchases_after_deletion = amount_of_expected_purchases - 1
-        actual_amount_of_purchases_after_deletion = len(mySQLPurchaseRepository.get_all())
-
-        assert actual_amount_of_purchases_after_deletion == expected_amount_of_purchases_after_deletion, \
-            (f"Amount of purchases after deletion {actual_amount_of_purchases_after_deletion} does not match "
-             f"the expected amount of purchases after deletion {expected_amount_of_purchases_after_deletion}")
+    assert mySQLCarRepository.get_by_id(valid_car_to_delete.get("id")) is None, \
+        f"Car with ID '{valid_car_to_delete.get('id')}' was not deleted."
 
 
 # INVALID TESTS FOR delete_car
@@ -942,8 +1004,8 @@ def test_delete_car_with_valid_partitions(
     (True, TypeError, "car_id must be of type str, not bool."),
     ("unknown-id", UnableToFindIdError, "Car with ID: unknown-id does not exist."),
 ])
-def test_delete_car_with_invalid_car_id(
-    mySQLCarRepository, mySQLPurchaseRepository, invalid_car_id, expected_error, expected_error_message
+def test_delete_car_with_invalid_car_id_partitions(
+        mySQLCarRepository, mySQLPurchaseRepository, invalid_car_id, expected_error, expected_error_message
 ):
     with pytest.raises(expected_error, match=expected_error_message):
         cars_service.delete(
@@ -953,21 +1015,57 @@ def test_delete_car_with_invalid_car_id(
             delete_purchase_too=False
         )
 
-@pytest.mark.parametrize("invalid_delete_purchase_too, expected_error_message", [
-    (None, "delete_purchase_too must be of type bool, not NoneType."),
-    (1, "delete_purchase_too must be of type bool, not int."),
-    ("True", "delete_purchase_too must be of type bool, not str."),
-])
-def test_delete_car_with_invalid_delete_purchase_too(
-    mySQLCarRepository, mySQLPurchaseRepository, invalid_delete_purchase_too, expected_error_message
+    actual_amount_of_cars_after_deletion = len(mySQLCarRepository.get_all())
+    expected_amount_of_cars_after_deletion = expected_amount_of_cars
+    actual_amount_of_purchases_after_deletion = len(mySQLPurchaseRepository.get_all())
+    expected_amount_of_purchases_after_deletion = expected_amount_of_purchases
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "deletion",
+        actual_amount_of_cars_after_deletion,
+        expected_amount_of_cars_after_deletion,
+        actual_amount_of_purchases_after_deletion,
+        expected_amount_of_purchases_after_deletion
+    )
+
+
+@pytest.mark.parametrize(
+    "invalid_delete_purchase_too, expected_error, expected_error_message", [
+        (None, TypeError, "delete_purchase_too must be of type bool, not NoneType."),
+        (1, TypeError, "delete_purchase_too must be of type bool, not int."),
+        ("True", TypeError, "delete_purchase_too must be of type bool, not str."),
+        # Rule 4 - Car with purchase and not deleting purchase too, raises: UnableToDeleteCarWithoutDeletingPurchaseTooError
+        (False, UnableToDeleteCarWithoutDeletingPurchaseTooError, "must delete its purchase too.")
+    ])
+def test_delete_car_with_invalid_delete_purchase_too_partitions(
+        mySQLCarRepository, mySQLPurchaseRepository, invalid_delete_purchase_too, expected_error, expected_error_message
 ):
-    with pytest.raises(TypeError, match=expected_error_message):
+    valid_car_id = car_with_purchase.get("id")
+
+    with pytest.raises(expected_error, match=expected_error_message):
         cars_service.delete(
             car_repository=mySQLCarRepository,
             purchase_repository=mySQLPurchaseRepository,
-            car_id=valid_car_test_data[0]["id"],
+            car_id=valid_car_id,
             delete_purchase_too=invalid_delete_purchase_too
         )
+    actual_amount_of_cars_after_deletion = len(mySQLCarRepository.get_all())
+    expected_amount_of_cars_after_deletion = expected_amount_of_cars
+    actual_amount_of_purchases_after_deletion = len(mySQLPurchaseRepository.get_all())
+    expected_amount_of_purchases_after_deletion = expected_amount_of_purchases
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "deletion",
+        actual_amount_of_cars_after_deletion,
+        expected_amount_of_cars_after_deletion,
+        actual_amount_of_purchases_after_deletion,
+        expected_amount_of_purchases_after_deletion
+    )
+
+    assert mySQLCarRepository.get_by_id(valid_car_id) is not None, (
+        f"Car with ID '{valid_car_id}' was deleted, but it should not have been."
+    )
+
 
 @pytest.mark.parametrize("invalid_car_repository, expected_error_message", [
     (None, "car_repository must be of type CarRepository, not NoneType."),
@@ -976,15 +1074,34 @@ def test_delete_car_with_invalid_delete_purchase_too(
     ("repo", "car_repository must be of type CarRepository, not str."),
 ])
 def test_delete_car_with_invalid_car_repository(
-    mySQLPurchaseRepository, invalid_car_repository, expected_error_message
+        mySQLCarRepository, mySQLPurchaseRepository, invalid_car_repository, expected_error_message
 ):
+    valid_car_id = valid_car_test_data[0]["id"]
     with pytest.raises(TypeError, match=expected_error_message):
         cars_service.delete(
             car_repository=invalid_car_repository,
             purchase_repository=mySQLPurchaseRepository,
-            car_id=valid_car_test_data[0]["id"],
-            delete_purchase_too=False
+            car_id=valid_car_id,
+            delete_purchase_too=True
         )
+
+    actual_amount_of_cars_after_deletion = len(mySQLCarRepository.get_all())
+    expected_amount_of_cars_after_deletion = expected_amount_of_cars
+    actual_amount_of_purchases_after_deletion = len(mySQLPurchaseRepository.get_all())
+    expected_amount_of_purchases_after_deletion = expected_amount_of_purchases
+
+    assert_amount_of_cars_and_purchases_after_action(
+        "deletion",
+        actual_amount_of_cars_after_deletion,
+        expected_amount_of_cars_after_deletion,
+        actual_amount_of_purchases_after_deletion,
+        expected_amount_of_purchases_after_deletion
+    )
+
+    assert mySQLCarRepository.get_by_id(valid_car_id) is not None, (
+        f"Car with ID '{valid_car_id}' was deleted, but it should not have been."
+    )
+
 
 @pytest.mark.parametrize("invalid_purchase_repository, expected_error_message", [
     (None, "purchase_repository must be of type PurchaseRepository, not NoneType."),
@@ -993,40 +1110,31 @@ def test_delete_car_with_invalid_car_repository(
     ("repo", "purchase_repository must be of type PurchaseRepository, not str."),
 ])
 def test_delete_car_with_invalid_purchase_repository(
-    mySQLCarRepository, invalid_purchase_repository, expected_error_message
+        mySQLCarRepository, mySQLPurchaseRepository, invalid_purchase_repository, expected_error_message
 ):
+    valid_car_id = valid_car_test_data[0]["id"]
+
     with pytest.raises(TypeError, match=expected_error_message):
         cars_service.delete(
             car_repository=mySQLCarRepository,
             purchase_repository=invalid_purchase_repository,
-            car_id=valid_car_test_data[0]["id"],
-            delete_purchase_too=False
+            car_id=valid_car_id,
+            delete_purchase_too=True
         )
 
-def test_delete_car_without_deleting_purchase(
-    mySQLCarRepository, mySQLPurchaseRepository
-):
-    
-    car_id_with_purchase = valid_car_test_data[1]["id"]
-    delete_purchase_too = False
-    expected_error = UnableToDeleteCarWithoutDeletingPurchaseTooError
-    expected_error_message = f"The car with ID: '{car_id_with_purchase}' must delete its purchase too."
+    actual_amount_of_cars_after_deletion = len(mySQLCarRepository.get_all())
+    expected_amount_of_cars_after_deletion = expected_amount_of_cars
+    actual_amount_of_purchases_after_deletion = len(mySQLPurchaseRepository.get_all())
+    expected_amount_of_purchases_after_deletion = expected_amount_of_purchases
 
-    amount_of_expected_cars = len(mySQLCarRepository.get_all())
-    amount_of_expected_purchases = len(mySQLPurchaseRepository.get_all())
-
-    with pytest.raises(expected_error, match=expected_error_message):
-        cars_service.delete(
-            car_repository=mySQLCarRepository,
-            purchase_repository=mySQLPurchaseRepository,
-            car_id=car_id_with_purchase,
-            delete_purchase_too=delete_purchase_too
-        )
-
-    assert len(mySQLCarRepository.get_all()) == amount_of_expected_cars, (
-        "The number of cars changed despite an exception being raised."
-    )
-    assert len(mySQLPurchaseRepository.get_all()) == amount_of_expected_purchases, (
-        "The number of purchases changed despite an exception being raised."
+    assert_amount_of_cars_and_purchases_after_action(
+        "deletion",
+        actual_amount_of_cars_after_deletion,
+        expected_amount_of_cars_after_deletion,
+        actual_amount_of_purchases_after_deletion,
+        expected_amount_of_purchases_after_deletion
     )
 
+    assert mySQLCarRepository.get_by_id(valid_car_id) is not None, (
+        f"Car with ID '{valid_car_id}' was deleted, but it should not have been."
+    )

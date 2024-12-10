@@ -23,12 +23,12 @@ def get_weather_by_country(country: str) -> WeatherReturnResource:
     # Example= https://api.weatherapi.com/v1/current.json?q=Denmark&key=somekey    
     url = baseUrl + "current.json?q=" + country + "&key=" + key
     print(url)
-    # Make a HTTP GET request to the URL
+    # Make an HTTP GET request to the URL
     response = requests.get(url)
     
     # Check if the response status code is 200 (OK)
     if response.status_code != 200:
-        raise WeatherAPIError()
+        raise WeatherAPIError(api_url=url)
     
     # Parse the JSON response
     data = response.json()

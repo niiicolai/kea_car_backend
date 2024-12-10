@@ -41,16 +41,20 @@ def test_get_accessory_by_id_with_valid_partitions(
     )
 
     assert isinstance(accessory, AccessoryReturnResource), \
-        f"Expected instance of AccessoryReturnResource, but got: {type(accessory).__name__}"
+        (f"Expected instance of AccessoryReturnResource, "
+         f"but got: {type(accessory).__name__}")
 
     assert accessory.id == expected_accessory.get("id"), \
-        f"Expected accessory id: {expected_accessory.get('id')}, but got: {accessory.id}"
+        (f"The actual accessory id: '{accessory.id}' does not match "
+         f"the expected accessory id: '{expected_accessory.get('id')}'")
 
     assert accessory.name == expected_accessory.get("name"), \
-        f"Expected accessory name: {expected_accessory.get('name')}, but got: {accessory.name}"
+        (f"The actual accessory name: '{accessory.name}' does not match "
+         f"the expected accessory name: '{expected_accessory.get('name')}'")
 
     assert accessory.price == expected_accessory.get("price"), \
-        f"Expected accessory price: {expected_accessory.get('price')}, but got: {accessory.price}"
+        (f"The actual accessory price: '{accessory.price}' does not match "
+         f"the expected accessory price: '{expected_accessory.get('price')}'")
 
 
 # INVALID TESTS FOR get_accessory_by_id
@@ -95,21 +99,24 @@ def test_get_accessory_by_id_with_invalid_repository_partition_types(
     valid_accessory_id = "0d61b4ee-2c27-400c-9ff5-38123284626c"
 
     with pytest.raises(TypeError,
-                       match=f"repository must be of type AccessoryRepository, not {type(mySQLInsuranceRepository).__name__}."):
+                       match=f"repository must be of type AccessoryRepository, "
+                             f"not {type(mySQLInsuranceRepository).__name__}."):
         accessories_service.get_by_id(
             repository=mySQLInsuranceRepository,
             accessory_id=valid_accessory_id
         )
 
     with pytest.raises(TypeError,
-                       match=f"repository must be of type AccessoryRepository, not {type(mySQLCustomerRepository).__name__}."):
+                       match=f"repository must be of type AccessoryRepository, "
+                             f"not {type(mySQLCustomerRepository).__name__}."):
         accessories_service.get_by_id(
             repository=mySQLCustomerRepository,
             accessory_id=valid_accessory_id
         )
 
     with pytest.raises(TypeError,
-                       match=f"repository must be of type AccessoryRepository, not {type(mySQLBrandRepository).__name__}."):
+                       match=f"repository must be of type AccessoryRepository, "
+                             f"not {type(mySQLBrandRepository).__name__}."):
         accessories_service.get_by_id(
             repository=mySQLBrandRepository,
             accessory_id=valid_accessory_id
@@ -122,17 +129,20 @@ def test_get_all_accessories_with_valid_partitions(mySQLAccessoryRepository):
     accessories = accessories_service.get_all(repository=mySQLAccessoryRepository)
 
     assert isinstance(accessories, list), \
-        f"Expected instance of list, but got: {type(accessories).__name__}"
+        (f"Expected instance of list, "
+         f"but got: {type(accessories).__name__}")
 
     expected_amount_of_accessories = 20
     actual_amount_of_accessories = len(accessories)
 
     assert actual_amount_of_accessories == expected_amount_of_accessories, \
-        f"Expected {expected_amount_of_accessories} accessories, but got: {actual_amount_of_accessories}"
+        (f"Expected {expected_amount_of_accessories} accessories, "
+         f"but got: {actual_amount_of_accessories}")
 
     for accessory in accessories:
         assert isinstance(accessory, AccessoryReturnResource), \
-            f"Expected instance of AccessoryReturnResource, but got: {type(accessory).__name__}"
+            (f"Expected instance of AccessoryReturnResource, "
+             f"but got: {type(accessory).__name__}")
 
 
 @pytest.mark.parametrize("valid_accessory_limit, expected_amount_of_accessories", [
@@ -202,13 +212,16 @@ def test_get_all_accessories_with_invalid_repository_partition_types(
         mySQLInsuranceRepository, mySQLCustomerRepository, mySQLBrandRepository
 ):
     with pytest.raises(TypeError,
-                       match=f"repository must be of type AccessoryRepository, not {type(mySQLInsuranceRepository).__name__}."):
+                       match=f"repository must be of type AccessoryRepository, "
+                             f"not {type(mySQLInsuranceRepository).__name__}."):
         accessories_service.get_all(repository=mySQLInsuranceRepository)
 
     with pytest.raises(TypeError,
-                       match=f"repository must be of type AccessoryRepository, not {type(mySQLCustomerRepository).__name__}."):
+                       match=f"repository must be of type AccessoryRepository, "
+                             f"not {type(mySQLCustomerRepository).__name__}."):
         accessories_service.get_all(repository=mySQLCustomerRepository)
 
     with pytest.raises(TypeError,
-                       match=f"repository must be of type AccessoryRepository, not {type(mySQLBrandRepository).__name__}."):
+                       match=f"repository must be of type AccessoryRepository, "
+                             f"not {type(mySQLBrandRepository).__name__}."):
         accessories_service.get_all(repository=mySQLBrandRepository)
