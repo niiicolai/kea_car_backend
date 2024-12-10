@@ -195,8 +195,7 @@ def test_get_color_by_id_with_invalid_repository_types_partitions(
 
 # VALID TESTS FOR get_all_colors
 
-@pytest.mark.parametrize("valid_color_id, expected_color", valid_colors)
-def test_get_all_colors_with_valid_partitions(mySQLColorRepository, valid_color_id, expected_color):
+def test_get_all_colors_with_valid_partitions(mySQLColorRepository):
 
     colors = colors_service.get_all(repository=mySQLColorRepository)
 
