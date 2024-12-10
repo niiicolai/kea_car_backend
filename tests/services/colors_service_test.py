@@ -5,8 +5,10 @@ from app.exceptions.database_errors import UnableToFindIdError
 
 
 def assert_valid_color(color: ColorReturnResource, expected_color: dict):
-    assert isinstance(color, ColorReturnResource) \
-        , f"Color is not of type ColorReturnResource, but {type(color).__name__}."
+    assert isinstance(color, ColorReturnResource), (
+        f"Color is not of type ColorReturnResource, "
+        f"but got {type(color).__name__}."
+    )
 
     expected_color_id = expected_color.get('id')
     actual_color_id = color.id
@@ -47,8 +49,10 @@ def assert_valid_color(color: ColorReturnResource, expected_color: dict):
 
 
 def assert_valid_colors(actual_colors: list, expected_colors: list):
-    assert isinstance(actual_colors, list) and all(isinstance(color, ColorReturnResource) for color in actual_colors) \
-        , f"Colors are not a list of ColorReturnResource objects, but {type(actual_colors).__name__}."
+    assert isinstance(actual_colors, list) and all(isinstance(color, ColorReturnResource) for color in actual_colors), (
+        f"Colors are not a list of ColorReturnResource objects, "
+        f"but {type(actual_colors).__name__}."
+    )
 
     actual_amount_of_colors = len(actual_colors)
     expected_amount_of_colors = len(expected_colors)
@@ -63,7 +67,7 @@ def assert_valid_colors(actual_colors: list, expected_colors: list):
 
         actual_color = next((color for color in actual_colors if color.id == expected_color_id), None)
         assert actual_color is not None, \
-            f"Color with ID: {expected_color_id} not found."
+            f"Color with ID: {expected_color_id} was not found."
 
         assert_valid_color(actual_color, expected_color_data)
 
@@ -155,23 +159,26 @@ def test_get_color_by_id_with_invalid_color_id_partitions(
 def test_get_color_by_id_with_invalid_repository_type_partitions(
         invalid_color_repository, expecting_error_message
 ):
+    valid_color_id = valid_colors[0][0]
     with pytest.raises(TypeError, match=expecting_error_message):
         colors_service.get_by_id(
             repository=invalid_color_repository,
-            color_id="e2164054-4cb8-49d5-a0da-eca5b36a0b3b"
+            color_id=valid_color_id
         )
 
 
 def test_get_color_by_id_with_invalid_repository_types_partitions(
         mySQLAccessoryRepository, mySQLBrandRepository, mySQLInsuranceRepository
 ):
+    valid_color_id = valid_colors[0][0]
+
     with pytest.raises(TypeError,
                        match=f"repository must be of type ColorRepository, "
                              f"not {type(mySQLAccessoryRepository).__name__}."
                        ):
         colors_service.get_by_id(
             repository=mySQLAccessoryRepository,
-            color_id="e2164054-4cb8-49d5-a0da-eca5b36a0b3b"
+            color_id=valid_color_id
         )
 
     with pytest.raises(TypeError,
@@ -180,7 +187,7 @@ def test_get_color_by_id_with_invalid_repository_types_partitions(
                        ):
         colors_service.get_by_id(
             repository=mySQLBrandRepository,
-            color_id="e2164054-4cb8-49d5-a0da-eca5b36a0b3b"
+            color_id=valid_color_id
         )
 
     with pytest.raises(TypeError,
@@ -189,14 +196,13 @@ def test_get_color_by_id_with_invalid_repository_types_partitions(
                        ):
         colors_service.get_by_id(
             repository=mySQLInsuranceRepository,
-            color_id="e2164054-4cb8-49d5-a0da-eca5b36a0b3b"
+            color_id=valid_color_id
         )
 
 
 # VALID TESTS FOR get_all_colors
 
 def test_get_all_colors_with_valid_partitions(mySQLColorRepository):
-
     colors = colors_service.get_all(repository=mySQLColorRepository)
 
     assert_valid_colors(colors, valid_colors)
@@ -221,11 +227,17 @@ def test_get_all_colors_with_valid_colors_limit_values_partitions(
         colors_limit=valid_colors_limit
     )
 
-    assert isinstance(colors, list) and all(isinstance(color, ColorReturnResource) for color in colors) \
-        , f"Colors are not a list of ColorReturnResource objects, but {type(colors).__name__}"
+    assert isinstance(colors, list) and all(isinstance(color, ColorReturnResource) for color in colors), (
+        f"Colors are not a list of ColorReturnResource objects, "
+        f"but {type(colors).__name__}"
+    )
 
-    assert len(colors) == expecting_color_amount \
-        , f"There should be {expecting_color_amount} colors, not '{len(colors)}'"
+    actual_amount_of_colors = len(colors)
+
+    assert actual_amount_of_colors == expecting_color_amount, (
+        f"The actual amount of colors '{actual_amount_of_colors}' is not the same as "
+        f"the expecting amount of colors '{expecting_color_amount}'."
+    )
 
 
 # INVALID TESTS FOR get_all_colors

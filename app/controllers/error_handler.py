@@ -5,6 +5,7 @@ import logging
 from fastapi import HTTPException, status
 
 # Internal library imports
+from app.exceptions.weather_errors import UnsupportedCountryError
 from app.exceptions.invalid_credentials_errors import IncorrectCredentialError
 from app.exceptions.database_errors import (
     UnableToFindIdError,
@@ -74,6 +75,13 @@ def error_handler(error_message: str, callback: Callable):
         )
 
     except PurchaseDeadlineHasPastError as e:
+        log_error(error_message, e)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(f"{error_message}: {e}")
+        )
+
+    except UnsupportedCountryError as e:
         log_error(error_message, e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

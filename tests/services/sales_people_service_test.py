@@ -140,8 +140,8 @@ def test_login_with_valid_partitions_and_boundaries(mySQLSalesPersonRepository, 
     (True, TypeError, "sales_person_login_data must be of type SalesPersonLoginResource, not bool."),
     (False, TypeError, "sales_person_login_data must be of type SalesPersonLoginResource, not bool."),
     (1, TypeError, "sales_person_login_data must be of type SalesPersonLoginResource, not int."),
-    (SalesPersonLoginResource(email="no_user@gmail.com", password="1234"), IncorrectEmailError, 'IncorrectEmailException: The email "no_user@gmail.com" is incorrect."'),
-    (SalesPersonLoginResource(email="james@gmail.com", password="not_correct"), IncorrectPasswordError, 'The password not_correct is incorrect for the email james@gmail.com.'),
+    (SalesPersonLoginResource(email="no_user@gmail.com", password="1234"), IncorrectEmailError, "The email 'no_user@gmail.com' is incorrect."),
+    (SalesPersonLoginResource(email="james@gmail.com", password="not_correct"), IncorrectPasswordError, "The password 'not_correct' is incorrect for the email 'james@gmail.com'."),
 ])
 def test_login_with_invalid_partitions_and_boundaries(mySQLSalesPersonRepository, salesPersonResource, errorType, errorMessage):
     with pytest.raises(errorType, match=errorMessage):

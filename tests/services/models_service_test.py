@@ -56,38 +56,40 @@ def test_get_model_by_id_with_valid_partitions(
         (f"Model is not of type ModelReturnResource, "
          f"but {type(model).__name__}")
 
-    assert model.id == valid_model_id, \
-        f"Model ID {model.id} does not match {valid_model_id}"
+    assert model.id == valid_model_id, (
+        f"The actual model ID: '{model.id}' does not match "
+        f"the expected model ID: '{valid_model_id}'"
+    )
 
     assert isinstance(model.brand, BrandReturnResource), \
         (f"Model brand is not of type BrandReturnResource, "
          f"but {type(model.brand).__name__}")
 
     assert model.brand.id == expected_model.get('brands_id'), \
-        (f"Model brand ID {model.brands_id} does not match "
-         f"{expected_model.get('brands_id')}")
+        (f"The actual model's brand ID: '{model.brands_id}' does not match "
+         f"the expected model's brand ID: '{expected_model.get('brands_id')}'")
 
     assert model.name == expected_model.get('name'), \
-        (f"Model name {model.name} does not match "
-         f"{expected_model.get('name')}")
+        (f"The actual model name: '{model.name}' does not match "
+         f"the expected model name: '{expected_model.get('name')}'")
 
     assert model.price == expected_model.get('price'), \
-        (f"Model price {model.price} does not match "
-         f"{expected_model.get('price')}")
+        (f"The actual model price: '{model.price}' does not match "
+         f"the expected model price: '{expected_model.get('price')}'")
 
     assert model.image_url == expected_model.get('image_url'), \
-        (f"Model image URL {model.image_url} does not match "
-         f"{expected_model.get('image_url')}")
+        (f"The actual model image URL: '{model.image_url}' does not match "
+         f"the expected model image URL: '{expected_model.get('image_url')}'")
 
     assert isinstance(model.colors, list) and all(isinstance(color, ColorReturnResource) for color in model.colors) \
         , f"Model colors are not a list of ColorReturnResource objects, but {type(model.colors).__name__}"
 
     assert len(model.colors) == len(expected_model.get('color_ids')), \
-        (f"Model colors length {len(model.colors)} does not match "
-         f"the expected amount of colors {len(expected_model.get('color_ids'))}")
+        (f"The actual amount of model's colors: '{len(model.colors)}' does not match "
+         f"the expected amount of colors: '{len(expected_model.get('color_ids'))}'")
 
     assert all(color.id in expected_model.get('color_ids') for color in model.colors), \
-        (f"Model colors IDs {', '.join(color.id for color in model.colors)} "
+        (f"The actual model's colors IDs {', '.join(color.id for color in model.colors)} "
          f"do not match the expected color IDs {', '.join(expected_model.get('color_ids'))}")
 
 
