@@ -7,7 +7,7 @@ from app.exceptions.weather_errors import UnsupportedCountryError, WeatherAPIErr
 router: APIRouter = APIRouter()
 
 @router.get(
-    path="/weather/{country}",
+    path="/mysql/weather/{country}",
     response_model=WeatherReturnResource,
     response_description=
     """
