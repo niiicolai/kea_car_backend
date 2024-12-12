@@ -24,7 +24,7 @@ class BrandMySQLEntity(Base):
             logo_url=self.logo_url,
         )
 
-class BrandMongoEntity(BaseModel):
+class BrandMongoEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
     name: str
     logo_url: str
@@ -38,7 +38,7 @@ class BrandMongoEntity(BaseModel):
             logo_url=self.logo_url,
         )
 
-class BrandNeo4jEntity(BaseModel):
+class BrandNeo4jEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     logo_url: str

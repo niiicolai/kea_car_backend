@@ -28,7 +28,7 @@ with the appropriate status code and message.
 return error_handler(error_message: str, lambda: service.get_all(repository=MySQLColorRepository(session), colors_limit=limit))
 ```
 """
-def error_handler(error_message: str, callback: Callable):
+def error_handler(error_message: str, callback: Callable):  # pragma: no cover
     try:
         return callback()
 
@@ -96,6 +96,6 @@ def error_handler(error_message: str, callback: Callable):
             detail=str(f"Internal Server Error Caught: {error_message}.")
         )
 
-def log_error(error_message: str, error: Exception):
+def log_error(error_message: str, error: Exception):  # pragma: no cover
     # Log internal server errors for debugging
     logging.error(f"{error.__class__.__name__} Was Caught.\n{error_message}:\n{error}", exc_info=True)

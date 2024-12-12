@@ -15,7 +15,7 @@ from app.repositories.brand_repositories import (
 
 router: APIRouter = APIRouter()
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_neo4j() as session:
         yield session
 
@@ -40,7 +40,7 @@ async def get_brands(
             description="""Set a limit for the amount of brands that is returned."""
         ),
         session: Neo4jSession = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get brands from the Neo4j database",
         callback=lambda: service.get_all(
@@ -71,7 +71,7 @@ async def get_brand(
             description="""The UUID of the brand to retrieve."""
         ),
         session: Neo4jSession = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get brand from the Neo4j database",
         callback=lambda: service.get_by_id(

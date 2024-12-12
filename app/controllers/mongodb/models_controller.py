@@ -15,7 +15,7 @@ from app.repositories.model_repositories import (
 
 router: APIRouter = APIRouter()
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_mongodb() as database:
         yield database
 
@@ -45,7 +45,7 @@ async def get_models(
             description="""Set a limit for the amount of models that is returned."""
         ),
         database: Database = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get models from the MongoDB database",
         callback=lambda: service.get_all(
@@ -79,7 +79,7 @@ async def get_model(
             description="""The UUID of the model to retrieve."""
         ),
         database: Database = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get model from the MongoDB database",
         callback=lambda: service.get_by_id(

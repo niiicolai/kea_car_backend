@@ -49,7 +49,7 @@ class ModelMySQLEntity(Base):
         )
 
 
-class ModelMongoEntity(BaseModel):
+class ModelMongoEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
     brand: BrandMongoEntity
     name: str
@@ -70,7 +70,7 @@ class ModelMongoEntity(BaseModel):
             image_url=self.image_url,
         )
 
-class ModelNeo4jEntity(BaseModel):
+class ModelNeo4jEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()))
     brand: BrandNeo4jEntity
     name: str

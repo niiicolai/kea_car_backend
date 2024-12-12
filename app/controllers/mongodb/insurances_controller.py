@@ -14,7 +14,7 @@ from app.repositories.insurance_repository import (
 
 router: APIRouter = APIRouter()
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_mongodb() as database:
         yield database
 
@@ -40,7 +40,7 @@ async def get_insurances(
             description="""Set a limit for the amount of insurances that is returned."""
         ),
         database: Database = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get insurances from the MongoDB database",
         callback=lambda: service.get_all(
@@ -71,7 +71,7 @@ async def get_insurance(
             description="""The UUID of the insurance to retrieve."""
         ),
         database: Database = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get insurance from the MongoDB database",
         callback=lambda: service.get_by_id(

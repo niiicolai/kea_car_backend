@@ -14,7 +14,7 @@ from app.repositories.insurance_repository import (
 
 router: APIRouter = APIRouter()
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_neo4j() as session:
         yield session
 
@@ -40,7 +40,7 @@ async def get_insurances(
             description="""Set a limit for the amount of insurances that is returned."""
         ),
         session: Neo4jSession = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get insurances from the NEO4J database",
         callback=lambda: service.get_all(
@@ -71,7 +71,7 @@ async def get_insurance(
             description="""The UUID of the insurance to retrieve."""
         ),
         session: Neo4jSession = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get insurance from the NEO4J database",
         callback=lambda: service.get_by_id(

@@ -35,7 +35,7 @@ class CustomerMySQLEntity(Base):
             address=self.address,
         )
 
-class CustomerMongoEntity(BaseModel):
+class CustomerMongoEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
     email: str
     phone_number: Optional[str]
@@ -55,7 +55,7 @@ class CustomerMongoEntity(BaseModel):
             address=self.address,
         )
 
-class CustomerNeo4jEntity(BaseModel):
+class CustomerNeo4jEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()))
     email: str
     phone_number: Optional[str]

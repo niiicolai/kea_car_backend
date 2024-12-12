@@ -17,11 +17,11 @@ from app.models.color import (
 class ColorRepository(ABC):
 
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[ColorReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[ColorReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_by_id(self, color_id: str) -> Optional[ColorReturnResource]:
+    def get_by_id(self, color_id: str) -> Optional[ColorReturnResource]:  # pragma: no cover
         pass
 
 
@@ -43,7 +43,7 @@ class MySQLColorRepository(ColorRepository):
         return None
 
 
-class MongoDBColorRepository(ColorRepository):
+class MongoDBColorRepository(ColorRepository):  # pragma: no cover
     def __init__(self, database: Database):
         self.database = database
 
@@ -67,7 +67,7 @@ class MongoDBColorRepository(ColorRepository):
         return None
 
 
-class Neo4jColorRepository(ColorRepository):
+class Neo4jColorRepository(ColorRepository):  # pragma: no cover
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 

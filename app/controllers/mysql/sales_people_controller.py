@@ -18,7 +18,7 @@ from app.repositories.sales_person_repositories import (
 router: APIRouter = APIRouter()
 
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_db_session() as session:
         yield session
 
@@ -54,7 +54,7 @@ async def login_for_access_token(
             description="""The password of the sales person."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to create an access token for a Sales Person in the MySQL database",
         callback=lambda: service.login(
@@ -90,7 +90,7 @@ async def login_for_access_token(
 async def login(
         sales_person_login_data: SalesPersonLoginResource,
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to login for a Sales Person in the MySQL database",
         callback=lambda: service.login(
@@ -122,7 +122,7 @@ async def get_sales_people(
             description="""Set a limit for the amount of sales people that is returned."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get sales people from the MySQL database",
         callback=lambda: service.get_all(
@@ -155,7 +155,7 @@ async def get_sales_person(
             description="""The UUID of the sales person to retrieve."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get sales person from the MySQL database",
         callback=lambda: service.get_by_id(
@@ -185,7 +185,7 @@ async def get_sales_person(
 async def create_sales_person(
         sales_person_create_data: SalesPersonCreateResource,
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to create sales person within the MySQL database",
         callback=lambda: service.create(

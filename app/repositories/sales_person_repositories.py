@@ -13,15 +13,15 @@ class SalesPersonRepository(ABC):
     def login_by_email(
             self,
             sales_person_login_info: SalesPersonLoginResource
-    ) -> Optional[Tuple[SalesPersonReturnResource, str]]:
+    ) -> Optional[Tuple[SalesPersonReturnResource, str]]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[SalesPersonReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[SalesPersonReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_by_id(self, sales_person_id: str) -> Optional[SalesPersonReturnResource]:
+    def get_by_id(self, sales_person_id: str) -> Optional[SalesPersonReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
@@ -29,11 +29,11 @@ class SalesPersonRepository(ABC):
             self,
             sales_person_create_data: SalesPersonCreateResource,
             hashed_password: str
-    ) -> SalesPersonReturnResource:
+    ) -> SalesPersonReturnResource:  # pragma: no cover
         pass
 
     @abstractmethod
-    def is_email_taken(self, email: str) -> bool:
+    def is_email_taken(self, email: str) -> bool:  # pragma: no cover
         pass
 
 

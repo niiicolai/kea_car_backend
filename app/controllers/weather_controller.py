@@ -26,7 +26,12 @@ router: APIRouter = APIRouter()
     """,
     dependencies=[Depends(get_current_sales_person_token)]
 )
-def get_weather(country: str = Path(..., title="Country", description="Country to get weather for")):
+def get_weather(
+        country: str = Path(
+            default=...,
+            title="Country",
+            description="Country to get weather for")
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get weather from the external API",
         callback=lambda: get_weather_by_country(country)

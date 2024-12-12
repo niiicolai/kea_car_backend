@@ -48,19 +48,31 @@ def create_customer_with_cars_resource(
 
 class CarPurchaseRepository(ABC):
     @abstractmethod
-    def get_sales_person_with_cars(self, sales_person_resource: SalesPersonReturnResource) -> SalesPersonWithCarsReturnResource:
+    def get_sales_person_with_cars(
+            self,
+            sales_person_resource: SalesPersonReturnResource
+    ) -> SalesPersonWithCarsReturnResource:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_customer_with_cars(self, customer_resource: CustomerReturnResource) -> CustomerWithCarsReturnResource:
+    def get_customer_with_cars(
+            self,
+            customer_resource: CustomerReturnResource
+    ) -> CustomerWithCarsReturnResource:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_cars_with_purchase(self, limit: Optional[int]) -> List[CarPurchaseReturnResource]:
+    def get_cars_with_purchase(
+            self,
+            limit: Optional[int]
+    ) -> List[CarPurchaseReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_car_with_purchase_by_id(self, car_id: str) -> Optional[CarPurchaseReturnResource]:
+    def get_car_with_purchase_by_id(
+            self,
+            car_id: str
+    ) -> Optional[CarPurchaseReturnResource]:  # pragma: no cover
         pass
 
 

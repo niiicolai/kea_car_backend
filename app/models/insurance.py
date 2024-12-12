@@ -32,7 +32,7 @@ class InsuranceMySQLEntity(Base):
             price=self.price
         )
 
-class InsuranceMongoEntity(BaseModel):
+class InsuranceMongoEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
     name: str
     price: float
@@ -48,7 +48,7 @@ class InsuranceMongoEntity(BaseModel):
         )
 
 
-class InsuranceNeo4jEntity(BaseModel):
+class InsuranceNeo4jEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     price: float

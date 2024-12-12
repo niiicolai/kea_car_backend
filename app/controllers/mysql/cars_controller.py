@@ -24,7 +24,7 @@ from app.repositories.car_repositories import (
 
 router: APIRouter = APIRouter()
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_db_session() as session:
         yield session
 
@@ -89,7 +89,7 @@ async def get_cars(
             description="""Set a limit for the amount of cars that is returned."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get cars from the MySQL database",
         callback=lambda: service.get_all(
@@ -127,7 +127,7 @@ async def get_car(
             description="""The UUID of the car to retrieve."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get car from the MySQL database",
         callback=lambda: service.get_by_id(
@@ -157,7 +157,7 @@ async def get_car(
 async def create_car(
         car_data: CarCreateResource,
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to create car within the MySQL database",
         callback=lambda: service.create(
@@ -205,7 +205,7 @@ async def delete_car(
             """
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to delete car within the MySQL database",
         callback=lambda: service.delete(

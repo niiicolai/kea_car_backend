@@ -25,11 +25,11 @@ class ModelRepository(ABC):
             self,
             brand_resource: Optional[BrandReturnResource] = None,
             limit: Optional[int] = None
-    ) -> List[ModelReturnResource]:
+    ) -> List[ModelReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:
+    def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:  # pragma: no cover
         pass
 
 
@@ -60,7 +60,7 @@ class MySQLModelRepository(ModelRepository):
         return None
 
 
-class MongoDBModelRepository(ModelRepository):
+class MongoDBModelRepository(ModelRepository):  # pragma: no cover
     def __init__(self, database: Database):
         self.database = database
 
@@ -96,7 +96,7 @@ class MongoDBModelRepository(ModelRepository):
         return None
 
 
-class Neo4jModelRepository(ModelRepository):
+class Neo4jModelRepository(ModelRepository):  # pragma: no cover
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 

@@ -12,15 +12,15 @@ from app.resources.purchase_resource import PurchaseCreateResource, CarReturnRes
 class PurchaseRepository(ABC):
 
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[PurchaseReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[PurchaseReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_by_id(self, purchase_id: str) -> Optional[PurchaseReturnResource]:
+    def get_by_id(self, purchase_id: str) -> Optional[PurchaseReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_by_car_id(self, car_resource: CarReturnResource) -> Optional[PurchaseReturnResource]:
+    def get_by_car_id(self, car_resource: CarReturnResource) -> Optional[PurchaseReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
@@ -28,11 +28,11 @@ class PurchaseRepository(ABC):
             self,
             purchase_create_data: PurchaseCreateResource,
             car_resource: CarReturnResource
-    ) -> PurchaseReturnResource:
+    ) -> PurchaseReturnResource:  # pragma: no cover
         pass
 
     @abstractmethod
-    def is_car_taken(self, car_resource: CarReturnResource) -> bool:
+    def is_car_taken(self, car_resource: CarReturnResource) -> bool:  # pragma: no cover
         pass
 
 

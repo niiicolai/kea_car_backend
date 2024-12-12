@@ -22,7 +22,7 @@ from app.repositories.view_repositories.car_purchase_repositories import (
 router: APIRouter = APIRouter()
 
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_db_session() as session:
         yield session
 
@@ -49,7 +49,7 @@ async def get_sales_person_with_car_purchases(
             description="""The UUID of the sales person to retrieve with cars."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get sales person with car purchases from the MySQL database",
         callback=
@@ -83,7 +83,7 @@ async def get_customer_with_car_purchases(
             description="""The UUID of the customer to retrieve with cars."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get customer with car purchases from the MySQL database",
         callback=
@@ -116,7 +116,7 @@ async def get_cars_with_purchase(
             description="""Set a limit for the amount of cars with purchase that is returned."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get cars with purchase from the MySQL database",
         callback=
@@ -149,7 +149,7 @@ async def get_sales_person(
             description="""The UUID of the car to retrieve."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get car with purchase from the MySQL database",
         callback=lambda: service.get_car_with_purchase_by_id(

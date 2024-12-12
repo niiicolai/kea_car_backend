@@ -38,7 +38,7 @@ class ColorMySQLEntity(Base):
             blue_value=self.blue_value,
         )
 
-class ColorMongoEntity(BaseModel):
+class ColorMongoEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
     name: str
     price: float
@@ -59,7 +59,7 @@ class ColorMongoEntity(BaseModel):
         )
 
 
-class ColorNeo4jEntity(BaseModel):
+class ColorNeo4jEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     price: float

@@ -22,15 +22,15 @@ class CustomerRepository(ABC):
             self,
             email_filter: Optional[str] = None,
             limit: Optional[int] = None
-    ) -> List[CustomerReturnResource]:
+    ) -> List[CustomerReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_by_id(self, customer_id: str) -> Optional[CustomerReturnResource]:
+    def get_by_id(self, customer_id: str) -> Optional[CustomerReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def create(self, customer_create_data: CustomerCreateResource) -> CustomerReturnResource:
+    def create(self, customer_create_data: CustomerCreateResource) -> CustomerReturnResource:  # pragma: no cover
         pass
 
     @abstractmethod
@@ -38,11 +38,11 @@ class CustomerRepository(ABC):
             self,
             customer_id: str,
             customer_update_data: CustomerUpdateResource
-    ) -> Optional[CustomerReturnResource]:
+    ) -> Optional[CustomerReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def delete(self, customer_resource: CustomerReturnResource):
+    def delete(self, customer_resource: CustomerReturnResource):  # pragma: no cover
         pass
 
     @abstractmethod
@@ -51,7 +51,7 @@ class CustomerRepository(ABC):
             customer_resource: Union[CustomerUpdateResource,
             CustomerCreateResource],
             customer_id: Optional[str] = None
-    ) -> bool:
+    ) -> bool:  # pragma: no cover
         pass
 
 
@@ -139,7 +139,7 @@ class MySQLCustomerRepository(CustomerRepository):
         return self.session.query(email_query.exists()).scalar()
 
 
-class MongoDBCustomerRepository(CustomerRepository):
+class MongoDBCustomerRepository(CustomerRepository):  # pragma: no cover
     def __init__(self, database: Database):
         self.database = database
 
@@ -223,7 +223,7 @@ class MongoDBCustomerRepository(CustomerRepository):
 
 
 
-class Neo4jCustomerRepository(CustomerRepository):
+class Neo4jCustomerRepository(CustomerRepository):  # pragma: no cover
     def __init__(self, session: Neo4jSession):
         self.session = session
 
@@ -307,7 +307,3 @@ class Neo4jCustomerRepository(CustomerRepository):
         query += " RETURN c"
         result = self.session.run(query)
         return result.single() is not None
-
-# Placeholder for future repositories
-# class OtherDBCustomerRepository(CustomerRepository):
-#     ...

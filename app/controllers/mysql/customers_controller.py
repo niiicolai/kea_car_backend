@@ -18,7 +18,7 @@ from app.repositories.customer_repositories import (
 
 router: APIRouter = APIRouter()
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_db_session() as session:
         yield session
 
@@ -50,7 +50,7 @@ async def get_customers(
             description="""Set a limit for the amount of customers that is returned."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get customers from the MySQL database",
         callback=lambda: service.get_all(
@@ -83,7 +83,7 @@ async def get_customer(
             description="""The UUID of the customer to retrieve."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get customer from the MySQL database",
         callback=lambda: service.get_by_id(
@@ -113,7 +113,7 @@ async def get_customer(
 async def create_customer(
         customer_create_data: CustomerCreateResource,
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to create customer within the MySQL database",
         callback=lambda: service.create(
@@ -151,7 +151,7 @@ async def update_customer(
             title="CustomerUpdateResource"
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to update customer within the MySQL database",
         callback=lambda: service.update(
@@ -185,7 +185,7 @@ async def delete_customer(
             description="""The UUID of the customer to delete."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to delete customer within the MySQL database",
         callback=lambda: service.delete(

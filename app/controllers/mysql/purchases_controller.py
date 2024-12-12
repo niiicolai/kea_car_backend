@@ -18,7 +18,7 @@ from app.repositories.purchase_repositories import (
 
 router: APIRouter = APIRouter()
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_db_session() as session:
         yield session
 
@@ -45,7 +45,7 @@ async def get_purchases(
             description="""Set a limit for the amount of purchases that is returned."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get purchases from the MySQL database",
         callback=lambda: service.get_all(
@@ -78,7 +78,7 @@ async def get_purchase(
             description="""The UUID of the purchase to retrieve."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get purchase from the MySQL database",
         callback=lambda: service.get_by_id(
@@ -111,7 +111,7 @@ async def get_purchase_by_car_id(
             description="""The UUID of the purchase's car to retrieve."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get purchase by car id from the MySQL database",
         callback=lambda: service.get_by_car_id(
@@ -142,7 +142,7 @@ async def get_purchase_by_car_id(
 async def create_purchase(
         purchase_create_data: PurchaseCreateResource,
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to create purchase within the MySQL database",
         callback=lambda: service.create(

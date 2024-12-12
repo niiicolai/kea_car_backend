@@ -16,11 +16,11 @@ from app.models.accessory import (
 
 class AccessoryRepository(ABC):
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:
+    def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:  # pragma: no cover
         pass
 
 

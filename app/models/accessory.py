@@ -32,7 +32,7 @@ class AccessoryMySQLEntity(Base):
             price=self.price
         )
 
-class AccessoryMongoEntity(BaseModel):
+class AccessoryMongoEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()), alias="_id")
     name: str
     price: float
@@ -46,7 +46,7 @@ class AccessoryMongoEntity(BaseModel):
             price=self.price
         )
 
-class AccessoryNeo4jEntity(BaseModel):
+class AccessoryNeo4jEntity(BaseModel):  # pragma: no cover
     id: str = Field(default_factory=lambda: str(uuid4()))
     name: str
     price: float

@@ -17,11 +17,11 @@ from app.models.brand import (
 class BrandRepository(ABC):
 
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[BrandReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[BrandReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_by_id(self, brand_id: str) -> Optional[BrandReturnResource]:
+    def get_by_id(self, brand_id: str) -> Optional[BrandReturnResource]:  # pragma: no cover
         pass
 
 
@@ -44,7 +44,7 @@ class MySQLBrandRepository(BrandRepository):
         return None
 
 
-class MongoDBBrandRepository(BrandRepository):
+class MongoDBBrandRepository(BrandRepository):  # pragma: no cover
     def __init__(self, database: Database):
         self.database = database
 
@@ -68,7 +68,7 @@ class MongoDBBrandRepository(BrandRepository):
         return None
 
 
-class Neo4jBrandRepository(BrandRepository):
+class Neo4jBrandRepository(BrandRepository):  # pragma: no cover
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 

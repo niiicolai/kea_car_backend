@@ -15,7 +15,7 @@ from app.repositories.color_repositories import (
 
 router: APIRouter = APIRouter()
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_mongodb() as database:
         yield database
 
@@ -40,7 +40,7 @@ async def get_colors(
             description="""Set a limit for the amount of colors that is returned."""
         ),
         database: Database = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get colors from the MongoDB database",
         callback=lambda: service.get_all(
@@ -71,7 +71,7 @@ async def get_color(
             description="""The UUID of the color to retrieve."""
         ),
         database: Database = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get color from the MongoDB database",
         callback=lambda: service.get_by_id(

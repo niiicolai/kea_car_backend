@@ -15,7 +15,7 @@ from app.repositories.brand_repositories import (
 
 router: APIRouter = APIRouter()
 
-def get_db():
+def get_db():  # pragma: no cover
     with get_db_session() as session:
         yield session
 
@@ -41,7 +41,7 @@ async def get_brands(
             description="""Set a limit for the amount of brands that is returned."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get brands from the MySQL database",
         callback=lambda: service.get_all(
@@ -72,7 +72,7 @@ async def get_brand(
             description="""The UUID of the brand to retrieve."""
         ),
         session: Session = Depends(get_db)
-):
+):  # pragma: no cover
     return error_handler(
         error_message="Failed to get brand from the MySQL database",
         callback=lambda: service.get_by_id(

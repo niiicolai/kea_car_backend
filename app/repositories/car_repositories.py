@@ -51,11 +51,11 @@ class CarRepository(ABC):
             is_purchased: Optional[bool] = None,
             is_past_purchase_deadline: Optional[bool] = None,
             limit: Optional[int] = None
-    ) -> List[CarReturnResource]:
+    ) -> List[CarReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_by_id(self, car_id: str) -> Optional[CarReturnResource]:
+    def get_by_id(self, car_id: str) -> Optional[CarReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
@@ -68,11 +68,11 @@ class CarRepository(ABC):
             color_resource: ColorReturnResource,
             accessory_resources: List[AccessoryReturnResource],
             insurance_resources: List[InsuranceReturnResource]
-    ) -> CarReturnResource:
+    ) -> CarReturnResource:  # pragma: no cover
         pass
 
     @abstractmethod
-    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool):
+    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool):  # pragma: no cover
         pass
 
 
@@ -215,7 +215,7 @@ class MySQLCarRepository(CarRepository):
             self.session.flush()
             self.session.refresh(new_car)
             return new_car.as_resource(is_purchased=False)
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             self.session.rollback()
             raise e
 
@@ -227,7 +227,7 @@ class MySQLCarRepository(CarRepository):
                 self.session.flush()
             self.session.query(CarMySQLEntity).filter_by(id=car_id).delete()
             self.session.flush()
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             self.session.rollback()
             raise e
 

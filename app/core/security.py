@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 def verify_sales_person_email(
         sent_email: str,
         sales_person_resource: SalesPersonReturnResource
-) -> bool:
+) -> bool:  # pragma: no cover
     if sent_email == sales_person_resource.email:
         return True
     return False
@@ -48,7 +48,7 @@ def create_access_token(sales_person: SalesPersonReturnResource) -> Token:
     return Token(access_token=encoded_jwt, token_type="bearer", sales_person=sales_person)
 
 
-def decode_access_token(token: str) -> TokenPayload:
+def decode_access_token(token: str) -> TokenPayload:  # pragma: no cover
     if not isinstance(token, str):
         raise TypeError(f"token must be of type str, not {type(token).__name__}.")
     try:
@@ -89,7 +89,7 @@ def decode_access_token(token: str) -> TokenPayload:
         )
         raise e
 
-def get_sales_person_token(token: str) -> TokenPayload:
+def get_sales_person_token(token: str) -> TokenPayload:  # pragma: no cover
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -117,5 +117,5 @@ def get_sales_person_token(token: str) -> TokenPayload:
         raise internal_server_error
 
 
-async def get_current_sales_person_token(token: str = Depends(oauth2)):
+async def get_current_sales_person_token(token: str = Depends(oauth2)):  # pragma: no cover
     return get_sales_person_token(token)

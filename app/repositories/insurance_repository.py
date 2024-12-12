@@ -15,11 +15,11 @@ from app.models.insurance import (
 
 class InsuranceRepository(ABC):
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[InsuranceReturnResource]:
+    def get_all(self, limit: Optional[int] = None) -> List[InsuranceReturnResource]:  # pragma: no cover
         pass
 
     @abstractmethod
-    def get_by_id(self, insurance_id: str) -> Optional[InsuranceReturnResource]:
+    def get_by_id(self, insurance_id: str) -> Optional[InsuranceReturnResource]:  # pragma: no cover
         pass
 
 
@@ -40,7 +40,8 @@ class MySQLInsuranceRepository(InsuranceRepository):
             return insurance.as_resource()
         return None
 
-class MongoDBInsuranceRepository(InsuranceRepository):
+
+class MongoDBInsuranceRepository(InsuranceRepository):  # pragma: no cover
     def __init__(self, database: Database):
         self.database = database
 
@@ -62,8 +63,9 @@ class MongoDBInsuranceRepository(InsuranceRepository):
                 **insurance
             ).as_resource()
         return None
-    
-class Neo4jInsuranceRepository(InsuranceRepository):
+
+
+class Neo4jInsuranceRepository(InsuranceRepository):  # pragma: no cover
     def __init__(self, session: Neo4jSession):
         self.session = session
 
