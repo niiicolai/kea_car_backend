@@ -151,11 +151,10 @@ class MongoDBCustomerRepository(CustomerRepository):  # pragma: no cover
         query = {}
         if email_filter is not None and isinstance(email_filter, str):
             query["email"] = {"$regex": email_filter}
-        customers_cursor = self.database.get_collection("customers").find(query).limit(0 if not limit else limit)
-        customers = [
-            CustomerMongoEntity(**customer).as_resource()
-            for customer in customers_cursor
-        ]
+        customers_query = self.database.get_collection("customers").find(query)
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            customers_query = customers_query.limit(limit)
+        customers = [CustomerMongoEntity(**customer).as_resource() for customer in customers_query]
         return customers
 
     def get_by_id(

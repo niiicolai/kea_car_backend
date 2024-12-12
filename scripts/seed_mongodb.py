@@ -1,7 +1,7 @@
 import json
 import os
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from pymongo import MongoClient, UpdateOne
 
 
@@ -42,6 +42,14 @@ if __name__ == '__main__':
 
     try:
         data = read_json()
+        future_date = date.today() + timedelta(days=30)
+        formatted_date = future_date.strftime("%Y-%m-%d")
+        car_id = "a5503fbb-c388-4789-a10c-d7ae7bdf7408"
+        for car in data['cars']:
+            if car['_id'] == car_id:
+                car['purchase_deadline'] = formatted_date
+                break
+
         client = MongoClient(host=MONGO_DB_HOST, port=int(MONGO_DB_PORT))
         db = client.get_database(MONGO_DB_NAME)
 

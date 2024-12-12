@@ -4,14 +4,25 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, cast
 from sqlalchemy import text, exists
 from sqlalchemy.orm import Session
+from pymongo.database import Database
+from pymongo import MongoClient
 
 # Internal library imports
 from app.models.purchase import PurchaseMySQLEntity
+from app.models.brand import BrandMongoEntity
 from app.models.car import (
     CarReturnResource,
     CarMySQLEntity,
+    CarMongoEntity,
+    ModelMongoEntity,
+    ColorMongoEntity,
+    AccessoryMongoEntity,
+    InsuranceMongoEntity,
+    SalesPersonMongoEntity,
+    CustomerMongoEntity,
     cars_has_accessories,
-    cars_has_insurances
+    cars_has_insurances,
+    prepare_car
 )
 from app.resources.car_resource import (
     CarCreateResource,
@@ -232,7 +243,122 @@ class MySQLCarRepository(CarRepository):
             raise e
 
 
+class MongoDBCarRepository(CarRepository):  # pragma: no cover
+    def __init__(self, database: Database):
+        self.database = database
 
-# Placeholder for future repositories
-# class OtherDBCarRepository(CarRepository):
-#     ...
+    def get_all(
+            self,
+            customer: Optional[CustomerReturnResource] = None,
+            sales_person: Optional[SalesPersonReturnResource] = None,
+            is_purchased: Optional[bool] = None,
+            is_past_purchase_deadline: Optional[bool] = None,
+            limit: Optional[int] = None
+    ) -> List[CarReturnResource]:
+
+        car_query = {}
+        if customer is not None and isinstance(customer, CustomerReturnResource):
+            car_query["customer._id"] = customer.id
+        if sales_person is not None and isinstance(sales_person, SalesPersonReturnResource):
+            car_query["sales_person._id"] = sales_person.id
+        if is_past_purchase_deadline is not None and isinstance(is_past_purchase_deadline, bool):
+            current_date = date.today()
+            if is_past_purchase_deadline:
+                car_query["purchase_deadline"] = {"$lt": current_date.strftime("%Y-%m-%d")}
+            else:
+                car_query["purchase_deadline"] = {"$gte": current_date.strftime("%Y-%m-%d")}
+
+        cars_query = self.database.get_collection("cars").find(car_query)
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            cars_query = cars_query.limit(limit)
+        cars: List[CarReturnResource] = []
+        for car in cars_query:
+            is_car_purchased = self.database.get_collection("purchases").count_documents({"car._id": car["_id"]}) > 0
+            if is_purchased is not None:
+                if is_purchased and not is_car_purchased:
+                    continue
+                if not is_purchased and is_car_purchased:
+                    continue
+            car_entity = prepare_car(self.database, car)
+            car_resource = car_entity.as_resource(is_car_purchased)
+            cars.append(car_resource)
+        return cars
+
+    def get_by_id(self, car_id: str) -> Optional[CarReturnResource]:
+        car_query = self.database.get_collection("cars").find_one({"_id": car_id})
+        if car_query is None:
+            return None
+        car_entity = prepare_car(self.database, car_query)
+        is_purchased = self.database.get_collection("purchases").count_documents({"car._id": car_query["_id"]}) > 0
+        return car_entity.as_resource(is_purchased)
+
+    def create(
+            self,
+            car_create_data: CarCreateResource,
+            customer_resource: CustomerReturnResource,
+            sales_person_resource: SalesPersonReturnResource,
+            model_resource: ModelReturnResource,
+            color_resource: ColorReturnResource,
+            accessory_resources: List[AccessoryReturnResource],
+            insurance_resources: List[InsuranceReturnResource]
+    ) -> CarReturnResource:
+        customer_entity = CustomerMongoEntity(**customer_resource.model_dump(), _id=customer_resource.id)
+        sales_person_hashed_password = self.database.get_collection("sales_people").find_one(
+            {"_id": sales_person_resource.id},
+            {"hashed_password": 1}
+        ).get("hashed_password")
+        sales_person_entity = SalesPersonMongoEntity(
+            **sales_person_resource.model_dump(),
+            hashed_password=sales_person_hashed_password,
+            _id=sales_person_resource.id
+        )
+        model_brand_entity = BrandMongoEntity(**model_resource.brand.model_dump(), _id=model_resource.brand.id)
+        model_colors_entities = [ColorMongoEntity(**color.model_dump(), _id=color.id) for color in model_resource.colors]
+        model_entity = ModelMongoEntity(
+            **model_resource.model_dump(exclude={"brand", "colors"}),
+            brand=model_brand_entity,
+            colors=model_colors_entities,
+            _id=model_resource.id
+        )
+        color_entity = ColorMongoEntity(**color_resource.model_dump())
+        accessories_entities = [AccessoryMongoEntity(**accessory.model_dump()) for accessory in accessory_resources]
+        insurances_entities = [InsuranceMongoEntity(**insurance.model_dump()) for insurance in insurance_resources]
+        new_car = CarMongoEntity(
+            total_price=calculate_total_price_for_car(
+                model_resource,
+                color_resource,
+                accessory_resources,
+                insurance_resources
+            ),
+            purchase_deadline=car_create_data.purchase_deadline,
+            model=model_entity,
+            color=color_entity,
+            customer=customer_entity,
+            sales_person=sales_person_entity,
+            accessories=accessories_entities,
+            insurances=insurances_entities
+        )
+
+        self.database.get_collection("cars").insert_one(new_car.model_dump(by_alias=True))
+
+        return new_car.as_resource(is_purchased=False)
+
+
+    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool):
+        car_id = car_resource.id
+        client: MongoClient = self.database.client
+        session = client.start_session()
+        try:
+            with session.start_transaction():
+                if delete_purchase_too:
+                    self.database.get_collection("purchases").delete_many({"car._id": car_id}, session=session)
+                self.database.get_collection("cars").delete_one({"_id": car_id}, session=session)
+        except Exception as e:  # pragma: no cover
+            session.abort_transaction()
+            raise e
+        finally:
+            session.end_session()
+
+        # Placeholder for future repositories
+        # class OtherDBCarRepository(CarRepository):
+        #     ...

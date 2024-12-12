@@ -18,10 +18,13 @@ from app.controllers.mysql.views import car_purchase_controller as mysql_car_pur
 from app.controllers.mongodb import (
     accessories_controller as mongodb_accessories_controller,
     brands_controller as mongodb_brands_controller,
+    cars_controller as mongodb_cars_controller,
     colors_controller as mongodb_colors_controller,
     customers_controller as mongodb_customers_controller,
     insurances_controller as mongodb_insurances_controller,
-    models_controller as mongodb_models_controller
+    models_controller as mongodb_models_controller,
+    purchases_controller as mongodb_purchases_controller,
+    sales_people_controller as mongodb_sales_people_controller
 )
 from app.controllers.neo4j import (
     accessories_controller as neo4j_accessories_controller,
@@ -43,7 +46,6 @@ CORS_SETTINGS = {
 
 app.add_middleware(CORSMiddleware, **CORS_SETTINGS)
 
-
 # Including the MySQL Router endpoints
 app.include_router(mysql_accessories_controller.router, prefix="/mysql", tags=["MySQL - Accessories"])
 app.include_router(mysql_brands_controller.router, prefix="/mysql", tags=["MySQL - Brands"])
@@ -59,10 +61,13 @@ app.include_router(mysql_car_purchase_controller.router, prefix="/mysql", tags=[
 # Including the MongoDB Router endpoints
 app.include_router(mongodb_accessories_controller.router, prefix="/mongodb", tags=["MongoDB - Accessories"])
 app.include_router(mongodb_brands_controller.router, prefix="/mongodb", tags=["MongoDB - Brands"])
+app.include_router(mongodb_cars_controller.router, prefix="/mongodb", tags=["MongoDB - Cars"])
 app.include_router(mongodb_colors_controller.router, prefix="/mongodb", tags=["MongoDB - Colors"])
 app.include_router(mongodb_customers_controller.router, prefix="/mongodb", tags=["MongoDB - Customers"])
 app.include_router(mongodb_insurances_controller.router, prefix="/mongodb", tags=["MongoDB - Insurances"])
 app.include_router(mongodb_models_controller.router, prefix="/mongodb", tags=["MongoDB - Models"])
+app.include_router(mongodb_purchases_controller.router, prefix="/mongodb", tags=["MongoDB - Purchases"])
+app.include_router(mongodb_sales_people_controller.router, prefix="/mongodb", tags=["MongoDB - Sales People"])
 
 # Including the Neo4j Router endpoints
 app.include_router(neo4j_accessories_controller.router, prefix="/neo4j", tags=["Neo4j - Accessories"])

@@ -48,22 +48,17 @@ class MongoDBColorRepository(ColorRepository):  # pragma: no cover
         self.database = database
 
     def get_all(self, limit: Optional[int] = None) -> List[ColorReturnResource]:
-        colors = self.database.get_collection("colors").find(
-        ).limit(0 if not limit else limit)
-        colors = [
-            ColorMongoEntity(
-                **color
-            ).as_resource()
-            for color in colors]
+        colors_query = self.database.get_collection("colors").find()
+        if limit is not None and isinstance(limit, int) and limit > 0:
+            colors_query = colors_query.limit(limit)
+        colors = [ColorMongoEntity(**color).as_resource() for color in colors_query]
         return colors
 
     def get_by_id(self, color_id: str) -> Optional[ColorReturnResource]:
-        color = self.database.get_collection("colors").find_one(
+        color_query = self.database.get_collection("colors").find_one(
             {"_id": color_id})
-        if color is not None:
-            return ColorMongoEntity(
-                **color
-            ).as_resource()
+        if color_query is not None:
+            return ColorMongoEntity(**color_query).as_resource()
         return None
 
 

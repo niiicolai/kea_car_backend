@@ -28,7 +28,7 @@ def get_db():  # pragma: no cover
     Successfully retrieved a list of accessories.
     Returns: List[AccessoryReturnResource].
     """,
-    summary="Retrieve Accessories - Requires authorization token in header.",
+    summary="Retrieve Accessories.",
     description=
     """
     Retrieves all or a limited amount of Accessories from the 
