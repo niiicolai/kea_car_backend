@@ -3,14 +3,12 @@ from abc import ABC, abstractmethod
 from typing import Optional, Tuple, List, cast
 from sqlalchemy.orm import Session
 from pymongo.database import Database
-from neo4j import Session as Neo4jSession, Query
 
 # Internal library imports
 from app.models.sales_person import (
     SalesPersonReturnResource,
     SalesPersonMySQLEntity,
     SalesPersonMongoEntity,
-    SalesPersonNeo4jEntity
 )
 from app.resources.sales_person_resource import SalesPersonCreateResource, SalesPersonLoginResource
 

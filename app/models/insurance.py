@@ -61,4 +61,4 @@ class InsuranceNeo4jEntity(BaseModel):  # pragma: no cover
             id=self.id,
             name=self.name,
             price=self.price
-        ) 
+        )

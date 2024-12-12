@@ -4,8 +4,8 @@ from typing import List, Union, Mapping
 from datetime import date
 from pymongo.database import Database
 from sqlalchemy.orm import Mapped, relationship
-from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy import Column, String, Double, Date, ForeignKey
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 # Internal library imports
 from db import Base
@@ -148,8 +148,6 @@ def prepare_car_resourcer(database: Database, car: CarReturnResource) -> dict[st
     sales_person_hashed_password = database.get_collection("sales_people").find_one(
         {"_id": car.sales_person.id}
     ).get("hashed_password")
-    if sales_person_hashed_password is None:
-        raise Exception("Sales person hashed password not found.")
     sales_person = {
         "_id": sales_person_resource.id,
         "first_name": sales_person_resource.first_name,
@@ -227,4 +225,3 @@ def prepare_car(database: Database, car: Union[Mapping[str, any], dict[str, any]
         accessories=accessories_entities,
         insurances=insurances_entities
     )
-

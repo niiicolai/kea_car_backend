@@ -4,7 +4,7 @@ from app.resources.weather_resource import WeatherReturnResource
 from app.exceptions.weather_errors import UnsupportedCountryError, WeatherAPIError
 
 # Base URL for the Weather API
-baseUrl = "https://api.weatherapi.com/v1/"
+BASE_URL = "https://api.weatherapi.com/v1/"
 
 # Get the API key from the environment variables
 key = os.getenv("WEATHER_API_KEY")
@@ -14,17 +14,17 @@ key = os.getenv("WEATHER_API_KEY")
 supported_countries = ["denmark", "sweden"]
 
 def get_weather_by_country(country: str) -> WeatherReturnResource:
-    if isinstance(country, str) == False:
+    if isinstance(country, str) is False:
         raise TypeError(f'country must be of type string, but was {type(country)}')
     if country.lower() not in supported_countries:
         raise UnsupportedCountryError(country, supported_countries)
     
     # Combine the base url with the endpoint and the key
     # Example= https://api.weatherapi.com/v1/current.json?q=Denmark&key=somekey    
-    url = baseUrl + "current.json?q=" + country + "&key=" + key
+    url = BASE_URL + "current.json?q=" + country + "&key=" + key
     print(url)
     # Make an HTTP GET request to the URL
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
     
     # Check if the response status code is 200 (OK)
     if response.status_code != 200:

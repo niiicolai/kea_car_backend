@@ -1,6 +1,6 @@
 # External Library imports
 from abc import ABC, abstractmethod
-from typing import Optional, List, cast, Union
+from typing import Optional, List, cast
 from pymongo.database import Database
 from sqlalchemy.orm import Session
 
