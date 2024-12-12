@@ -14,14 +14,14 @@ from app.models.brand import (
 )
 
 
-class BrandRepository(ABC):
+class BrandRepository(ABC):  # pragma: no cover
 
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[BrandReturnResource]:  # pragma: no cover
+    def get_all(self, limit: Optional[int] = None) -> List[BrandReturnResource]:
         pass
 
     @abstractmethod
-    def get_by_id(self, brand_id: str) -> Optional[BrandReturnResource]:  # pragma: no cover
+    def get_by_id(self, brand_id: str) -> Optional[BrandReturnResource]:
         pass
 
 

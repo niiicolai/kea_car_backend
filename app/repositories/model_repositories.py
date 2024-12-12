@@ -19,17 +19,17 @@ from app.models.model import (
 )
 
 
-class ModelRepository(ABC):
+class ModelRepository(ABC):  # pragma: no cover
     @abstractmethod
     def get_all(
             self,
             brand_resource: Optional[BrandReturnResource] = None,
             limit: Optional[int] = None
-    ) -> List[ModelReturnResource]:  # pragma: no cover
+    ) -> List[ModelReturnResource]:
         pass
 
     @abstractmethod
-    def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:  # pragma: no cover
+    def get_by_id(self, model_id: str) -> Optional[ModelReturnResource]:
         pass
 
 

@@ -9,18 +9,18 @@ from app.models.purchase import PurchaseReturnResource, PurchaseMySQLEntity
 from app.resources.purchase_resource import PurchaseCreateResource, CarReturnResource
 
 
-class PurchaseRepository(ABC):
+class PurchaseRepository(ABC):  # pragma: no cover
 
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[PurchaseReturnResource]:  # pragma: no cover
+    def get_all(self, limit: Optional[int] = None) -> List[PurchaseReturnResource]:
         pass
 
     @abstractmethod
-    def get_by_id(self, purchase_id: str) -> Optional[PurchaseReturnResource]:  # pragma: no cover
+    def get_by_id(self, purchase_id: str) -> Optional[PurchaseReturnResource]:
         pass
 
     @abstractmethod
-    def get_by_car_id(self, car_resource: CarReturnResource) -> Optional[PurchaseReturnResource]:  # pragma: no cover
+    def get_by_car_id(self, car_resource: CarReturnResource) -> Optional[PurchaseReturnResource]:
         pass
 
     @abstractmethod
@@ -28,11 +28,11 @@ class PurchaseRepository(ABC):
             self,
             purchase_create_data: PurchaseCreateResource,
             car_resource: CarReturnResource
-    ) -> PurchaseReturnResource:  # pragma: no cover
+    ) -> PurchaseReturnResource:
         pass
 
     @abstractmethod
-    def is_car_taken(self, car_resource: CarReturnResource) -> bool:  # pragma: no cover
+    def is_car_taken(self, car_resource: CarReturnResource) -> bool:
         pass
 
 

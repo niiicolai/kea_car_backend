@@ -15,22 +15,22 @@ from app.models.customer import (
 from app.resources.customer_resource import CustomerCreateResource, CustomerUpdateResource
 
 
-class CustomerRepository(ABC):
+class CustomerRepository(ABC):  # pragma: no cover
 
     @abstractmethod
     def get_all(
             self,
             email_filter: Optional[str] = None,
             limit: Optional[int] = None
-    ) -> List[CustomerReturnResource]:  # pragma: no cover
+    ) -> List[CustomerReturnResource]:
         pass
 
     @abstractmethod
-    def get_by_id(self, customer_id: str) -> Optional[CustomerReturnResource]:  # pragma: no cover
+    def get_by_id(self, customer_id: str) -> Optional[CustomerReturnResource]:
         pass
 
     @abstractmethod
-    def create(self, customer_create_data: CustomerCreateResource) -> CustomerReturnResource:  # pragma: no cover
+    def create(self, customer_create_data: CustomerCreateResource) -> CustomerReturnResource:
         pass
 
     @abstractmethod
@@ -38,11 +38,11 @@ class CustomerRepository(ABC):
             self,
             customer_id: str,
             customer_update_data: CustomerUpdateResource
-    ) -> Optional[CustomerReturnResource]:  # pragma: no cover
+    ) -> Optional[CustomerReturnResource]:
         pass
 
     @abstractmethod
-    def delete(self, customer_resource: CustomerReturnResource):  # pragma: no cover
+    def delete(self, customer_resource: CustomerReturnResource):
         pass
 
     @abstractmethod
@@ -51,7 +51,7 @@ class CustomerRepository(ABC):
             customer_resource: Union[CustomerUpdateResource,
             CustomerCreateResource],
             customer_id: Optional[str] = None
-    ) -> bool:  # pragma: no cover
+    ) -> bool:
         pass
 
 

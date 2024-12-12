@@ -13,13 +13,13 @@ from app.models.insurance import (
     InsuranceNeo4jEntity)
 
 
-class InsuranceRepository(ABC):
+class InsuranceRepository(ABC):  # pragma: no cover
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[InsuranceReturnResource]:  # pragma: no cover
+    def get_all(self, limit: Optional[int] = None) -> List[InsuranceReturnResource]:
         pass
 
     @abstractmethod
-    def get_by_id(self, insurance_id: str) -> Optional[InsuranceReturnResource]:  # pragma: no cover
+    def get_by_id(self, insurance_id: str) -> Optional[InsuranceReturnResource]:
         pass
 
 

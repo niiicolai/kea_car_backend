@@ -41,7 +41,7 @@ def calculate_total_price_for_car(
     return total_price
 
 
-class CarRepository(ABC):
+class CarRepository(ABC):  # pragma: no cover
 
     @abstractmethod
     def get_all(
@@ -51,11 +51,11 @@ class CarRepository(ABC):
             is_purchased: Optional[bool] = None,
             is_past_purchase_deadline: Optional[bool] = None,
             limit: Optional[int] = None
-    ) -> List[CarReturnResource]:  # pragma: no cover
+    ) -> List[CarReturnResource]:
         pass
 
     @abstractmethod
-    def get_by_id(self, car_id: str) -> Optional[CarReturnResource]:  # pragma: no cover
+    def get_by_id(self, car_id: str) -> Optional[CarReturnResource]:
         pass
 
     @abstractmethod
@@ -68,11 +68,11 @@ class CarRepository(ABC):
             color_resource: ColorReturnResource,
             accessory_resources: List[AccessoryReturnResource],
             insurance_resources: List[InsuranceReturnResource]
-    ) -> CarReturnResource:  # pragma: no cover
+    ) -> CarReturnResource:
         pass
 
     @abstractmethod
-    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool):  # pragma: no cover
+    def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool):
         pass
 
 

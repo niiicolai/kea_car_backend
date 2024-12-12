@@ -8,20 +8,20 @@ from app.models.sales_person import SalesPersonReturnResource, SalesPersonMySQLE
 from app.resources.sales_person_resource import SalesPersonCreateResource, SalesPersonLoginResource
 
 
-class SalesPersonRepository(ABC):
+class SalesPersonRepository(ABC):  # pragma: no cover
     @abstractmethod
     def login_by_email(
             self,
             sales_person_login_info: SalesPersonLoginResource
-    ) -> Optional[Tuple[SalesPersonReturnResource, str]]:  # pragma: no cover
+    ) -> Optional[Tuple[SalesPersonReturnResource, str]]:
         pass
 
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[SalesPersonReturnResource]:  # pragma: no cover
+    def get_all(self, limit: Optional[int] = None) -> List[SalesPersonReturnResource]:
         pass
 
     @abstractmethod
-    def get_by_id(self, sales_person_id: str) -> Optional[SalesPersonReturnResource]:  # pragma: no cover
+    def get_by_id(self, sales_person_id: str) -> Optional[SalesPersonReturnResource]:
         pass
 
     @abstractmethod
@@ -29,11 +29,11 @@ class SalesPersonRepository(ABC):
             self,
             sales_person_create_data: SalesPersonCreateResource,
             hashed_password: str
-    ) -> SalesPersonReturnResource:  # pragma: no cover
+    ) -> SalesPersonReturnResource:
         pass
 
     @abstractmethod
-    def is_email_taken(self, email: str) -> bool:  # pragma: no cover
+    def is_email_taken(self, email: str) -> bool:
         pass
 
 

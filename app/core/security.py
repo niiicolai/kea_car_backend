@@ -21,15 +21,6 @@ from app.core.config import (
 logger = logging.getLogger(__name__)
 
 
-def verify_sales_person_email(
-        sent_email: str,
-        sales_person_resource: SalesPersonReturnResource
-) -> bool:  # pragma: no cover
-    if sent_email == sales_person_resource.email:
-        return True
-    return False
-
-
 def verify_password(
         sent_login_password: str,
         found_hashed_password: str

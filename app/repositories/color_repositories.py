@@ -14,14 +14,14 @@ from app.models.color import (
 )
 
 
-class ColorRepository(ABC):
+class ColorRepository(ABC):  # pragma: no cover
 
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[ColorReturnResource]:  # pragma: no cover
+    def get_all(self, limit: Optional[int] = None) -> List[ColorReturnResource]:
         pass
 
     @abstractmethod
-    def get_by_id(self, color_id: str) -> Optional[ColorReturnResource]:  # pragma: no cover
+    def get_by_id(self, color_id: str) -> Optional[ColorReturnResource]:
         pass
 
 

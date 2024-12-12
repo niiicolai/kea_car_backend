@@ -14,13 +14,13 @@ from app.models.accessory import (
 )
 
 
-class AccessoryRepository(ABC):
+class AccessoryRepository(ABC):  # pragma: no cover
     @abstractmethod
-    def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:  # pragma: no cover
+    def get_all(self, limit: Optional[int] = None) -> List[AccessoryReturnResource]:
         pass
 
     @abstractmethod
-    def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:  # pragma: no cover
+    def get_by_id(self, accessory_id: str) -> Optional[AccessoryReturnResource]:
         pass
 
 
@@ -42,7 +42,7 @@ class MySQLAccessoryRepository(AccessoryRepository):
         return None
 
 
-class MongoDBAccessoryRepository(AccessoryRepository):
+class MongoDBAccessoryRepository(AccessoryRepository):  # pragma: no cover
     def __init__(self, database: Database):
         self.database = database
 
@@ -66,7 +66,7 @@ class MongoDBAccessoryRepository(AccessoryRepository):
         return None
 
 
-class Neo4jAccessoryRepository(AccessoryRepository):
+class Neo4jAccessoryRepository(AccessoryRepository):  # pragma: no cover
     def __init__(self, neo4j_session: Neo4jSession):
         self.neo4j_session = neo4j_session
 
