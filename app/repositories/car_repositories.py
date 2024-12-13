@@ -313,7 +313,9 @@ class MongoDBCarRepository(CarRepository):  # pragma: no cover
             _id=sales_person_resource.id
         )
         model_brand_entity = BrandMongoEntity(**model_resource.brand.model_dump(), _id=model_resource.brand.id)
-        model_colors_entities = [ColorMongoEntity(**color.model_dump(), _id=color.id) for color in model_resource.colors]
+        model_colors_entities = [ColorMongoEntity(**color.model_dump(), _id=color.id)
+                                 for color
+                                 in model_resource.colors]
         model_entity = ModelMongoEntity(
             **model_resource.model_dump(exclude={"brand", "colors"}),
             brand=model_brand_entity,
@@ -343,7 +345,6 @@ class MongoDBCarRepository(CarRepository):  # pragma: no cover
 
         return new_car.as_resource(is_purchased=False)
 
-
     def delete(self, car_resource: CarReturnResource, delete_purchase_too: bool):
         car_id = car_resource.id
         client: MongoClient = self.database.client
@@ -353,6 +354,7 @@ class MongoDBCarRepository(CarRepository):  # pragma: no cover
                 if delete_purchase_too:
                     self.database.get_collection("purchases").delete_many({"car._id": car_id}, session=session)
                 self.database.get_collection("cars").delete_one({"_id": car_id}, session=session)
+                session.commit_transaction()
         except Exception as e:  # pragma: no cover
             session.abort_transaction()
             raise e

@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, Union, List, cast
 from sqlalchemy.orm import Session
 from pymongo.database import Database
+from pymongo import MongoClient
 from neo4j import Session as Neo4jSession, Query
 
 # Internal library imports
@@ -206,9 +207,19 @@ class MongoDBCustomerRepository(CustomerRepository):  # pragma: no cover
             self,
             customer_resource: CustomerReturnResource
     ) -> None:
-        self.database.get_collection("cars").delete_many({"customer._id": customer_resource.id})
-        self.database.get_collection("purchases").delete_many({"car.customer._id": customer_resource.id})
-        self.database.get_collection("customers").delete_one({"_id": customer_resource.id})
+        client: MongoClient = self.database.client
+        session = client.start_session()
+        try:
+            with session.start_transaction():
+                self.database.get_collection("cars").delete_many({"customer._id": customer_resource.id})
+                self.database.get_collection("purchases").delete_many({"car.customer._id": customer_resource.id})
+                self.database.get_collection("customers").delete_one({"_id": customer_resource.id})
+                session.commit_transaction()
+        except Exception as e:  # pragma: no cover
+            session.abort_transaction()
+            raise e
+        finally:
+            session.end_session()
 
     def is_email_taken(
             self,
@@ -219,7 +230,6 @@ class MongoDBCustomerRepository(CustomerRepository):  # pragma: no cover
         if customer_id is not None:
             email_query["_id"] = {"$ne": customer_id}
         return self.database.get_collection("customers").count_documents(email_query) > 0
-
 
 
 class Neo4jCustomerRepository(CustomerRepository):  # pragma: no cover
