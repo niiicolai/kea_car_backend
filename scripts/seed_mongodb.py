@@ -2,7 +2,7 @@ import json
 import os
 from dotenv import load_dotenv
 from datetime import datetime, date, timedelta
-from pymongo import MongoClient, UpdateOne
+from pymongo import MongoClient, UpdateOne, IndexModel
 
 
 load_dotenv()
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         db.drop_collection('brands')
         db.create_collection('brands').create_index('name', unique=True)
         db.drop_collection('cars')
-        db.create_collection('cars')
+        db.create_collection('cars').create_indexes([IndexModel('customer._id'), IndexModel('sales_person._id')])
         db.drop_collection('colors')
         db.create_collection('colors').create_index('name', unique=True)
         db.drop_collection('customers')
@@ -66,7 +66,7 @@ if __name__ == '__main__':
         db.drop_collection('insurances')
         db.create_collection('insurances').create_index('name', unique=True)
         db.drop_collection('models')
-        db.create_collection('models')
+        db.create_collection('models').create_indexes([IndexModel('brand._id'), IndexModel('name')])
         db.drop_collection('purchases')
         db.create_collection('purchases').create_index('car._id', unique=True)
         db.drop_collection('sales_people')
