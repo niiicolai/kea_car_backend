@@ -237,8 +237,8 @@
 									"const now = new Date().getTime() / 1000;\r",
 									"\r",
 									"const email = `${now}@test.com`;\r",
-									"const first_name = `${now}`;\r",
-									"const last_name = `${now}`;\r",
+									"const first_name = `Hans`;\r",
+									"const last_name = `Hansen`;\r",
 									"const password = `${now}`;\r",
 									"\r",
 									"pm.environment.set('CreateSalesPersonBody', JSON.stringify({ \r",
@@ -359,8 +359,8 @@
 									"const now = new Date().getTime() / 1000;\r",
 									"\r",
 									"const email = `${now}@test.com`;\r",
-									"const first_name = `${now}`;\r",
-									"const last_name = `${now}`;\r",
+									"const first_name = `Hans`;\r",
+									"const last_name = `Hansen`;\r",
 									"const password = `${now}`;\r",
 									"\r",
 									"pm.environment.set('CreateSalesPersonBody', JSON.stringify({ \r",
@@ -808,58 +808,6 @@
 					"response": []
 				},
 				{
-					"name": "Find All 401",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 401\", function() {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/brands?&limit=2",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"brands"
-							],
-							"query": [
-								{
-									"key": null,
-									"value": null
-								},
-								{
-									"key": "limit",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Find One 200",
 					"event": [
 						{
@@ -912,49 +860,6 @@
 									"    key: \"Authorization\", \r",
 									"    value: pm.environment.get(\"Authorization\") \r",
 									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/brand/{{BrandUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"brand",
-								"{{BrandUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 401",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 401\", function() {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
 									""
 								],
 								"type": "text/javascript",
@@ -1118,58 +1023,6 @@
 					"response": []
 				},
 				{
-					"name": "Find All 401",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 401\", function() {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/accessories?&limit=2",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"accessories"
-							],
-							"query": [
-								{
-									"key": null,
-									"value": null
-								},
-								{
-									"key": "limit",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Find One 200",
 					"event": [
 						{
@@ -1223,49 +1076,6 @@
 									"    key: \"Authorization\", \r",
 									"    value: pm.environment.get(\"Authorization\") \r",
 									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/accessory/{{AccessoryUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"accessory",
-								"{{AccessoryUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 401",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 401\", function() {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
 									""
 								],
 								"type": "text/javascript",
@@ -1589,9 +1399,9 @@
 									"\r",
 									"const email = `${now}@test.com`;\r",
 									"const phone_number = randomPhoneNumber(8);\r",
-									"const first_name = `${now}`;\r",
-									"const last_name = `${now}`;\r",
-									"const address = `${now}`;\r",
+									"const first_name = `Hans`;\r",
+									"const last_name = `Hansen`;\r",
+									"const address = `Elm st. 1 th`;\r",
 									"\r",
 									"pm.environment.set('CreateCustomerBody', JSON.stringify({ \r",
 									"    email,\r",
@@ -1832,9 +1642,9 @@
 									"\r",
 									"const email = `${now}@test.com`;\r",
 									"const phone_number = randomPhoneNumber(8);\r",
-									"const first_name = `${now}`;\r",
-									"const last_name = `${now}`;\r",
-									"const address = `${now}`;\r",
+									"const first_name = `Hans`;\r",
+									"const last_name = `Hansen`;\r",
+									"const address = `Elm st. 1 th`;\r",
 									"\r",
 									"pm.environment.set('UpdateCustomerBody', JSON.stringify({ \r",
 									"    email,\r",
@@ -2366,58 +2176,6 @@
 					"response": []
 				},
 				{
-					"name": "Find All 401",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 401\", function() {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/insurances?&limit=2",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"insurances"
-							],
-							"query": [
-								{
-									"key": null,
-									"value": null
-								},
-								{
-									"key": "limit",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Find One 200",
 					"event": [
 						{
@@ -2476,46 +2234,6 @@
 								],
 								"type": "text/javascript",
 								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/insurance/{{InsuranceUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"insurance",
-								"{{InsuranceUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 401",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 401\", function() {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"packages": {},
-								"type": "text/javascript"
 							}
 						}
 					],
@@ -3646,7 +3364,7 @@
 								"exec": [
 									"const now = new Date();\r",
 									"\r",
-									"const date_of_purchase = `${now.getFullYear()}-${(now.getMonth()+1)%12}-10`;\r",
+									"const date_of_purchase = `2024-01-10`;\r",
 									"const cars_id = pm.environment.get('NewCarUuid');\r",
 									"\r",
 									"pm.environment.set('CreatePurchaseBody', JSON.stringify({ \r",
@@ -4968,58 +4686,6 @@
 					"response": []
 				},
 				{
-					"name": "Find All 401",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 401\", function() {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/models?&limit=2",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"models"
-							],
-							"query": [
-								{
-									"key": null,
-									"value": null
-								},
-								{
-									"key": "limit",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Find One 200",
 					"event": [
 						{
@@ -5151,46 +4817,6 @@
 								],
 								"type": "text/javascript",
 								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BaseUrl}}/model/{{ModelUuid}}",
-							"host": [
-								"{{BaseUrl}}"
-							],
-							"path": [
-								"model",
-								"{{ModelUuid}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Find One 401",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Response must return 401\", function() {\r",
-									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"packages": {},
-								"type": "text/javascript"
 							}
 						}
 					],
