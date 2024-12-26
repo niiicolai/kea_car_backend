@@ -116,4 +116,3 @@ class SalesPersonReturnResource(SalesPersonBaseResource):
         description="UUID of the sales person.",
         examples=["f9097a97-eca4-49b6-85a0-08423789c320"]
     )
-    

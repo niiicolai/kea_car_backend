@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Spike-Load-Test-Plan">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Spike-Test-Plan">
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
@@ -10,7 +10,7 @@
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding"></stringProp>
-        <stringProp name="filename">C:/Users/niiic/Desktop/kea_car_backend/load-tests/peak-load-test-config.csv</stringProp>
+        <stringProp name="filename">C:/Users/niiic/Desktop/kea_car_backend/load-tests/spike-test/spike-test-config.csv</stringProp>
         <boolProp name="ignoreFirstLine">true</boolProp>
         <boolProp name="quotedData">false</boolProp>
         <boolProp name="recycle">true</boolProp>
@@ -19,7 +19,7 @@
         <stringProp name="variableNames">email,password,baseURL</stringProp>
       </CSVDataSet>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Login Test (20 Concurrent Users, 2 Iterations, Ramp-up 5s)">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Login Test (20 Concurrent Users, 2 Iterations, Ramp-up 5s)" enabled="true">
         <intProp name="ThreadGroup.num_threads">20</intProp>
         <intProp name="ThreadGroup.ramp_time">5</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -202,7 +202,7 @@ wait.until(ExpectedConditions.urlContains(&quot;brands&quot;));
         </ConstantTimer>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Customer Test (20 Concurrent Users, 2 Iterations, Ramp-up 5s)">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Customer Test (20 Concurrent Users, 2 Iterations, Ramp-up 5s)" enabled="true">
         <intProp name="ThreadGroup.num_threads">20</intProp>
         <intProp name="ThreadGroup.ramp_time">5</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -438,7 +438,7 @@ wait.until(ExpectedConditions.urlContains(&quot;edit-customer&quot;));
         </ConstantTimer>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="View Cars Test (20 Concurrent Users, 2 Iterations, Ramp-up 5s)">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="View Cars Test (20 Concurrent Users, 2 Iterations, Ramp-up 5s)" enabled="true">
         <intProp name="ThreadGroup.num_threads">20</intProp>
         <intProp name="ThreadGroup.ramp_time">5</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -626,7 +626,7 @@ wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName(&apos;h3&apos;
           <stringProp name="filename"></stringProp>
         </ResultCollector>
         <hashTree/>
-        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer (Wait 30 Seconds between Iterations)">
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer (Wait 30 Seconds between Iterations)" enabled="true">
           <stringProp name="ConstantTimer.delay">30000</stringProp>
         </ConstantTimer>
         <hashTree/>

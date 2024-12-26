@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Peak-Load-Test-Plan">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Average-Load-Test-Plan">
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
-      <boolProp name="TestPlan.functional_mode">false</boolProp>
-      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
     </TestPlan>
     <hashTree>
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding"></stringProp>
-        <stringProp name="filename">C:/Users/niiic/Desktop/kea_car_backend/load-tests/peak-load-test-config.csv</stringProp>
+        <stringProp name="filename">C:/Users/niiic/Desktop/kea_car_backend/load-tests/average-load-test-config.csv</stringProp>
         <boolProp name="ignoreFirstLine">true</boolProp>
         <boolProp name="quotedData">false</boolProp>
         <boolProp name="recycle">true</boolProp>
@@ -21,21 +19,21 @@
         <stringProp name="variableNames">email,password,baseURL</stringProp>
       </CSVDataSet>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Login Test (5 Concurrent Users, 5 Iterations, Ramp-up 10s)">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Login Test (5 Concurrent Users, 50 Iterations, Ramp-up 10s)">
         <intProp name="ThreadGroup.num_threads">5</intProp>
         <intProp name="ThreadGroup.ramp_time">10</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
-          <stringProp name="LoopController.loops">5</stringProp>
+          <stringProp name="LoopController.loops">50</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.RemoteDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig" testname="jp@gc - Remote Driver Config" enabled="true">
-          <boolProp name="WebDriverConfig.acceptinsecurecerts">true</boolProp>
+        <com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.RemoteDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig" testname="jp@gc - Remote Driver Config">
+          <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
           <boolProp name="WebDriverConfig.reset_per_iteration">false</boolProp>
-          <boolProp name="WebDriverConfig.headless">false</boolProp>
+          <boolProp name="WebDriverConfig.headless">true</boolProp>
           <boolProp name="WebDriverConfig.maximize_browser">true</boolProp>
           <stringProp name="ChromeDriverConfig.additional_args">--remote-allow-origins=*</stringProp>
           <stringProp name="ChromeDriverConfig.binary_path"></stringProp>
@@ -65,12 +63,12 @@
           <intProp name="WebDriverConfig.socks_port">8080</intProp>
           <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
           <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
-          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:58012</stringProp>
+          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:52918</stringProp>
           <stringProp name="RemoteDriverConfig.general.selenium.capability">CHROME</stringProp>
           <boolProp name="RemoteDriverConfig.general.selenium.file.detector">true</boolProp>
         </com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig>
         <hashTree/>
-        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="jp@gc - WebDriver Sampler" enabled="true">
+        <com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler guiclass="com.googlecode.jmeter.plugins.webdriver.sampler.gui.WebDriverSamplerGui" testclass="com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler" testname="jp@gc - WebDriver Sampler">
           <stringProp name="WebDriverSampler.script">import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -111,9 +109,9 @@ wait.until(ExpectedConditions.urlContains(&quot;brands&quot;));
           <stringProp name="WebDriverSampler.language">groovy</stringProp>
         </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
         <hashTree/>
-        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion (The final page must show the &apos;Choose a Car Brand&apos; title)" enabled="true">
+        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion (The final page must show the &apos;Choose a Car Brand&apos; title)">
           <collectionProp name="Asserion.test_strings">
-            <stringProp name="-35136020">Choose a Car Brand&lt;/h4&gt;</stringProp>
+            <stringProp name="-728495349">&gt;Choose a Car Brand&lt;</stringProp>
           </collectionProp>
           <stringProp name="Assertion.custom_message"></stringProp>
           <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
@@ -121,11 +119,11 @@ wait.until(ExpectedConditions.urlContains(&quot;brands&quot;));
           <intProp name="Assertion.test_type">2</intProp>
         </ResponseAssertion>
         <hashTree/>
-        <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion (Sign-in E2E must take a maximum of 5 second)" enabled="true">
+        <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion (Sign-in E2E must take a maximum of 5 second)">
           <stringProp name="DurationAssertion.duration">5000</stringProp>
         </DurationAssertion>
         <hashTree/>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -162,7 +160,7 @@ wait.until(ExpectedConditions.urlContains(&quot;brands&quot;));
           <stringProp name="filename"></stringProp>
         </ResultCollector>
         <hashTree/>
-        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results" enabled="true">
+        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -204,18 +202,18 @@ wait.until(ExpectedConditions.urlContains(&quot;brands&quot;));
         </ConstantTimer>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Customer Test (5 Concurrent Users, 5 Iterations, Ramp-up 10s)">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Create Customer Test (5 Concurrent Users, 50 Iterations, Ramp-up 10s)">
         <intProp name="ThreadGroup.num_threads">5</intProp>
         <intProp name="ThreadGroup.ramp_time">10</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
-          <stringProp name="LoopController.loops">5</stringProp>
+          <stringProp name="LoopController.loops">50</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.RemoteDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig" testname="jp@gc - Remote Driver Config" enabled="true">
+        <com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.RemoteDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig" testname="jp@gc - Remote Driver Config">
           <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
           <boolProp name="WebDriverConfig.reset_per_iteration">false</boolProp>
           <boolProp name="WebDriverConfig.headless">true</boolProp>
@@ -248,7 +246,7 @@ wait.until(ExpectedConditions.urlContains(&quot;brands&quot;));
           <intProp name="WebDriverConfig.socks_port">8080</intProp>
           <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
           <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
-          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:58012</stringProp>
+          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:52918</stringProp>
           <stringProp name="RemoteDriverConfig.general.selenium.capability">CHROME</stringProp>
           <boolProp name="RemoteDriverConfig.general.selenium.file.detector">true</boolProp>
         </com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig>
@@ -347,9 +345,9 @@ wait.until(ExpectedConditions.urlContains(&quot;edit-customer&quot;));
           <stringProp name="WebDriverSampler.language">groovy</stringProp>
         </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
         <hashTree/>
-        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion (The final page must display the &apos;Customers&apos; title)" enabled="true">
+        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion (The final page must display the &apos;Customers&apos; title)">
           <collectionProp name="Asserion.test_strings">
-            <stringProp name="1141251933">&lt;h4 class=&quot;MuiTypography-root MuiTypography-h4 MuiTypography-alignCenter MuiTypography-gutterBottom css-1fb7dkc&quot; style=&quot;--Typography-textAlign: center;&quot;&gt;Customers&lt;/h4&gt;</stringProp>
+            <stringProp name="670446949">&gt;Customers&lt;</stringProp>
           </collectionProp>
           <stringProp name="Assertion.custom_message"></stringProp>
           <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
@@ -361,7 +359,7 @@ wait.until(ExpectedConditions.urlContains(&quot;edit-customer&quot;));
           <stringProp name="DurationAssertion.duration">10000</stringProp>
         </DurationAssertion>
         <hashTree/>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -398,7 +396,7 @@ wait.until(ExpectedConditions.urlContains(&quot;edit-customer&quot;));
           <stringProp name="filename"></stringProp>
         </ResultCollector>
         <hashTree/>
-        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results" enabled="true">
+        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -440,18 +438,18 @@ wait.until(ExpectedConditions.urlContains(&quot;edit-customer&quot;));
         </ConstantTimer>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="View Cars Test (5 Concurrent Users, 5 Iterations, Ramp-up 10s)">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="View Cars Test (5 Concurrent Users, 50 Iterations, Ramp-up 10s)">
         <intProp name="ThreadGroup.num_threads">5</intProp>
         <intProp name="ThreadGroup.ramp_time">10</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
         <stringProp name="ThreadGroup.on_sample_error">stopthread</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
-          <stringProp name="LoopController.loops">5</stringProp>
+          <stringProp name="LoopController.loops">50</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.RemoteDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig" testname="jp@gc - Remote Driver Config" enabled="true">
+        <com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.RemoteDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig" testname="jp@gc - Remote Driver Config">
           <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
           <boolProp name="WebDriverConfig.reset_per_iteration">false</boolProp>
           <boolProp name="WebDriverConfig.headless">true</boolProp>
@@ -484,7 +482,7 @@ wait.until(ExpectedConditions.urlContains(&quot;edit-customer&quot;));
           <intProp name="WebDriverConfig.socks_port">8080</intProp>
           <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
           <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
-          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:58012</stringProp>
+          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:52918</stringProp>
           <stringProp name="RemoteDriverConfig.general.selenium.capability">CHROME</stringProp>
           <boolProp name="RemoteDriverConfig.general.selenium.file.detector">true</boolProp>
         </com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig>
@@ -540,9 +538,9 @@ wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName(&apos;h3&apos;
           <stringProp name="WebDriverSampler.language">groovy</stringProp>
         </com.googlecode.jmeter.plugins.webdriver.sampler.WebDriverSampler>
         <hashTree/>
-        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion (The final page must display the &apos;Cars&apos; title)" enabled="true">
+        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion (The final page must display the &apos;Cars&apos; title)">
           <collectionProp name="Asserion.test_strings">
-            <stringProp name="220704689">&lt;h3 class=&quot;MuiTypography-root MuiTypography-h3 MuiTypography-alignCenter MuiTypography-gutterBottom css-1gltqhd&quot; style=&quot;--Typography-textAlign: center;&quot;&gt;Cars&lt;/h3&gt;</stringProp>
+            <stringProp name="1839886175">&gt;Cars&lt;</stringProp>
           </collectionProp>
           <stringProp name="Assertion.custom_message"></stringProp>
           <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
@@ -554,7 +552,7 @@ wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName(&apos;h3&apos;
           <stringProp name="DurationAssertion.duration">6000</stringProp>
         </DurationAssertion>
         <hashTree/>
-        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -591,7 +589,7 @@ wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName(&apos;h3&apos;
           <stringProp name="filename"></stringProp>
         </ResultCollector>
         <hashTree/>
-        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results" enabled="true">
+        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
