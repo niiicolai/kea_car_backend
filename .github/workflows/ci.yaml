@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+      - nicolai
+      - marcus
+      - oliver
+      - daniel
 
 jobs:
   build-and-test:
