@@ -32,7 +32,7 @@ class CustomerBaseResource(BaseModel):
         description="Address of the customer.",
         examples=["Randomgade nr. 10 4. tv."]
     )
-asds
+
     model_config = ConfigDict(from_attributes=True)
 
 
