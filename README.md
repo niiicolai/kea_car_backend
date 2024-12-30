@@ -75,7 +75,7 @@ newman run <collection> -e <environment>
 newman run "./api-tests/KEA Car API Test.postman_collection.json" -e "./api-tests/KEA Car Mysql.postman_environment.json"
 ```
 
-### Load Testing
+## Load Testing
 The project include test plans for stress-testing, load-testing and spike-testing of the frontend and backend implemented with JMeter. The test plans are located in the `performance-tests` directory.
 ```bash
 # Run the stress test and generate the report
