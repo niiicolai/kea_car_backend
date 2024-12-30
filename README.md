@@ -75,6 +75,19 @@ newman run <collection> -e <environment>
 newman run "./api-tests/KEA Car API Test.postman_collection.json" -e "./api-tests/KEA Car Mysql.postman_environment.json"
 ```
 
+### Load Testing
+The project include test plans for stress-testing, load-testing and spike-testing of the frontend and backend implemented with JMeter. The test plans are located in the `performance-tests` directory.
+```bash
+# Run the stress test and generate the report
+jmeter -n -t ./performance-tests/stress-test/Stress-Test-Plan.jmx -l log.jtl -e -o ./stress-test-html-report
+
+# Run the load test and generate the report
+jmeter -n -t ./performance-tests/load-test/Load-Test-Plan.jmx -l log.jtl -e -o ./load-test-html-report
+
+# Run the spike test and generate the report
+jmeter -n -t ./performance-tests/spike-test/Spike-Test-Plan.jmx -l log.jtl -e -o ./spike-test-html-report
+```
+
 ## MySQL Dump
 To dump the database, run the following command:
 ```bash
@@ -160,64 +173,3 @@ When you start the Docker Compose, it will restore the database from the dump fi
 ```bash
 docker-compose -f docker-compose.yml up
 ```
-
-## CI/CD
-The CI/CD pipeline is configured using GitHub Actions.
-
-The pipeline consists of the following stages:
-1. pre-test
-2. deploy-staging
-3. load-test
-4. deploy-production
-
-The `pre-test` pipeline consists of following checks that must pass:
-1. All pytest must pass
-2. Coverage must be at least 80%
-3. Pylint score must be at least 7.0
-4. All API tests must pass
-5. All End-to-end tests must pass
-
-The `deploy-staging` pipeline consists of following checks that must pass:
-1. Copy the application to the staging server
-2. Build the Docker image using the Dockerfile
-3. Run the `docker-compose.yaml` file to start all required services
-
-The `load-test` pipeline consists of following checks that must pass:
-1. Run the load test on the staging server
-2. All CPU Thresholds must pass
-
-The `deploy-production` pipeline consists of following checks that must pass:
-1. Copy the application to the production server
-2. Build the Docker image using the Dockerfile
-3. Run the `docker-compose.yaml` file to start all required services
-
-## Demonstration Flow
-The project contains a GitHub Action that can be used to demonstrate a minifed version of the CI/CD pipeline.
-The file is called `short-ci.yaml` and can be found in the `.github/workflows` directory.
-It is designed to run on push events to a branch called `demo`.
-
-The GitHub Action contains a single job called `test` that runs the following checks:
-1. All pytest must pass
-2. All API tests must pass
-
-### Example
-
-1. Create a new branch or use an existing branch called `demo`
-```bash	
-# Create a new branch called demo
-git checkout -b demo 
-
-# Use an existing branch called demo
-git checkout demo
-```
-
-2. Make some changes to the code and push the changes to the `demo` branch on GitHub
-```bash
-git add .
-git commit -m "I changed ..."
-git push origin demo
-```
-
-The GitHub action will automatically run the checks at this point and can be found under the Actions tab on GitHub.
-To clean up after the demonstration, merge the `demo` branch into the `main` branch by creating a pull request on GitHub.
-
