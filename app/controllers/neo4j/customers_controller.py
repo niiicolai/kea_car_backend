@@ -18,6 +18,7 @@ from app.repositories.customer_repositories import (
 
 router: APIRouter = APIRouter()
 
+
 def get_db():  # pragma: no cover
     with get_neo4j() as session:
         yield session
@@ -34,8 +35,8 @@ def get_db():  # pragma: no cover
     summary="Retrieve Customers - Requires authorization token in header.",
     description=
     """
-    Retrieves all or a limited amount of Customers from 
-    the Neo4j database potentially filtered by email 
+    Retrieves all or a limited amount of Customers on a selected 
+    page from the Neo4j database potentially filtered by email 
     and returns a list of 'CustomerReturnResource'.
     """,
     dependencies=[Depends(get_current_sales_person_token)]
@@ -49,6 +50,10 @@ async def get_customers(
             default=None, ge=1,
             description="""Set a limit for the amount of customers that is returned."""
         ),
+        page_number: int = Query(
+            default=1, ge=1,
+            description="""Set the page number for the customers that is returned."""
+        ),
         session: Neo4jSession = Depends(get_db)
 ):  # pragma: no cover
     return error_handler(
@@ -56,7 +61,8 @@ async def get_customers(
         callback=lambda: service.get_all(
             repository=Neo4jCustomerRepository(session),
             filter_customer_by_email=email_filter,
-            customers_limit=limit
+            customers_limit=limit,
+            customers_page=page_number
         )
     )
 

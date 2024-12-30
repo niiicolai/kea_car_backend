@@ -22,7 +22,8 @@ class CustomerRepository(ABC):  # pragma: no cover
     def get_all(
             self,
             email_filter: Optional[str] = None,
-            limit: Optional[int] = None
+            limit: Optional[int] = None,
+            page: int = 1
     ) -> List[CustomerReturnResource]:
         pass
 
@@ -63,13 +64,17 @@ class MySQLCustomerRepository(CustomerRepository):
     def get_all(
             self,
             email_filter: Optional[str] = None,
-            limit: Optional[int] = None
+            limit: Optional[int] = None,
+            page: int = 1
     ) -> List[CustomerReturnResource]:
 
         customers_query = self.session.query(CustomerMySQLEntity)
         if email_filter is not None and isinstance(email_filter, str):
             customers_query = customers_query.filter(CustomerMySQLEntity.email.contains(email_filter))
         if limit is not None and isinstance(limit, int) and limit > 0:
+            if isinstance(page, int) and page >= 1:
+                offset: int = (page - 1) * limit
+                customers_query = customers_query.offset(offset)
             customers_query = customers_query.limit(limit)
         customers: List[CustomerMySQLEntity] = cast(List[CustomerMySQLEntity], customers_query.all())
         return [customer.as_resource() for customer in customers]
@@ -147,13 +152,17 @@ class MongoDBCustomerRepository(CustomerRepository):  # pragma: no cover
     def get_all(
             self,
             email_filter: Optional[str] = None,
-            limit: Optional[int] = None
+            limit: Optional[int] = None,
+            page: int = 1
     ) -> List[CustomerReturnResource]:
         query = {}
         if email_filter is not None and isinstance(email_filter, str):
             query["email"] = {"$regex": email_filter}
         customers_query = self.database.get_collection("customers").find(query)
         if limit is not None and isinstance(limit, int) and limit > 0:
+            if isinstance(page, int) and page >= 1:
+                skip: int = (page - 1) * limit
+                customers_query = customers_query.skip(skip)
             customers_query = customers_query.limit(limit)
         customers = [CustomerMongoEntity(**customer).as_resource() for customer in customers_query]
         return customers
@@ -239,13 +248,17 @@ class Neo4jCustomerRepository(CustomerRepository):  # pragma: no cover
     def get_all(
             self,
             email_filter: Optional[str] = None,
-            limit: Optional[int] = None
+            limit: Optional[int] = None,
+            page: int = 1
     ) -> List[CustomerReturnResource]:
         query = "MATCH (c:Customer) "
         if email_filter is not None and isinstance(email_filter, str):
             query += f"WHERE c.email CONTAINS '{email_filter}' "
         query += "RETURN c"
         if limit is not None and isinstance(limit, int) and limit > 0:
+            if isinstance(page, int) and page >= 1:
+                skip: int = (page - 1) * limit
+                query += f" SKIP {skip}"
             query += f" LIMIT {limit}"
         result = self.session.run(query)
         customers = [record["c"] for record in result]

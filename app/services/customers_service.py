@@ -14,7 +14,8 @@ from app.repositories.customer_repositories import (
 def get_all(
         repository: CustomerRepository,
         filter_customer_by_email: Optional[str] = None,
-        customers_limit: Optional[int] = None
+        customers_limit: Optional[int] = None,
+        customers_page: int = 1
 ) -> List[CustomerReturnResource]:
 
     if not isinstance(repository, CustomerRepository):
@@ -26,7 +27,14 @@ def get_all(
     if isinstance(customers_limit, bool) or not (isinstance(customers_limit, int) or customers_limit is None):
         raise TypeError(f"customers_limit must be of type int or None, "
                         f"not {type(customers_limit).__name__}.")
-    return repository.get_all(email_filter=filter_customer_by_email, limit=customers_limit)
+    if isinstance(customers_page, bool) or not isinstance(customers_page, int):
+        raise TypeError(f"customers_page must be of type int, "
+                        f"not {type(customers_page).__name__}.")
+    return repository.get_all(
+        email_filter=filter_customer_by_email,
+        limit=customers_limit,
+        page=customers_page
+    )
 
 
 def get_by_id(

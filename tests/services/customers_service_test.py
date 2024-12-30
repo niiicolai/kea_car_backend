@@ -255,6 +255,39 @@ def test_get_all_customers_with_valid_customers_limit_values_partitions(
     )
 
 
+@pytest.mark.parametrize("valid_customers_page, expecting_customers", [
+    (-1, [customer_henrik, customer_oliver]),
+    (0, [customer_henrik, customer_oliver]),
+    (1, [customer_henrik, customer_oliver]),
+    (2, [customer_tom, customer_james]),
+    (3, [customer_test]),
+    (4, []),
+])
+def test_get_all_customers_with_valid_customers_page_values_partitions(
+        mySQLCustomerRepository, valid_customers_page, expecting_customers
+):
+    actual_customers = customers_service.get_all(
+        repository=mySQLCustomerRepository,
+        customers_limit=2,
+        customers_page=valid_customers_page
+    )
+
+    actual_amount_of_customers = len(actual_customers)
+    expected_amount_of_customers = len(expecting_customers)
+
+    assert actual_amount_of_customers == expected_amount_of_customers, (
+        f"The actual amount of customers '{actual_amount_of_customers}' does not match "
+        f"the expected amount of customers '{expected_amount_of_customers}'."
+    )
+
+    for i in range(actual_amount_of_customers):
+        actual_customer_id = actual_customers[i].id
+        expected_customer_id = expecting_customers[i].get('id')
+        assert actual_customer_id == expected_customer_id, (
+            f"The actual customer ID '{actual_customer_id}' does not match "
+            f"the expected customer ID '{expected_customer_id}'."
+        )
+
 @pytest.mark.parametrize("valid_email_filter, expecting_customers", [
     (None, [customer_henrik,
             customer_oliver,
@@ -405,6 +438,21 @@ def test_get_all_customers_with_invalid_customers_limit_values_partitions(
             customers_limit=invalid_customers_limit
         )
 
+
+@pytest.mark.parametrize("invalid_customers_page, expecting_error_message", [
+    ("1", "customers_page must be of type int, not str."),
+    (True, "customers_page must be of type int, not bool."),
+    (1.5, "customers_page must be of type int, not float."),
+    (None, "customers_page must be of type int, not NoneType."),
+])
+def test_get_all_customers_with_invalid_customers_page_values_partitions(
+        mySQLCustomerRepository, invalid_customers_page, expecting_error_message
+):
+    with pytest.raises(TypeError, match=expecting_error_message):
+        customers_service.get_all(
+            repository=mySQLCustomerRepository,
+            customers_page=invalid_customers_page
+        )
 
 @pytest.mark.parametrize("invalid_email_filter, expecting_error_message", [
     (1, "filter_customer_by_email must be of type str or None, not int."),
