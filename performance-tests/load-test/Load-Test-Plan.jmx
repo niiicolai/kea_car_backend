@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Spike-Test-Plan">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Load-Test-Plan">
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
         <collectionProp name="Arguments.arguments"/>
       </elementProp>
@@ -10,7 +10,7 @@
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config">
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding"></stringProp>
-        <stringProp name="filename">C:/Users/niiic/Desktop/kea_car_backend/performance-tests/spike-test/spike-test-config.csv</stringProp>
+        <stringProp name="filename">C:/Users/niiic/Desktop/kea_car_backend/performance-tests/load-test/load-test-config.csv</stringProp>
         <boolProp name="ignoreFirstLine">true</boolProp>
         <boolProp name="quotedData">false</boolProp>
         <boolProp name="recycle">true</boolProp>
@@ -19,29 +19,17 @@
         <stringProp name="variableNames">email,password,baseURL</stringProp>
       </CSVDataSet>
       <hashTree/>
-      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group (View Cars Test)" enabled="true">
-        <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="338925568">
-            <stringProp name="52">4</stringProp>
-            <stringProp name="1660">40</stringProp>
-            <stringProp name="49">1</stringProp>
-            <stringProp name="49">1</stringProp>
-            <stringProp name="49">1</stringProp>
-          </collectionProp>
-          <collectionProp name="2098444495">
-            <stringProp name="50">2</stringProp>
-            <stringProp name="48">0</stringProp>
-            <stringProp name="49">1</stringProp>
-            <stringProp name="1784">80</stringProp>
-            <stringProp name="49">1</stringProp>
-          </collectionProp>
-        </collectionProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
-          <intProp name="LoopController.loops">-1</intProp>
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-        </elementProp>
+      <com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup guiclass="com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroupGui" testclass="com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup" testname="bzm - Concurrency Thread Group (View Cars Test)">
+        <elementProp name="ThreadGroup.main_controller" elementType="com.blazemeter.jmeter.control.VirtualUserController"/>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-      </kg.apc.jmeter.threads.UltimateThreadGroup>
+        <stringProp name="TargetLevel">2</stringProp>
+        <stringProp name="RampUp">5</stringProp>
+        <stringProp name="Steps">2</stringProp>
+        <stringProp name="Hold">600</stringProp>
+        <stringProp name="LogFilename"></stringProp>
+        <stringProp name="Iterations"></stringProp>
+        <stringProp name="Unit">S</stringProp>
+      </com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup>
       <hashTree>
         <com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.RemoteDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig" testname="jp@gc - Remote Driver Config">
           <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
@@ -76,7 +64,7 @@
           <intProp name="WebDriverConfig.socks_port">8080</intProp>
           <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
           <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
-          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:60392</stringProp>
+          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:62445</stringProp>
           <stringProp name="RemoteDriverConfig.general.selenium.capability">CHROME</stringProp>
           <boolProp name="RemoteDriverConfig.general.selenium.file.detector">true</boolProp>
         </com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig>
@@ -142,11 +130,6 @@ wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName(&apos;h3&apos;
           <intProp name="Assertion.test_type">16</intProp>
         </ResponseAssertion>
         <hashTree/>
-        <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion (Sign-in E2E and viewing cars must take no more than 6 seconds)" enabled="true">
-          <stringProp name="DurationAssertion.duration">6000</stringProp>
-          <stringProp name="Assertion.scope">all</stringProp>
-        </DurationAssertion>
-        <hashTree/>
         <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion (The final page must display the &apos;Cars&apos; title)" enabled="true">
           <collectionProp name="Asserion.test_strings">
             <stringProp name="1839886175">&gt;Cars&lt;</stringProp>
@@ -156,6 +139,10 @@ wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName(&apos;h3&apos;
           <boolProp name="Assertion.assume_success">false</boolProp>
           <intProp name="Assertion.test_type">2</intProp>
         </ResponseAssertion>
+        <hashTree/>
+        <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion (Sign-in E2E and viewing cars must take no more than 6 seconds)" enabled="true">
+          <stringProp name="DurationAssertion.duration">6000</stringProp>
+        </DurationAssertion>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -266,33 +253,20 @@ wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName(&apos;h3&apos;
             </value>
           </objProp>
           <stringProp name="filename"></stringProp>
-          <stringProp name="RespTimeGraph.interval">1000</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group (Create Customer Test)" enabled="true">
-        <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="338925568">
-            <stringProp name="52">4</stringProp>
-            <stringProp name="1660">40</stringProp>
-            <stringProp name="49">1</stringProp>
-            <stringProp name="49">1</stringProp>
-            <stringProp name="49">1</stringProp>
-          </collectionProp>
-          <collectionProp name="312771955">
-            <stringProp name="50">2</stringProp>
-            <stringProp name="0">0</stringProp>
-            <stringProp name="49">1</stringProp>
-            <stringProp name="1784">80</stringProp>
-            <stringProp name="49">1</stringProp>
-          </collectionProp>
-        </collectionProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
-          <intProp name="LoopController.loops">-1</intProp>
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-        </elementProp>
+      <com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup guiclass="com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroupGui" testclass="com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup" testname="bzm - Concurrency Thread Group (Create Customer Test)">
+        <elementProp name="ThreadGroup.main_controller" elementType="com.blazemeter.jmeter.control.VirtualUserController"/>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-      </kg.apc.jmeter.threads.UltimateThreadGroup>
+        <stringProp name="TargetLevel">2</stringProp>
+        <stringProp name="RampUp">5</stringProp>
+        <stringProp name="Steps">2</stringProp>
+        <stringProp name="Hold">600</stringProp>
+        <stringProp name="LogFilename"></stringProp>
+        <stringProp name="Iterations"></stringProp>
+        <stringProp name="Unit">S</stringProp>
+      </com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup>
       <hashTree>
         <com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.RemoteDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig" testname="jp@gc - Remote Driver Config">
           <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
@@ -327,7 +301,7 @@ wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName(&apos;h3&apos;
           <intProp name="WebDriverConfig.socks_port">8080</intProp>
           <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
           <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
-          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:60392</stringProp>
+          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:62445</stringProp>
           <stringProp name="RemoteDriverConfig.general.selenium.capability">CHROME</stringProp>
           <boolProp name="RemoteDriverConfig.general.selenium.file.detector">true</boolProp>
         </com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig>
@@ -436,6 +410,10 @@ wait.until(ExpectedConditions.urlContains(&quot;edit-customer&quot;));
           <intProp name="Assertion.test_type">16</intProp>
         </ResponseAssertion>
         <hashTree/>
+        <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion (Sign-in E2E and customer creation must take no more than 10 seconds)" enabled="true">
+          <stringProp name="DurationAssertion.duration">10000</stringProp>
+        </DurationAssertion>
+        <hashTree/>
         <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion (The final page must display the &apos;Customers&apos; title)" enabled="true">
           <collectionProp name="Asserion.test_strings">
             <stringProp name="670446949">&gt;Customers&lt;</stringProp>
@@ -445,10 +423,6 @@ wait.until(ExpectedConditions.urlContains(&quot;edit-customer&quot;));
           <boolProp name="Assertion.assume_success">false</boolProp>
           <intProp name="Assertion.test_type">2</intProp>
         </ResponseAssertion>
-        <hashTree/>
-        <DurationAssertion guiclass="DurationAssertionGui" testclass="DurationAssertion" testname="Duration Assertion (Sign-in E2E and customer creation must take no more than 10 seconds)" enabled="true">
-          <stringProp name="DurationAssertion.duration">10000</stringProp>
-        </DurationAssertion>
         <hashTree/>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -562,29 +536,17 @@ wait.until(ExpectedConditions.urlContains(&quot;edit-customer&quot;));
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="jp@gc - Ultimate Thread Group (Login Test)" enabled="true">
-        <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="338925568">
-            <stringProp name="52">4</stringProp>
-            <stringProp name="1660">40</stringProp>
-            <stringProp name="49">1</stringProp>
-            <stringProp name="49">1</stringProp>
-            <stringProp name="49">1</stringProp>
-          </collectionProp>
-          <collectionProp name="312771955">
-            <stringProp name="50">2</stringProp>
-            <stringProp name="0">0</stringProp>
-            <stringProp name="49">1</stringProp>
-            <stringProp name="1784">80</stringProp>
-            <stringProp name="49">1</stringProp>
-          </collectionProp>
-        </collectionProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
-          <intProp name="LoopController.loops">-1</intProp>
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-        </elementProp>
+      <com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup guiclass="com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroupGui" testclass="com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup" testname="bzm - Concurrency Thread Group (Login Test)">
+        <elementProp name="ThreadGroup.main_controller" elementType="com.blazemeter.jmeter.control.VirtualUserController"/>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-      </kg.apc.jmeter.threads.UltimateThreadGroup>
+        <stringProp name="TargetLevel">2</stringProp>
+        <stringProp name="RampUp">5</stringProp>
+        <stringProp name="Steps">2</stringProp>
+        <stringProp name="Hold">600</stringProp>
+        <stringProp name="LogFilename"></stringProp>
+        <stringProp name="Iterations"></stringProp>
+        <stringProp name="Unit">S</stringProp>
+      </com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup>
       <hashTree>
         <com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig guiclass="com.googlecode.jmeter.plugins.webdriver.config.gui.RemoteDriverConfigGui" testclass="com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig" testname="jp@gc - Remote Driver Config">
           <boolProp name="WebDriverConfig.acceptinsecurecerts">false</boolProp>
@@ -619,7 +581,7 @@ wait.until(ExpectedConditions.urlContains(&quot;edit-customer&quot;));
           <intProp name="WebDriverConfig.socks_port">8080</intProp>
           <stringProp name="WebDriverConfig.no_proxy">localhost</stringProp>
           <stringProp name="WebDriverConfig.custom_capabilites"></stringProp>
-          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:60392</stringProp>
+          <stringProp name="RemoteDriverConfig.general.selenium.grid.url">http://127.0.0.1:62445</stringProp>
           <stringProp name="RemoteDriverConfig.general.selenium.capability">CHROME</stringProp>
           <boolProp name="RemoteDriverConfig.general.selenium.file.detector">true</boolProp>
         </com.googlecode.jmeter.plugins.webdriver.config.RemoteDriverConfig>
@@ -672,7 +634,7 @@ wait.until(ExpectedConditions.urlContains(&quot;brands&quot;));
           <stringProp name="Assertion.custom_message"></stringProp>
           <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
           <boolProp name="Assertion.assume_success">false</boolProp>
-          <intProp name="Assertion.test_type">8</intProp>
+          <intProp name="Assertion.test_type">16</intProp>
         </ResponseAssertion>
         <hashTree/>
         <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion (The final page must show the &apos;Choose a Car Brand&apos; title)" enabled="true">
@@ -801,43 +763,6 @@ wait.until(ExpectedConditions.urlContains(&quot;brands&quot;));
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ResultCollector guiclass="RespTimeGraphVisualizer" testclass="ResultCollector" testname="Response Time Graph" enabled="true">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
-            <fieldNames>true</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <sentBytes>true</sentBytes>
-            <url>true</url>
-            <threadCounts>true</threadCounts>
-            <idleTime>true</idleTime>
-            <connectTime>true</connectTime>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-      </ResultCollector>
-      <hashTree/>
     </hashTree>
   </hashTree>
 </jmeterTestPlan>
