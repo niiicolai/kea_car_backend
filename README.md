@@ -1,5 +1,5 @@
 # Python Project
-[![CI/CD](https://github.com/niiicolai/kea_car_backend/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/niiicolai/kea_car_backend/actions/workflows/ci-cd.yaml) [![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
+[![CI/CD](https://github.com/niiicolai/kea_car_backend/actions/workflows/ci-cd.yaml/badge.svg)](https://github.com/niiicolai/kea_car_backend/actions/workflows/ci-cd.yaml) [![CI](https://github.com/niiicolai/kea_car_backend/actions/workflows/ci.yaml/badge.svg)](https://github.com/niiicolai/kea_car_backend/actions/workflows/ci.yaml) [![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
 
 ## Setup Instructions
 
