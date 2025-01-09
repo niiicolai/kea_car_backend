@@ -36,7 +36,6 @@ def create_access_token(sales_person: SalesPersonReturnResource) -> Token:
     email = sales_person.email
     data: TokenData = TokenData(sub=email)
     encoded_jwt = encode(data.model_dump(), SECRET_KEY, algorithm=ALGORITHM)
-    sales_person.first_name = 2 
     return Token(access_token=encoded_jwt, token_type="bearer", sales_person=sales_person)
 
 
