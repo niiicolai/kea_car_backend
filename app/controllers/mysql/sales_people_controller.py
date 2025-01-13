@@ -114,7 +114,7 @@ async def login(
     Retrieves all or a limited amount of Sales People from the MySQL 
     database and returns a list of 'SalesPersonReturnResource'.
     """,
-    dependencies=[Depends(get_current_sales_person_token)]
+    #dependencies=[Depends(get_current_sales_person_token)]
 )
 async def get_sales_people(
         limit: Optional[int] = Query(
