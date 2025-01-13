@@ -38,7 +38,7 @@ def get_db():  # pragma: no cover
     the MySQL database potentially filtered by email 
     and returns a list of 'CustomerReturnResource'.
     """,
-    dependencies=[Depends(get_current_sales_person_token)]
+    #dependencies=[Depends(get_current_sales_person_token)]
 )
 async def get_customers(
         email_filter: Optional[str] = Query(
