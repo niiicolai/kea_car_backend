@@ -15,13 +15,13 @@ def get_db_connection_string(is_test_connection_string: bool) -> str:
     """
     Creates a database engine using individual environment variables.
     """
-    db_host = os.getenv('KEA_CARS_DB_HOST')
-    db_name = os.getenv('KEA_CARS_DB_NAME')
-    db_user = os.getenv('KEA_CARS_DB_USER')
-    db_password = os.getenv('KEA_CARS_DB_PASSWORD')
-    db_port = os.getenv('KEA_CARS_DB_PORT')
+    db_host = os.getenv('DB_HOST')
+    db_name = os.getenv('DB_NAME')
+    db_user = os.getenv('DB_USER')
+    db_password = os.getenv('DB_PASSWORD')
+    db_port = os.getenv('DB_PORT')
     if is_test_connection_string:
-        db_name = os.getenv('KEA_CARS_TEST_DB_NAME') if os.getenv('KEA_CARS_TEST_DB_NAME') else db_name
+        db_name = os.getenv('TEST_DB_NAME') if os.getenv('TEST_DB_NAME') else db_name
 
 
     # When using docker, we don't need to specify the port.
@@ -29,7 +29,7 @@ def get_db_connection_string(is_test_connection_string: bool) -> str:
     port = f':{db_port}' if db_port else '' 
     
     connection_string = f'mysql+pymysql://{db_user}:{db_password}@{db_host}{port}/{db_name}'
-    
+    print(connection_string)
     return connection_string
 
 def get_engine(is_test_engine: bool) -> Engine:

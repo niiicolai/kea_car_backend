@@ -7,10 +7,10 @@ import argparse
 
 load_dotenv()
 
-host = os.getenv('KEA_CARS_DB_HOST')
-username = os.getenv('KEA_CARS_DB_USER')
-password = os.getenv('KEA_CARS_DB_PASSWORD')
-port = os.getenv('KEA_CARS_DB_PORT')
+host = os.getenv('DB_HOST')
+username = os.getenv('DB_USER')
+password = os.getenv('DB_PASSWORD')
+port = os.getenv('DB_PORT')
 
 def restore(filepath: str):
     if host is None or username is None or password is None:
