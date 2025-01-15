@@ -7,7 +7,7 @@ from app.exceptions.weather_errors import UnsupportedCountryError, WeatherAPIErr
 BASE_URL = "https://api.weatherapi.com/v1/"
 
 # Get the API key from the environment variables
-key = os.getenv("WEATHER_API_KEY")
+key = os.getenv("WEATHER_API_KEY", "unset_api_key")
 
 # List of supported countries
 # Find the supported countries here: https://www.weatherapi.com/docs/conditions.json
@@ -22,7 +22,7 @@ def get_weather_by_country(country: str) -> WeatherReturnResource:
     # Combine the base url with the endpoint and the key
     # Example= https://api.weatherapi.com/v1/current.json?q=Denmark&key=somekey    
     url = BASE_URL + "current.json?q=" + country + "&key=" + key
-    print(url)
+    #print(url)
     # Make an HTTP GET request to the URL
     response = requests.get(url, timeout=10)
     
